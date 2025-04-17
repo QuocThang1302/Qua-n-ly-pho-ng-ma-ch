@@ -10,38 +10,40 @@
     <left>
         <AnchorPane prefHeight="550.0" prefWidth="451.0" BorderPane.alignment="CENTER">
             <children>
-                <PasswordField fx:id="txtMatKhau" layoutX="65.0" layoutY="289.0" prefHeight="37.0" prefWidth="327.0" promptText="Nhập mật khẩu" />
-                <TextField fx:id="txtTaiKhoan" layoutX="65.0" layoutY="209.0" prefHeight="37.0" prefWidth="328.0" promptText="Nhập tài khoản" />
-                <Label layoutX="65.0" layoutY="261.0" text="Mật khẩu">
+                <PasswordField fx:id="txtMatKhau" layoutX="65.0" layoutY="264.0" prefHeight="37.0" prefWidth="327.0" promptText="Nhập mật khẩu" />
+                <TextField fx:id="txtMatKhauVisible" layoutX="65.0" layoutY="264.0" prefHeight="37.0" prefWidth="327.0" promptText="Nhập mật khẩu" visible="false" />
+                <TextField fx:id="txtTaiKhoan" layoutX="65.0" layoutY="184.0" prefHeight="37.0" prefWidth="328.0" promptText="Nhập tài khoản" />
+                <Label layoutX="65.0" layoutY="236.0" text="Mật khẩu">
                     <font>
                         <Font size="19.0" />
                     </font></Label>
-                <Label layoutX="65.0" layoutY="181.0" text="Tài khoản">
+                <Label layoutX="65.0" layoutY="156.0" text="Tài khoản">
                     <font>
                         <Font size="19.0" />
                     </font></Label>
-                <Label layoutX="148.0" layoutY="102.0" text="Đăng nhập">
+                <Label layoutX="148.0" layoutY="77.0" text="Đăng nhập">
                     <font>
                         <Font size="33.0" />
                     </font>
                 </Label>
-                <Button fx:id="btnDangNhap" layoutX="173.0" layoutY="394.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="111.0" text="Đăng nhập">
+                <Button fx:id="btnDangNhap" layoutX="173.0" layoutY="369.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="111.0" text="Đăng nhập">
                     <font>
                         <Font size="16.0" />
                     </font>
                 </Button>
-                <Hyperlink fx:id="linkQuenMatKhau" layoutX="292.0" layoutY="350.0" text="Quên mật khẩu ? " />
-                <Hyperlink fx:id="linkDangKy" layoutX="284.0" layoutY="455.0" text="Đăng ký" />
-                <Label layoutX="134.0" layoutY="457.0" text="Bạn chưa có tài khoản ?">
+                <Hyperlink fx:id="linkQuenMatKhau" layoutX="292.0" layoutY="325.0" text="Quên mật khẩu ? " />
+                <Hyperlink fx:id="linkDangKy" layoutX="284.0" layoutY="430.0" text="Đăng ký" />
+                <Label layoutX="134.0" layoutY="432.0" text="Bạn chưa có tài khoản ?">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Label>
-                <Label fx:id="lbltest" layoutX="75.0" layoutY="326.0" prefHeight="20.0" prefWidth="307.0" text="Tài khoản hoặc mật khẩu bị sai. Vui lòng thử lại" textFill="RED">
+                <Label fx:id="lbltest" layoutX="75.0" layoutY="301.0" prefHeight="20.0" prefWidth="307.0" text="Tài khoản hoặc mật khẩu bị sai. Vui lòng thử lại" textFill="RED">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Label>
+            <CheckBox fx:id="chkShowPassword" layoutX="68.0" layoutY="329.0" mnemonicParsing="false" text="Hiển thị mật khẩu" />
             </children>
         </AnchorPane>
     </left>

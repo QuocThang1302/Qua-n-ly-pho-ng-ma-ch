@@ -1,2 +1,2 @@
-public class TrangChu {
+public class TrangChuController {
 }
