@@ -1,3 +1,5 @@
+package com.clinic.controllers;
+
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
