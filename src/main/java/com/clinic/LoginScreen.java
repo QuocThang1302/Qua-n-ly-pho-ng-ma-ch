@@ -21,6 +21,8 @@ public class LoginScreen extends Application {
     }
 
     public static void main(String[] args) {
+        // Test kết nối database trước khi chạy ứng dụng
+        DatabaseConnector.connect();
         launch(args);
     }
 }

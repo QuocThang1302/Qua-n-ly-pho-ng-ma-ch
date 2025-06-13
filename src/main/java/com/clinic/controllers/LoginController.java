@@ -1,5 +1,6 @@
 package com.clinic.controllers;
 
+import com.clinic.DatabaseConnector;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -95,7 +96,7 @@ public class LoginController {
 
                 // Chuyển sang màn hình chính
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/TrangChu.fxml"));
                     Parent root = loader.load();
                     Stage stage = (Stage) btnDangNhap.getScene().getWindow();
                     stage.setScene(new Scene(root));
@@ -120,22 +121,17 @@ public class LoginController {
 
     // Phương thức kiểm tra tài khoản và mật khẩu từ cơ sở dữ liệu
     private boolean isValidLogin(String taiKhoan, String matKhau) {
-        // Thông tin kết nối cơ sở dữ liệu
-        String url = "jdbc:mysql://localhost:3306/your_database"; // Sửa URL
-        String dbUser = "your_username";
-        String dbPassword = "your_password";
-
-        try (Connection conn = DriverManager.getConnection(url, dbUser, dbPassword)) {
-            String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+        try (Connection conn = DatabaseConnector.connect()) {
+            String query = "SELECT * FROM \"NhanVien\" WHERE \"MaNhanVien\" = ? AND \"MatKhau\" = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, taiKhoan);
-            stmt.setString(2, matKhau); // Lưu ý: Nên mã hóa mật khẩu trong thực tế
+            stmt.setString(2, matKhau);
             ResultSet rs = stmt.executeQuery();
 
-            return rs.next(); // Trả về true nếu tìm thấy bản ghi khớp
+            return rs.next(); // true nếu tìm thấy bản ghi
         } catch (Exception e) {
             e.printStackTrace();
-            lbltest.setText("Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
+            lbltest.setText("Lỗi kết nối CSDL: " + e.getMessage());
             lbltest.setVisible(true);
             return false;
         }
