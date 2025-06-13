@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.clinic.controllers.HomeController"
+           style="-fx-background-color: white;">
+    <Label text="Đây là màn hình trang chủ!" style="-fx-font-size: 24;" />
+</StackPane>
