@@ -16,10 +16,12 @@ import java.util.List;
 
 public class MenuController {
     @FXML private HBox btnDashboard, btnStaff, btnPatients,btnAnalytics, btnLogout;
+    @FXML private StackPane contentArea;
 
     @FXML
     private void initialize() {
-        highlightMenu(btnStaff); // Nhân viên là mặc định
+        highlightMenu(btnDashboard);
+        NavigationHelper.setContent(contentArea, "/views/dashboard.fxml");
     }
 
     private void highlightMenu(HBox activeItem) {

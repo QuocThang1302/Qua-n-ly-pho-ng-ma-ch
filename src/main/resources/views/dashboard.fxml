@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controllers.DashboardController"
+      spacing="20"
+      VBox.vgrow="ALWAYS"
+      HBox.hgrow="ALWAYS"
+      fillWidth="true">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <HBox spacing="20" HBox.hgrow="ALWAYS">
+
+    <!-- Thẻ 1: Tổng bệnh nhân -->
+        <StackPane style="-fx-background-color: #F1F8E9; -fx-background-radius: 10;" prefWidth="250" prefHeight="150" >
+            <VBox alignment="CENTER" spacing="10">
+                <Label text="👥" style="-fx-font-size: 36;" />
+                <Label text="Tổng bệnh nhân" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                <Label text="235" style="-fx-font-size: 28; -fx-text-fill: #2E7D32;" />
+            </VBox>
+        </StackPane>
+
+        <!-- Thẻ 2: Lịch hẹn hôm nay -->
+        <StackPane style="-fx-background-color: #E3F2FD; -fx-background-radius: 10;" prefWidth="250" prefHeight="150">
+            <VBox alignment="CENTER" spacing="10">
+                <Label text="📅" style="-fx-font-size: 36;" />
+                <Label text="Lịch hẹn hôm nay" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                <Label text="18" style="-fx-font-size: 28; -fx-text-fill: #1565C0;" />
+            </VBox>
+        </StackPane>
+
+        <!-- Thẻ 3: Doanh thu hôm nay -->
+        <StackPane style="-fx-background-color: #FFF3E0; -fx-background-radius: 10;" prefWidth="250" prefHeight="150">
+            <VBox alignment="CENTER" spacing="10">
+                <Label text="💰" style="-fx-font-size: 36;" />
+                <Label text="Doanh thu hôm nay" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                <Label text="4.200.000₫" style="-fx-font-size: 28; -fx-text-fill: #EF6C00;" />
+            </VBox>
+        </StackPane>
+    </HBox>
+
+</VBox>

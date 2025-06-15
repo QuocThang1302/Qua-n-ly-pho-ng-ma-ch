@@ -1,98 +1,85 @@
-<?import javafx.scene.layout.BorderPane?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.BorderPane?>
 
-<VBox fx:id="sideMenu" xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.controllers.MenuController"
-      spacing="15" alignment="TOP_LEFT"
-      prefWidth="220" style="-fx-background-color: white;">
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.controllers.MenuController"
+            prefWidth="1000" prefHeight="600">
 
-    <!-- Logo + Tên -->
-    <VBox alignment="CENTER" spacing="5" >
-        <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
-        </padding>
-        <ImageView fx:id="logoImage" fitHeight="121" fitWidth="121">
-            <image>
-                <Image url="@/assets/logo.png" />
-            </image>
-        </ImageView>
-        <Label text="Mikanko" styleClass="app-title"/>
-    </VBox>
+    <!-- LEFT: SIDE MENU -->
+    <left>
+        <VBox fx:id="sideMenu"
+              spacing="15" alignment="TOP_LEFT"
+              prefWidth="240"
+              style="-fx-background-color: white;">
 
-    <!-- Menu item -->
-    <VBox fx:id="menuItems" spacing="10" >
-        <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
-        </padding>
-        <HBox fx:id="btnDashboard" styleClass="menu-item" onMouseClicked="#handleDashboard">
-            <ImageView fitHeight="24" fitWidth="24">
-                <image>
-                    <Image url="@/assets/dashboard-icon.png"/>
-                </image>
-            </ImageView>
-            <Label text="Bảng điều khiển"/>
-        </HBox>
+            <!-- Logo + Title -->
+            <VBox alignment="CENTER" spacing="5">
+                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                <ImageView fx:id="logoImage" fitHeight="121" fitWidth="121">
+                    <image><Image url="@/assets/logo.png"/></image>
+                </ImageView>
+                <Label text="Mikanko" styleClass="app-title"/>
+            </VBox>
 
-        <HBox fx:id="btnStaff" styleClass="menu-item active" onMouseClicked="#handleStaff">
-            <ImageView fitHeight="24" fitWidth="24">
-                <image>
-                    <Image url="@/assets/nurse-icon.png"/>
-                </image>
-            </ImageView>
-            <Label text="Nhân viên"/>
-        </HBox>
+            <!-- Menu Items -->
+            <VBox fx:id="menuItems" spacing="10">
+                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
 
-        <HBox fx:id="btnPatients" styleClass="menu-item" onMouseClicked="#handlePatients">
-            <ImageView fitHeight="24" fitWidth="24">
-                <image>
-                    <Image url="@/assets/patient-icon.png"/>
-                </image>
-            </ImageView>
-            <Label text="Bệnh nhân"/>
-        </HBox>
+                <HBox fx:id="btnDashboard" styleClass="menu-item" onMouseClicked="#handleDashboard">
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image><Image url="@/assets/dashboard-icon.png"/></image>
+                    </ImageView>
+                    <Label text="Bảng điều khiển"/>
+                </HBox>
 
-        <HBox fx:id="btnAnalytics" styleClass="menu-item" onMouseClicked="#handleAnalytics">
-            <ImageView fitHeight="24" fitWidth="24">
-                <image>
-                    <Image url="@/assets/chart-icon.png"/>
-                </image>
-            </ImageView>
-            <Label text="Phân tích"/>
-        </HBox>
+                <HBox fx:id="btnStaff" styleClass="menu-item" onMouseClicked="#handleStaff">
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image><Image url="@/assets/nurse-icon.png"/></image>
+                    </ImageView>
+                    <Label text="Nhân viên"/>
+                </HBox>
 
-        <!-- Bỏ comment nếu cần -->
-        <!--
-        <HBox fx:id="btnSettings" styleClass="menu-item" onMouseClicked="#handleSettings">
-            <ImageView fitHeight="24" fitWidth="24">
-                <image>
-                    <Image url="@/assets/settings-icon.png"/>
-                </image>
-            </ImageView>
-            <Label text="Cài đặt"/>
-        </HBox>
-        -->
-    </VBox>
+                <HBox fx:id="btnPatients" styleClass="menu-item" onMouseClicked="#handlePatients">
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image><Image url="@/assets/patient-icon.png"/></image>
+                    </ImageView>
+                    <Label text="Bệnh nhân"/>
+                </HBox>
 
-    <!-- Sign out (ở dưới cùng) -->
-    <VBox alignment="BOTTOM_CENTER" VBox.vgrow="ALWAYS" >
-        <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
-        </padding>
-        <HBox fx:id="btnLogout" styleClass="signout-item" onMouseClicked="#handleSignOut">
-            <ImageView fitHeight="24" fitWidth="24">
-                <image>
-                    <Image url="@/assets/signout-icon.png"/>
-                </image>
-            </ImageView>
-            <Label text="Sign out"/>
-        </HBox>
-    </VBox>
-</VBox>
+                <HBox fx:id="btnAnalytics" styleClass="menu-item" onMouseClicked="#handleAnalytics">
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image><Image url="@/assets/chart-icon.png"/></image>
+                    </ImageView>
+                    <Label text="Phân tích"/>
+                </HBox>
+            </VBox>
+
+            <!-- Sign Out -->
+            <VBox alignment="BOTTOM_CENTER" VBox.vgrow="ALWAYS">
+                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                <HBox fx:id="btnLogout" styleClass="signout-item" onMouseClicked="#handleSignOut">
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image><Image url="@/assets/signout-icon.png"/></image>
+                    </ImageView>
+                    <Label text="Sign out"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- CENTER: MAIN CONTENT AREA -->
+    <center>
+        <StackPane fx:id="contentArea"
+                   style="-fx-background-color: #FAFAFA;"
+                   VBox.vgrow="ALWAYS"/>
+    </center>
+</BorderPane>
