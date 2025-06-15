@@ -27,3 +27,24 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/target/classes/assets/chart-icon.png
+/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+/target/classes/assets/dashboard-icon.png
+/target/classes/com/example/model/DatabaseConnector.class
+/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+/target/classes/views/login.fxml
+/target/classes/com/example/controllers/LoginController.class
+/target/classes/com/example/LoginScreen.class
+/target/classes/assets/logo.png
+/target/classes/com/example/Main.class
+/target/classes/CSS/menu.css
+/target/classes/views/menu.fxml
+/target/classes/com/example/controllers/MenuController.class
+/target/classes/com/example/helper/NavigationHelper.class
+/target/classes/assets/nurse-icon.png
+/target/classes/assets/patient-icon.png
+/target/classes/com/example/model/Role.class
+/target/classes/assets/signout-icon.png
+/target/classes/views/TrangChu.fxml
+/target/classes/com/example/controllers/TrangChuController.class
+/target/classes/com/example/model/UserContext.class
