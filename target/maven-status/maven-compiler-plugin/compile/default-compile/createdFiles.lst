@@ -1,9 +1,0 @@
-com\clinic\controllers\LoginController.class
-com\clinic\LoginScreen.class
-com\example\controllers\LayoutController.class
-com\clinic\utils\UserSession.class
-com\clinic\Main.class
-com\clinic\controllers\HomeController.class
-com\clinic\controllers\TrangChuController.class
-com\clinic\controllers\SideBarController.class
-com\clinic\utils\SceneManager.class
