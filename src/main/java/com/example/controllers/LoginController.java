@@ -1,6 +1,6 @@
-package com.clinic.controllers;
+package com.example.controllers;
 
-import com.clinic.DatabaseConnector;
+import com.example.model.DatabaseConnector;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -72,7 +71,7 @@ public class LoginController {
             System.out.println("Mở chức năng đăng ký...");
         });
 
-        // Sự kiện cho btnDangNhap
+//         Sự kiện cho btnDangNhap
         btnDangNhap.setOnAction(e -> {
             // Lấy giá trị từ TextField và PasswordField
             String taiKhoan = txtTaiKhoan.getText();
@@ -96,7 +95,7 @@ public class LoginController {
 
                 // Chuyển sang màn hình chính
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/TrangChu.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/menu.fxml"));
                     Parent root = loader.load();
                     Stage stage = (Stage) btnDangNhap.getScene().getWindow();
                     stage.setScene(new Scene(root));
@@ -117,6 +116,20 @@ public class LoginController {
                 delay.play();
             }
         });
+//        btnDangNhap.setOnAction(e ->{
+//                    try {
+//                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/menu.fxml"));
+//                    Parent root = loader.load();
+//                    Stage stage = (Stage) btnDangNhap.getScene().getWindow();
+//                    stage.setScene(new Scene(root));
+//                    stage.setTitle("Màn hình chính");
+//                    stage.show();
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                    lbltest.setText("Lỗi khi chuyển màn hình: " + ex.getMessage());
+//                    lbltest.setVisible(true);
+//                }
+//        });
     }
 
     // Phương thức kiểm tra tài khoản và mật khẩu từ cơ sở dữ liệu

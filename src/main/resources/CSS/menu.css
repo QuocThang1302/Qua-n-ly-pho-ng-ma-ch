@@ -1,0 +1,39 @@
+.menu-item {
+    -fx-spacing: 10;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 15 8 15;
+    -fx-cursor: hand;
+    -fx-background-color: transparent;
+}
+
+.menu-item:hover {
+    -fx-background-color: #E8F5E9;
+}
+
+.menu-item Label {
+    -fx-font-size: 14;
+    -fx-text-fill: #555;
+}
+
+.menu-item.active Label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #43A047;
+}
+
+.signout-item {
+    -fx-spacing: 10;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10;
+    -fx-cursor: hand;
+}
+
+.signout-item Label {
+    -fx-text-fill: #2E7D32;
+    -fx-font-weight: bold;
+}
+
+.app-title {
+    -fx-font-size: 20;
+    -fx-text-fill: #2E7D32;
+    -fx-font-weight: bold;
+}

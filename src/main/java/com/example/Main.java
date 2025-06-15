@@ -1,4 +1,4 @@
-package com.clinic;
+package com.example;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

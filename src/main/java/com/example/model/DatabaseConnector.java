@@ -1,4 +1,4 @@
-package com.clinic;
+package com.example.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

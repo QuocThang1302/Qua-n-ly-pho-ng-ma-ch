@@ -1,4 +1,4 @@
-package com.clinic.controllers;
+package com.example.controllers;
 
 public class TrangChuController {
 }
