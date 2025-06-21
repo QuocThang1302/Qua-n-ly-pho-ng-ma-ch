@@ -2,7 +2,7 @@
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-target/
+/target/
 
 ### Eclipse ###
 .apt_generated
@@ -31,3 +31,5 @@ bin/
 
 /target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
 /target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+
+
