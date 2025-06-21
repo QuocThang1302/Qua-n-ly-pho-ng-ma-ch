@@ -1,0 +1,46 @@
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controllers.AppointmentDetailController"
+      spacing="16"
+      style="-fx-background-color: white; -fx-border-color: #43a047; -fx-border-width: 2; -fx-background-radius: 6;">
+    <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+
+    <Label text="📝 Thông tin lịch hẹn" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="12" vgap="10">
+        <Label text="Họ tên:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtHoTen" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Ngày sinh:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="dateNgaySinh" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Số điện thoại:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtSoDienThoai" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Giới tính:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <ChoiceBox fx:id="cbGioiTinh" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Lý do khám:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextArea fx:id="txtLyDo" prefRowCount="2" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <Label text="Ngày khám:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="dateNgayKham" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+        <Label text="Giờ bắt đầu:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtGioBatDau" promptText="HH:mm" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+        <Label text="Giờ kết thúc:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtGioKetThuc" promptText="HH:mm" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+
+    </GridPane>
+
+    <HBox spacing="12" alignment="CENTER_RIGHT">
+        <Button fx:id="btnLuu" text="💾 Lưu thông tin"/>
+    </HBox>
+</VBox>

@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="javafx-desktop-app" />
+        <module name="Qua-n-ly-pho-ng-ma-ch" />
       </profile>
     </annotationProcessing>
   </component>

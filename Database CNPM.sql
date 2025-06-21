@@ -39,8 +39,10 @@ CREATE TABLE "HenKhamBenh" (
   "MaBenhNhan" VARCHAR(20),
   "LyDoKham" TEXT,
   "NgayKham" DATE,
+  "NgayketThuc" DATE,
   "MaBacSi" VARCHAR(20),
   "TinhTrang" TEXT
+  CHECK (NgayKham = NgayKetThuc)
 );
 
 CREATE TABLE "PhieuKhamBenh" (
@@ -120,7 +122,7 @@ INSERT INTO "Role" ("RoleID", "TenRole") VALUES
 ('ADMIN', 'Quản trị viên'),
 ('DOCTOR', 'Bác sĩ'),
 ('MANAGER', 'Quản lý'),
-('RECEPTIONIST', 'Lễ tân');
+('NURSE', 'Y Tá');
 
 INSERT INTO "NhanVien" (
   "MaNhanVien", "Ho", "Ten", "RoleID", "NgaySinh", "GioiTinh",
@@ -135,7 +137,7 @@ INSERT INTO "NhanVien" (
 ('NV003', 'Tran', 'Quan Ly', 'MANAGER', '1988-03-03', 'Nam',
  '0123456791', 'Đà Nẵng', '0900000003', 'manager@example.com', 'manager123'),
 
-('NV004', 'Hoang', 'Le Tan', 'RECEPTIONIST', '1995-04-04', 'Nữ',
+('NV004', 'Hoang', 'Y Ta', 'RECEPTIONIST', '1995-04-04', 'Nữ',
  '0123456792', 'Cần Thơ', '0900000004', 'reception@example.com', 'reception123');
 
 INSERT INTO "BenhNhan" (

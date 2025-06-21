@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.controllers.AppointmentController"
+            prefHeight="600.0" prefWidth="900.0">
+
+    <!-- Container để nhúng CalendarFX -->
+    <StackPane fx:id="calendarContainer" layoutX="0.0" layoutY="0.0" prefWidth="1280" prefHeight="960" />
+</AnchorPane>

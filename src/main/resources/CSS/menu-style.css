@@ -1,0 +1,20 @@
+.menu-item {
+    -fx-padding: 8 12;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-background-radius: 8;
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10;
+}
+
+.menu-item:hover {
+    -fx-background-color: #F1F8E9;
+}
+
+.menu-item.active {
+    -fx-background-color: #A5D6A7;
+    -fx-border-color: #66BB6A;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}

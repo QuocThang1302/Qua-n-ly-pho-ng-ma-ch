@@ -1,57 +1,70 @@
 package com.example.controllers;
 
 import com.example.helper.NavigationHelper;
-import com.example.model.Role;
 import com.example.model.UserContext;
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
-import java.io.IOException;
 import java.util.List;
 
 public class MenuController {
-    @FXML private HBox btnDashboard, btnStaff, btnPatients,btnAnalytics, btnLogout;
+    @FXML private HBox btnDashboard, btnStaff, btnPatients, btnAnalytics, btnLogout;
     @FXML private StackPane contentArea;
+
+    private HBox currentActiveItem;
 
     @FXML
     private void initialize() {
-        highlightMenu(btnDashboard);
+        setMenuItemHandlers();
+        setMenuActive(btnDashboard);
         NavigationHelper.setContent(contentArea, "/views/dashboard.fxml");
     }
 
-    private void highlightMenu(HBox activeItem) {
-        List<HBox> allButtons = List.of(btnDashboard, btnStaff, btnPatients, btnAnalytics);
-        for (HBox box : allButtons) {
-            box.getStyleClass().remove("active");
+    private void setMenuItemHandlers() {
+        btnDashboard.setOnMouseClicked(e -> {
+            setMenuActive(btnDashboard);
+            NavigationHelper.setContent(contentArea, "/views/dashboard.fxml");
+        });
+
+        btnStaff.setOnMouseClicked(e -> {
+            setMenuActive(btnStaff);
+            NavigationHelper.setContent(contentArea, "/views/staff.fxml");
+        });
+
+        btnPatients.setOnMouseClicked(e -> {
+            setMenuActive(btnPatients);
+            NavigationHelper.setContent(contentArea, "/views/patient.fxml");
+        });
+
+        btnAnalytics.setOnMouseClicked(e -> {
+            setMenuActive(btnAnalytics);
+            NavigationHelper.setContent(contentArea, "/views/appointment.fxml");
+        });
+
+        btnLogout.setOnMouseClicked(e -> {
+            UserContext.getInstance().clear();
+            NavigationHelper.switchTo("/views/login.fxml");
+        });
+    }
+
+    private void setMenuActive(HBox selectedItem) {
+        if (currentActiveItem != null) {
+            currentActiveItem.getStyleClass().remove("active");
         }
-        activeItem.getStyleClass().add("active");
+        selectedItem.getStyleClass().add("active");
+        currentActiveItem = selectedItem;
+
+        // Optional: Apply fade transition for soft feedback
+        applyFadeAnimation(selectedItem);
     }
 
-    public void handleDashboard() {
-        highlightMenu(btnDashboard);
-        // Load view tương ứng
-    }
-
-    public void handleStaff() {
-        highlightMenu(btnStaff);
-        // Load staff view
-    }
-
-    public void handlePatients() {
-        highlightMenu(btnPatients);
-    }
-
-    public void handleAnalytics() {
-        highlightMenu(btnAnalytics);
-    }
-
-    public void handleSignOut() {
-        UserContext.getInstance().clear();
-        NavigationHelper.switchTo("/views/login.fxml");
+    private void applyFadeAnimation(HBox item) {
+        FadeTransition fade = new FadeTransition(Duration.millis(200), item);
+        fade.setFromValue(0.85);
+        fade.setToValue(1.0);
+        fade.play();
     }
 }

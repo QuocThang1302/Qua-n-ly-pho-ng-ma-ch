@@ -4,9 +4,11 @@ import com.example.model.DatabaseConnector;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -97,9 +99,16 @@ public class LoginController {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/menu.fxml"));
                     Parent root = loader.load();
+
                     Stage stage = (Stage) btnDangNhap.getScene().getWindow();
-                    stage.setScene(new Scene(root));
+                    Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
+                    Scene scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
+                    scene.getStylesheets().add(getClass().getResource("/css/menu-style.css").toExternalForm());
+                    stage.setScene(scene);
                     stage.setTitle("Màn hình chính");
+                    stage.setResizable(true);
+                    stage.setMaximized(true);;
                     stage.show();
                 } catch (Exception ex) {
                     ex.printStackTrace();
