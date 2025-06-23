@@ -30,7 +30,7 @@
     <Label text="Mã bệnh nhân" GridPane.rowIndex="0" GridPane.columnIndex="2"
            style="-fx-font-size: 14"/>
     <TextField fx:id="tfId" GridPane.rowIndex="0" GridPane.columnIndex="3"
-                styleClass="text-field"/>
+                styleClass="text-field" editable="false"/>
 
     <Label text="Giới tính" GridPane.rowIndex="1" GridPane.columnIndex="2"
            style="-fx-font-size: 14"/>

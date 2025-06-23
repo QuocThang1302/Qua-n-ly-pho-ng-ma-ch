@@ -36,11 +36,11 @@
 
 /* tableview */
 /* TableView header background */
-.table-view .column-header {
+.table-view .column-header,
+.table-view .column-header-background {
     -fx-background-color: white;
     -fx-border-color: transparent transparent LightGray transparent;
-    -fx-padding: 15px 0;
-    -fx-min-height: 40px;
+    -fx-pref-height: 40;
 }
 
 /* TableView header label */
@@ -48,7 +48,7 @@
     -fx-text-fill: black;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-padding: 0 10px;
+    -fx-padding: 5 10;
     -fx-alignment: CENTER;
 }
 
@@ -65,6 +65,7 @@
 .table-view .cell {
     -fx-font-size: 13px;
     -fx-text-fill: #333333;
+    -fx-alignment: CENTER;
 }
 
 /* scroll bar */

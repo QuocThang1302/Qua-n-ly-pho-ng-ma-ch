@@ -5,6 +5,7 @@ import com.example.model.PatientModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -47,9 +48,6 @@ public class PatientController {
         phoneCol.prefWidthProperty().bind(tvPatient.widthProperty().multiply(0.2));
         birthCol.prefWidthProperty().bind(tvPatient.widthProperty().multiply(0.2));
 
-        tvPatient.widthProperty().addListener((obs, oldVal, newVal) -> {
-            ((Region) tvPatient.lookup("TableHeaderRow")).setPrefHeight(45);
-        });
         // Thiết lập cách hiển thị dữ liệu cho mỗi cột
         setupTableColumns();
 
@@ -70,9 +68,6 @@ public class PatientController {
 
         // Số lượng bệnh nhân
         updatePatientCount();
-
-        PatientModel patientModel = tvPatient.getSelectionModel().getSelectedItem();
-        showPatientDetailPopUp(patientModel);
     }
 
     private void showPatientDetailPopUp(PatientModel patientModel) {
@@ -125,7 +120,10 @@ public class PatientController {
             filteredData = new FilteredList<>(patientList, p -> true);
 
             // Gán dữ liệu cho TableView
-            tvPatient.setItems(filteredData);
+            SortedList<PatientModel> sortedData = new SortedList<>(filteredData);
+            sortedData.comparatorProperty().bind(tvPatient.comparatorProperty());
+
+            tvPatient.setItems(sortedData);
 
             // Cập nhật số lượng bệnh nhân (nếu cần thiết)
             updatePatientCount();
