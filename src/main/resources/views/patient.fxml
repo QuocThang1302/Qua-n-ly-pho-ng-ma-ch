@@ -69,7 +69,7 @@
                     <Insets left="15" top="15" right="15"/>
                 </VBox.margin>
 
-                <Label text="Tổng số bệnh nhân (487)" style="-fx-font-size: 16px; -fx-font-weight: bold;">
+                <Label fx:id="lblTotalPatients" text="Tổng số bệnh nhân (0)" style="-fx-font-size: 16px; -fx-font-weight: bold;">
                     <HBox.margin>
                         <Insets left="15"/>
                     </HBox.margin>

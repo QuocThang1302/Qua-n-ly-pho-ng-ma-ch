@@ -7,12 +7,14 @@ public class PatientModel {
     private String hoTen;
     private LocalDate ngaySinh;
     private String soDienThoai;
+    private String gioiTinh;
 
-    public PatientModel(String maBenhNhan, String hoTen, LocalDate ngaySinh, String soDienThoai) {
+    public PatientModel(String maBenhNhan, String hoTen, LocalDate ngaySinh, String soDienThoai, String gioiTinh) {
         this.maBenhNhan = maBenhNhan;
         this.hoTen = hoTen;
         this.ngaySinh = ngaySinh;
         this.soDienThoai = soDienThoai;
+        this.gioiTinh = gioiTinh;
     }
 
     public String getMaBenhNhan() {
@@ -45,5 +47,13 @@ public class PatientModel {
 
     public void setHoTen(String hoTen) {
         this.hoTen = hoTen;
+    }
+
+    public String getGioiTinh() {
+        return gioiTinh;
+    }
+
+    public void setGioiTinh(String gioiTinh) {
+        this.gioiTinh = gioiTinh;
     }
 }
