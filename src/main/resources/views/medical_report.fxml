@@ -1,0 +1,103 @@
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.controllers.MedicalReportController"
+            fitToWidth="true" fitToHeight="true"
+            style="-fx-background-color: white;">
+    <content>
+        <AnchorPane prefWidth="794" prefHeight="1123">
+            <VBox spacing="24"
+                  prefWidth="794" prefHeight="1123"
+                  style="-fx-background-color: white; -fx-alignment: TOP_LEFT;"
+                  AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"
+                  AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
+                <padding>
+                    <Insets top="20" right="24" bottom="20" left="24"/>
+                </padding>
+
+                <Label text="📋 PHIẾU KHÁM BỆNH"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;"/>
+
+                <TitledPane text="Thông tin khám bệnh" expanded="true">
+                    <GridPane hgap="16" vgap="10">
+                        <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
+
+                        <Label text="Mã phiếu khám:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblMaPhieuKham" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                        <Label text="Mã bệnh nhân:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblMaBenhNhan" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <Label text="Họ tên:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblHoTen" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                        <Label text="Ngày sinh:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblNgaySinh" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                        <Label text="Giới tính:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblGioiTinh" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                        <Label text="SĐT:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblSoDienThoai" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                        <Label text="Tên bác sĩ:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblTenBacSi" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+                        <Label text="Lý do khám:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblLyDoKham" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+                        <Label text="Chẩn đoán:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+                        <Label fx:id="ChanDoan" wrapText="true" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+                        <TextArea fx:id="txtChanDoan" GridPane.rowIndex="8" GridPane.columnIndex="2"/>
+
+                        <Label text="Ngày lập phiếu:" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblNgayLap" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+                    </GridPane>
+                </TitledPane>
+
+                <TitledPane text="💊 Danh sách thuốc kê trong hóa đơn" expanded="true">
+                    <VBox spacing="12">
+                        <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
+                        <TableView fx:id="tableThuocHoaDon" prefHeight="200">
+                            <columns>
+                                <TableColumn fx:id="colTenThuoc" text="Tên thuốc" prefWidth="200"/>
+                                <TableColumn fx:id="colSoLuong" text="Số lượng" prefWidth="80"/>
+                                <TableColumn fx:id="colDonGia" text="Đơn giá" prefWidth="100"/>
+                            </columns>
+                        </TableView>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Button fx:id="btnThemThuoc" text="➕ Thêm thuốc"/>
+                        </HBox>
+                    </VBox>
+                </TitledPane>
+
+                <TitledPane text="Thông tin hóa đơn" expanded="true">
+                    <GridPane hgap="16" vgap="10">
+                        <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
+
+                        <Label text="Ngày lập hóa đơn:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblNgayHoaDon" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                        <Label text="Tiền thuốc:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblTienThuoc" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <Label text="Tiền khám:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblTienKham" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                        <Label text="Tổng tiền:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblTongTien" style="-fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    </GridPane>
+                </TitledPane>
+
+                <HBox spacing="12" alignment="CENTER_RIGHT">
+                    <Button fx:id="btnLuuPhieu" text="💾 Lưu phiếu"/>
+                    <Button fx:id="btnInPhieu" text="🖨 In phiếu"/>
+                    <Button fx:id="btnXuatPdf" text="📄 Xuất PDF"/>
+                </HBox>
+            </VBox>
+        </AnchorPane>
+    </content>
+</ScrollPane>

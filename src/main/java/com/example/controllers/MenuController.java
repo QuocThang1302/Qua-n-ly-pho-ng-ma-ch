@@ -11,7 +11,7 @@ import javafx.util.Duration;
 import java.util.List;
 
 public class MenuController {
-    @FXML private HBox btnDashboard, btnStaff, btnPatients, btnAnalytics, btnLogout;
+    @FXML private HBox btnDashboard, btnStaff, btnPatients, btnAnalytics,btnAppointment, btnLogout;
     @FXML private StackPane contentArea;
 
     private HBox currentActiveItem;
@@ -42,6 +42,10 @@ public class MenuController {
         btnAnalytics.setOnMouseClicked(e -> {
             setMenuActive(btnAnalytics);
             NavigationHelper.setContent(contentArea, "/views/appointment.fxml");
+        });
+        btnAppointment.setOnMouseClicked(e -> {
+            setMenuActive(btnAppointment);
+            NavigationHelper.setContent(contentArea,"/views/appointment.fxml");
         });
 
         btnLogout.setOnMouseClicked(e -> {

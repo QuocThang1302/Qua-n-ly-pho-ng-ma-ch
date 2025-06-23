@@ -5,10 +5,12 @@
     -fx-background-radius: 8;
     -fx-alignment: CENTER_LEFT;
     -fx-spacing: 10;
+    -fx-text-fill: black;
 }
 
 .menu-item:hover {
     -fx-background-color: #F1F8E9;
+    -fx-text-fill: black;
 }
 
 .menu-item.active {
@@ -17,4 +19,17 @@
     -fx-border-width: 2px;
     -fx-border-radius: 8;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+    -fx-text-fill: black;
+}
+.menu-item .label {
+    -fx-text-fill: black;
+}
+.menu-item:hover .label {
+    -fx-text-fill: black;
+}
+.app-logo-text {
+    -fx-font-family: "Times New Roman"
+        -fx-font-size: 52px;
+    -fx-text-fill: linear-gradient(to right, #43cea2, #185a9d);
+    -fx-font-weight: normal;
 }

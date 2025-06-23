@@ -9,5 +9,5 @@
             prefHeight="600.0" prefWidth="900.0">
 
     <!-- Container để nhúng CalendarFX -->
-    <StackPane fx:id="calendarContainer" layoutX="0.0" layoutY="0.0" prefWidth="1280" prefHeight="960" />
+    <StackPane fx:id="calendarContainer" layoutX="0.0" layoutY="0.0" prefWidth="1300" prefHeight="780" />
 </AnchorPane>
