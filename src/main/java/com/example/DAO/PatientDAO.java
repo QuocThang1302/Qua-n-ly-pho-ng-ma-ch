@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class PatientDAO {
     // CREATE
     public static boolean insert(PatientModel patient) {
-        String sql = "INSERT INTO \"BenhNhan\" (\"MaBenhNhan\", \"Ho\", \"Ten\", \"NgaySinh\", \"SDT\", \"GioiTinh\") VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO BenhNhan (MaBenhNhan, Ho, Ten, NgaySinh, SDT, GioiTinh) VALUES (?, ?, ?, ?, ?, ?)";
         String[] nameParts = patient.getHoTen().split(" ", 2);
         String ho = nameParts.length > 1 ? nameParts[0] : "";
         String ten = nameParts.length > 1 ? nameParts[1] : nameParts[0];
@@ -23,7 +23,7 @@ public class PatientDAO {
             stmt.setString(3, ten);
             stmt.setDate(4, Date.valueOf(patient.getNgaySinh()));
             stmt.setString(5, patient.getSoDienThoai());
-            stmt.setString(6, patient.getGioiTinh()); // Giả sử bạn thêm field này vào PatientModel
+            stmt.setString(6, patient.getGioiTinh());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -32,9 +32,9 @@ public class PatientDAO {
         return false;
     }
 
-    //READ
+    // READ
     public static PatientModel getById(String maBenhNhan) {
-        String sql = "SELECT * FROM \"BenhNhan\" WHERE \"MaBenhNhan\" = ?";
+        String sql = "SELECT * FROM BenhNhan WHERE MaBenhNhan = ?";
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -62,7 +62,7 @@ public class PatientDAO {
 
     // UPDATE
     public static boolean update(PatientModel patient) {
-        String sql = "UPDATE \"BenhNhan\" SET \"Ho\" = ?, \"Ten\" = ?, \"NgaySinh\" = ?, \"SDT\" = ?, \"GioiTinh\" = ? WHERE \"MaBenhNhan\" = ?";
+        String sql = "UPDATE BenhNhan SET Ho = ?, Ten = ?, NgaySinh = ?, SDT = ?, GioiTinh = ? WHERE MaBenhNhan = ?";
         String[] nameParts = patient.getHoTen().split(" ", 2);
         String ho = nameParts.length > 1 ? nameParts[0] : "";
         String ten = nameParts.length > 1 ? nameParts[1] : nameParts[0];
@@ -86,7 +86,7 @@ public class PatientDAO {
 
     // DELETE
     public static boolean delete(String maBenhNhan) {
-        String sql = "DELETE FROM \"BenhNhan\" WHERE \"MaBenhNhan\" = ?";
+        String sql = "DELETE FROM BenhNhan WHERE MaBenhNhan = ?";
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -102,7 +102,7 @@ public class PatientDAO {
     // READ ALL
     public static List<PatientModel> getAll() {
         List<PatientModel> list = new ArrayList<>();
-        String sql = "SELECT * FROM \"BenhNhan\"";
+        String sql = "SELECT * FROM BenhNhan";
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -115,7 +115,7 @@ public class PatientDAO {
                         hoTen,
                         rs.getDate("NgaySinh").toLocalDate(),
                         rs.getString("SDT"),
-                        rs.getString("GioiTinh") // Thêm giới tính
+                        rs.getString("GioiTinh")
                 ));
             }
 
@@ -125,9 +125,9 @@ public class PatientDAO {
         return list;
     }
 
-    // Method để lấy số lượng bệnh nhân (tùy chọn)
+    // COUNT
     public static int getPatientCount() {
-        String sql = "SELECT COUNT(*) as total FROM \"BenhNhan\"";
+        String sql = "SELECT COUNT(*) as total FROM BenhNhan";
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql);

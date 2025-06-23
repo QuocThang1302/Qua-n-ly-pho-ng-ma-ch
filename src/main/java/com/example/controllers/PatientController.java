@@ -7,6 +7,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -42,7 +45,7 @@ public class PatientController {
     private FilteredList<PatientModel> filteredData;
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         nameCol.prefWidthProperty().bind(tvPatient.widthProperty().multiply(0.2));
         idCol.prefWidthProperty().bind(tvPatient.widthProperty().multiply(0.2));
         genderCol.prefWidthProperty().bind(tvPatient.widthProperty().multiply(0.2));
@@ -59,20 +62,21 @@ public class PatientController {
         loadPatientData();
 
         tvPatient.setOnMouseClicked((event) -> {
-           if (event.getClickCount() == 2){
+            if (event.getClickCount() == 2) {
                 PatientModel patientModel = tvPatient.getSelectionModel().getSelectedItem();
-                if (patientModel != null){
+                if (patientModel != null) {
                     showPatientDetailPopUp(patientModel);
                 }
-           }
-        // Thiết lập tìm kiếm
-        setupSearch();
+            }
+            // Thiết lập tìm kiếm
+            setupSearch();
 
-        // Số lượng bệnh nhân
-        updatePatientCount();
+            // Số lượng bệnh nhân
+            updatePatientCount();
 
-        PatientModel patientModel = tvPatient.getSelectionModel().getSelectedItem();
-        showPatientDetailPopUp(patientModel);
+            PatientModel patientModel = tvPatient.getSelectionModel().getSelectedItem();
+            showPatientDetailPopUp(patientModel);
+        });
     }
 
     private void showPatientDetailPopUp(PatientModel patientModel) {
