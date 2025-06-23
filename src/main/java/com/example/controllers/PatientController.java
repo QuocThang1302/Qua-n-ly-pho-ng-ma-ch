@@ -9,7 +9,14 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 import java.time.format.DateTimeFormatter;
 
@@ -28,8 +35,6 @@ public class PatientController {
     private TableColumn<PatientModel, String> birthCol;
     @FXML
     private TextField tfSearch;
-    @FXML
-    private ImageView ivAdd;
     @FXML
     private Label lblTotalPatients;
 
@@ -53,15 +58,43 @@ public class PatientController {
         // Load dữ liệu
         loadPatientData();
 
+        tvPatient.setOnMouseClicked((event) -> {
+           if (event.getClickCount() == 2){
+                PatientModel patientModel = tvPatient.getSelectionModel().getSelectedItem();
+                if (patientModel != null){
+                    showPatientDetailPopUp(patientModel);
+                }
+           }
         // Thiết lập tìm kiếm
         setupSearch();
 
         // Số lượng bệnh nhân
         updatePatientCount();
-        ivAdd.setOnMouseClicked(event -> {
-            //NavigationHelper.setContent(contentArea, "/views/dashboard.fxml");
-        });
+
+        PatientModel patientModel = tvPatient.getSelectionModel().getSelectedItem();
+        showPatientDetailPopUp(patientModel);
     }
+
+    private void showPatientDetailPopUp(PatientModel patientModel) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/patient_detail_dialog.fxml"));
+            Parent root = loader.load();
+
+            // Lấy controller để truyền dữ liệu
+            PatientDetailDialogController controller = loader.getController();
+            controller.setPatient(patientModel);
+
+            // Tạo stage mới (window mới)
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Chi tiết bệnh nhân");
+            dialogStage.initModality(Modality.APPLICATION_MODAL); // chặn tương tác với window chính
+            dialogStage.setScene(new Scene(root));
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+                                    
     private void setupTableColumns() {
         // Thiết lập cách hiển thị dữ liệu cho từng cột
         idCol.setCellValueFactory(cellData ->

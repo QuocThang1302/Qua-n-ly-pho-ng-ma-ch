@@ -74,23 +74,6 @@
                         <Insets left="15"/>
                     </HBox.margin>
                 </Label>
-
-                <Region HBox.hgrow="ALWAYS"/>
-
-                <StackPane style="-fx-border-color: #cccccc; -fx-border-width: 1; -fx-border-radius: 6; -fx-padding: 4">
-                    <HBox.margin>
-                        <Insets right="15"/>
-                    </HBox.margin>
-
-                    <ImageView fx:id="ivAdd"
-                               fitWidth="20" fitHeight="20"
-                               pickOnBounds="true"
-                               preserveRatio="true">
-                        <image>
-                            <Image url="@../assets/plus.png" />
-                        </image>
-                    </ImageView>
-                </StackPane>
             </HBox>
 
             <TableView fx:id="tvPatient" VBox.vgrow="ALWAYS">
