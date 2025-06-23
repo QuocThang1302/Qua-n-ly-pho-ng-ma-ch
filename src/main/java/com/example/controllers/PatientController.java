@@ -1,7 +1,6 @@
 package com.example.controllers;
 
 import com.example.DAO.PatientDAO;
-import com.example.helper.NavigationHelper;
 import com.example.model.PatientModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,14 +10,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import java.time.format.DateTimeFormatter;
@@ -68,15 +63,16 @@ public class PatientController {
                     showPatientDetailPopUp(patientModel);
                 }
             }
-            // Thiết lập tìm kiếm
-            setupSearch();
-
-            // Số lượng bệnh nhân
-            updatePatientCount();
-
-            PatientModel patientModel = tvPatient.getSelectionModel().getSelectedItem();
-            showPatientDetailPopUp(patientModel);
         });
+
+        // Thiết lập tìm kiếm
+        setupSearch();
+
+        // Số lượng bệnh nhân
+        updatePatientCount();
+
+        PatientModel patientModel = tvPatient.getSelectionModel().getSelectedItem();
+        showPatientDetailPopUp(patientModel);
     }
 
     private void showPatientDetailPopUp(PatientModel patientModel) {

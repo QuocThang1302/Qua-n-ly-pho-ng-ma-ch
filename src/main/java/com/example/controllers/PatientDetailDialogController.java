@@ -57,6 +57,13 @@ public class PatientDetailDialogController {
             tfName.setText(patient.getHoTen());
             tfId.setText(patient.getMaBenhNhan());
             tfPhone.setText(patient.getSoDienThoai());
+
+            String gioitinh = patient.getGioiTinh();
+            if (gioitinh == "Nam")
+                btnMale.setSelected(true);
+            else
+                btnFemale.setSelected(true);
+
             LocalDate date = patient.getNgaySinh();
             dpBirth.setValue(date);
         }
