@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane fx:controller="com.example.controllers.PatientDetailDialogController"
+          xmlns:fx="http://javafx.com/fxml"
+          hgap="50" vgap="20" stylesheets="@../CSS/patient_detail_style.css"
+          prefHeight="600" prefWidth="785"
+          style="-fx-padding: 20; -fx-background-color: white;"
+          alignment="TOP_CENTER">
+
+    <!-- Cột trái -->
+    <Label text="Họ và tên" GridPane.rowIndex="0" GridPane.columnIndex="0"
+           style="-fx-font-size: 14"/>
+    <TextField fx:id="tfName" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                styleClass="text-field"/>
+
+    <Label text="Ngày sinh" GridPane.rowIndex="1" GridPane.columnIndex="0"
+           style="-fx-font-size: 14"/>
+
+    <DatePicker fx:id="dpBirth"
+                styleClass="date-picker" GridPane.rowIndex="1" GridPane.columnIndex="1">
+    </DatePicker>
+
+    <!-- Cột phải -->
+    <Label text="Mã bệnh nhân" GridPane.rowIndex="0" GridPane.columnIndex="2"
+           style="-fx-font-size: 14"/>
+    <TextField fx:id="tfId" GridPane.rowIndex="0" GridPane.columnIndex="3"
+                styleClass="text-field" editable="false"/>
+
+    <Label text="Giới tính" GridPane.rowIndex="1" GridPane.columnIndex="2"
+           style="-fx-font-size: 14"/>
+    <HBox spacing="10" GridPane.rowIndex="1" GridPane.columnIndex="3">
+        <ToggleButton text="Nam" fx:id="btnMale" prefWidth="50"
+                      styleClass="male-toggle-button"/>
+
+        <ToggleButton text="Nữ" fx:id="btnFemale" prefWidth="50"
+                      styleClass="female-toggle-button"/>
+    </HBox>
+
+    <Label text="Số điện thoại" GridPane.rowIndex="2" GridPane.columnIndex="0"
+           style="-fx-font-size: 14"/>
+    <TextField fx:id="tfPhone" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                styleClass="text-field"/>
+
+    <Button text="Lưu" fx:id="btnSave" prefWidth="60"
+            GridPane.columnIndex="2" GridPane.rowIndex="2"
+            styleClass="save-button" onAction="#save"/>
+</GridPane>
