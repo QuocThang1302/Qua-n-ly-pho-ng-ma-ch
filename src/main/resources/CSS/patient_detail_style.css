@@ -12,6 +12,7 @@
     -fx-border-color: #0078d7;
 }
 
+.combo-box,
 .date-picker {
     -fx-background-color: transparent;
     -fx-text-fill: black;
@@ -21,10 +22,12 @@
     -fx-font-size: 13;
 }
 
+.combo-box:focused,
 .date-picker:focused {
     -fx-border-color: #0078d7;
 }
 
+.combo-box .text-field,
 .date-picker .text-field {
     -fx-border-color: transparent;
     -fx-border-width: 0;
@@ -58,7 +61,7 @@
     -fx-background-color: #F8BBD0;
 }
 
-.save-button {
+.button {
     -fx-border-color: lightgray;
     -fx-background-color: transparent;
     -fx-text-fill: black;
@@ -71,6 +74,42 @@
 .button:hover {
     -fx-background-color: #A5D6A7;
     -fx-border-color: #66BB6A;
+}
+
+/* Đăng ký */
+.btn-register {
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-background-color: linear-gradient(to right, #66BB6A, #A5D6A7);
+}
+.btn-register:hover {
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-background-color: linear-gradient(to right, #4CAF50, #81C784);
+}
+
+/* Cập nhật */
+.btn-update {
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-background-color: linear-gradient(to right, #7E57C2, #9575CD);
+}
+.btn-update:hover {
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-background-color: linear-gradient(to right, #673AB7, #9575CD);
+}
+
+/* Xóa */
+.btn-delete {
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-background-color: linear-gradient(to right, #EF5350, #FF8A65);
+}
+.btn-delete:hover {
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to right, #E53935, #FF7043);
 }
 
 /* tableview */
