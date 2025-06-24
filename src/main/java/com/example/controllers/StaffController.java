@@ -1,16 +1,11 @@
 package com.example.controllers;
 
-import com.example.model.PatientModel;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
+import com.example.model.StaffModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -18,23 +13,25 @@ import java.io.IOException;
 
 public class StaffController {
     @FXML
-    private TableView<PatientModel> tvStaff;
+    private TableView<StaffModel> tvStaff;
     @FXML
-    private TableColumn<PatientModel, Integer> idCol;
+    private TableColumn<StaffModel, Integer> idCol;
     @FXML
-    private TableColumn<PatientModel, String> nameCol;
+    private TableColumn<StaffModel, String> nameCol;
     @FXML
-    private TableColumn<PatientModel, String> salaryCol;
+    private TableColumn<StaffModel, String> salaryCol;
     @FXML
-    private TableColumn<PatientModel, String> roleCol;
+    private TableColumn<StaffModel, String> roleCol;
     @FXML
-    private TableColumn<PatientModel, String> phoneCol;
+    private TableColumn<StaffModel, String> phoneCol;
     @FXML
-    private TableColumn<PatientModel, String> birthCol;
+    private TableColumn<StaffModel, String> birthCol;
     @FXML
     private TextField tfSearch;
     @FXML
     private Label lblTotalStaffs;
+    @FXML
+    Button btnAdd;
 
     @FXML
     public void initialize() {
@@ -47,26 +44,42 @@ public class StaffController {
 
         tvStaff.setOnMouseClicked((event) -> {
             if (event.getClickCount() == 2) {
-                PatientModel patientModel = tvStaff.getSelectionModel().getSelectedItem();
-                if (patientModel != null) {
-                    showPatientDetailPopUp(patientModel);
+                StaffModel staffModel = tvStaff.getSelectionModel().getSelectedItem();
+                if (staffModel != null) {
+                    showStaffDetailPopUp(staffModel);
                 }
+            }
+        });
+
+        btnAdd.setOnMouseClicked((event) -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/staff_detail.fxml"));
+                Parent root = loader.load();
+
+                // Tạo stage mới (window mới)
+                Stage dialogStage = new Stage();
+                dialogStage.setTitle("Chi tiết nhân viên");
+                dialogStage.initModality(Modality.APPLICATION_MODAL); // chặn tương tác với window chính
+                dialogStage.setScene(new Scene(root));
+                dialogStage.showAndWait();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
     }
 
-    private void showPatientDetailPopUp(PatientModel patientModel) {
+    private void showStaffDetailPopUp(StaffModel staffModel) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/patient_detail_dialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/staff_detail.fxml"));
             Parent root = loader.load();
 
             // Lấy controller để truyền dữ liệu
-            PatientDetailDialogController controller = loader.getController();
-            controller.setPatient(patientModel);
+            StaffDetailController controller = loader.getController();
+            controller.setStaff(staffModel);
 
             // Tạo stage mới (window mới)
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Chi tiết bệnh nhân");
+            dialogStage.setTitle("Chi tiết nhân viên");
             dialogStage.initModality(Modality.APPLICATION_MODAL); // chặn tương tác với window chính
             dialogStage.setScene(new Scene(root));
             dialogStage.showAndWait();
