@@ -11,12 +11,12 @@ import java.time.format.DateTimeFormatter;
 
 public class MedicalReportController {
 
-    @FXML private Label lblMaPhieuKham, lblMaBenhNhan, lblHoTen, lblNgaySinh, lblGioiTinh,
-            lblSoDienThoai, lblTenBacSi, lblLyDoKham, lblNgayLap;
+    @FXML private TextField tfMaPhieuKham, tfMaBenhNhan, tfHoTen, tfNgaySinh, tfGioiTinh,
+            tfSoDienThoai, tfTenBacSi, tfLyDoKham, tfNgayLap;
 
     @FXML private TextArea txtChanDoan;
 
-    @FXML private Label lblNgayHoaDon, lblTienThuoc, lblTienKham, lblTongTien;
+    @FXML private TextField tfNgayHoaDon, tfTienThuoc, tfTienKham, tfTongTien;
 
     @FXML private TableView<MedicineModel> tableThuocHoaDon;
     @FXML private TableColumn<MedicineModel, String> colTenThuoc;
@@ -29,26 +29,30 @@ public class MedicalReportController {
     private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public void setData(MedicalReportModel report, BillModel bill) {
-        lblMaPhieuKham.setText(report.getMaPhieuKham());
-        lblMaBenhNhan.setText(report.getMaBenhNhan());
-        lblHoTen.setText(report.getHoTen());
-        lblNgaySinh.setText(report.getNgaySinh().format(fmt));
-        lblGioiTinh.setText(report.getGioiTinh());
-        lblSoDienThoai.setText(report.getSoDienThoai());
-        lblTenBacSi.setText(report.getTenBacSi());
-        lblLyDoKham.setText(report.getLyDoKham());
-        lblNgayLap.setText(report.getNgayLap().format(fmt));
+        colTenThuoc.prefWidthProperty().bind(tableThuocHoaDon.widthProperty().multiply(0.33));
+        colDonGia.prefWidthProperty().bind(tableThuocHoaDon.widthProperty().multiply(0.33));
+        colSoLuong.prefWidthProperty().bind(tableThuocHoaDon.widthProperty().multiply(0.33));
+
+        tfMaPhieuKham.setText(report.getMaPhieuKham());
+        tfMaBenhNhan.setText(report.getMaBenhNhan());
+        tfHoTen.setText(report.getHoTen());
+        tfNgaySinh.setText(report.getNgaySinh().format(fmt));
+        tfGioiTinh.setText(report.getGioiTinh());
+        tfSoDienThoai.setText(report.getSoDienThoai());
+        tfTenBacSi.setText(report.getTenBacSi());
+        tfLyDoKham.setText(report.getLyDoKham());
+        tfNgayLap.setText(report.getNgayLap().format(fmt));
         txtChanDoan.setText(report.getChanDoan());
 
         if (bill != null) {
-            lblNgayHoaDon.setText(bill.getNgayLapDon().format(fmt));
+            tfNgayHoaDon.setText(bill.getNgayLapDon().format(fmt));
             double tienThuoc = 0;
             for(MedicineModel thuoc : bill.getDanhSachThuoc()){
                 tienThuoc += thuoc.getGiaTien();
             }
-            lblTienThuoc.setText(String.format("%.0f", tienThuoc));
-            lblTienKham.setText(String.format("%.0f", bill.getTienKham()));
-            lblTongTien.setText(String.format("%.0f", bill.getTongTien()));
+            tfTienThuoc.setText(String.format("%.0f", tienThuoc));
+            tfTienKham.setText(String.format("%.0f", bill.getTienKham()));
+            tfTongTien.setText(String.format("%.0f", bill.getTongTien()));
             if (bill.getDanhSachThuoc() != null) {
                 danhSachThuoc.setAll(bill.getDanhSachThuoc());
             }
@@ -87,12 +91,12 @@ public class MedicalReportController {
         double tongTien = danhSachThuoc.stream()
                 .mapToDouble(t -> t.getSoLuong() * t.getGiaTien())
                 .sum();
-        lblTienThuoc.setText(String.format("%.0f", tongTien));
+        tfTienThuoc.setText(String.format("%.0f", tongTien));
         try {
-            double tienKham = Double.parseDouble(lblTienKham.getText());
-            lblTongTien.setText(String.format("%.0f", tongTien + tienKham));
+            double tienKham = Double.parseDouble(tfTienKham.getText());
+            tfTongTien.setText(String.format("%.0f", tongTien + tienKham));
         } catch (NumberFormatException e) {
-            lblTongTien.setText(String.format("%.0f", tongTien));
+            tfTongTien.setText(String.format("%.0f", tongTien));
         }
     }
 

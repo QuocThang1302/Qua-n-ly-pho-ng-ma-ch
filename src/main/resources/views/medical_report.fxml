@@ -5,7 +5,7 @@
 
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.controllers.MedicalReportController"
-            fitToWidth="true" fitToHeight="true"
+            fitToWidth="true" fitToHeight="true" stylesheets="@../CSS/medical_report.css"
             style="-fx-background-color: white;">
     <content>
         <AnchorPane prefWidth="794" prefHeight="1123">
@@ -23,38 +23,42 @@
 
                 <TitledPane text="Thông tin khám bệnh" expanded="true">
                     <GridPane hgap="16" vgap="10">
-                        <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
+                        <padding><Insets top="12" right="20" bottom="20" left="12"/></padding>
+
+                        <columnConstraints>
+                            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="120"/>
+                            <ColumnConstraints halignment="LEFT" hgrow="ALWAYS"/>
+                        </columnConstraints>
 
                         <Label text="Mã phiếu khám:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblMaPhieuKham" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <TextField fx:id="tfMaPhieuKham" GridPane.rowIndex="0" GridPane.columnIndex="1" editable="false"/>
 
-                        <Label text="Mã bệnh nhân:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblMaBenhNhan" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <Label text="Ngày lập phiếu:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfNgayLap" GridPane.rowIndex="1" GridPane.columnIndex="1" editable="false"/>
 
-                        <Label text="Họ tên:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblHoTen" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                        <Label text="Mã bệnh nhân:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfMaBenhNhan" GridPane.rowIndex="2" GridPane.columnIndex="1" editable="false"/>
 
-                        <Label text="Ngày sinh:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblNgaySinh" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                        <Label text="Họ tên:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfHoTen" GridPane.rowIndex="3" GridPane.columnIndex="1" editable="false"/>
 
-                        <Label text="Giới tính:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblGioiTinh" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                        <Label text="Ngày sinh:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfNgaySinh" GridPane.rowIndex="4" GridPane.columnIndex="1" editable="false"/>
 
-                        <Label text="SĐT:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblSoDienThoai" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                        <Label text="Giới tính:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfGioiTinh" GridPane.rowIndex="5" GridPane.columnIndex="1" editable="false"/>
 
-                        <Label text="Tên bác sĩ:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblTenBacSi" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                        <Label text="SĐT:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfSoDienThoai" GridPane.rowIndex="6" GridPane.columnIndex="1" editable="false"/>
 
-                        <Label text="Lý do khám:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblLyDoKham" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                        <Label text="Tên bác sĩ:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfTenBacSi" GridPane.rowIndex="7" GridPane.columnIndex="1" editable="false"/>
 
-                        <Label text="Chẩn đoán:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-                        <Label fx:id="ChanDoan" wrapText="true" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
-                        <TextArea fx:id="txtChanDoan" GridPane.rowIndex="8" GridPane.columnIndex="2"/>
+                        <Label text="Lý do khám:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfLyDoKham" GridPane.rowIndex="8" GridPane.columnIndex="1" editable="false"/>
 
-                        <Label text="Ngày lập phiếu:" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblNgayLap" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+                        <Label text="Chẩn đoán:" GridPane.rowIndex="9" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+                        <TextArea fx:id="txtChanDoan" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
                     </GridPane>
                 </TitledPane>
 
@@ -78,17 +82,23 @@
                     <GridPane hgap="16" vgap="10">
                         <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
 
+                        <columnConstraints>
+                            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="120"/>
+                            <ColumnConstraints halignment="LEFT" hgrow="ALWAYS"/>
+                        </columnConstraints>
+
                         <Label text="Ngày lập hóa đơn:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblNgayHoaDon" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <TextField fx:id="tfNgayHoaDon" GridPane.rowIndex="0" GridPane.columnIndex="1" editable="false"/>
 
                         <Label text="Tiền thuốc:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblTienThuoc" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <TextField fx:id="tfTienThuoc" GridPane.rowIndex="1" GridPane.columnIndex="1" editable="false"/>
 
                         <Label text="Tiền khám:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblTienKham" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                        <TextField fx:id="tfTienKham" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
                         <Label text="Tổng tiền:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                        <Label fx:id="lblTongTien" style="-fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                        <TextField fx:id="tfTongTien" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                                   editable="false" style="-fx-text-fill: red; -fx-font-weight: bold"/>
                     </GridPane>
                 </TitledPane>
 
