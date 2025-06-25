@@ -50,8 +50,7 @@
                         <Label fx:id="lblLyDoKham" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
 
                         <Label text="Chẩn đoán:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-                        <Label fx:id="ChanDoan" wrapText="true" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
-                        <TextArea fx:id="txtChanDoan" GridPane.rowIndex="8" GridPane.columnIndex="2"/>
+                        <TextArea fx:id="txtChanDoan" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
 
                         <Label text="Ngày lập phiếu:" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
                         <Label fx:id="lblNgayLap" GridPane.rowIndex="9" GridPane.columnIndex="1"/>

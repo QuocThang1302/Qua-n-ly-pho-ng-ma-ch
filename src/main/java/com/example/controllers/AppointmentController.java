@@ -11,11 +11,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
@@ -34,7 +36,7 @@ public class AppointmentController {
         calendarView.showDayPage();
 
         Calendar calendar = new Calendar("Lịch Khám");
-        calendar.setStyle(Calendar.Style.STYLE3);
+        calendar.setStyle(Calendar.Style.STYLE1);
         // TODO : load  ✅ Load dữ liệu từ DB hàm ở cuối class
         loadAppointmentsFromDatabase(calendar);
 

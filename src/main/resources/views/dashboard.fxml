@@ -1,39 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.controllers.DashboardController"
       spacing="20"
-      VBox.vgrow="ALWAYS"
-      HBox.hgrow="ALWAYS"
-      fillWidth="true">
+      fillWidth="true"
+      VBox.vgrow="ALWAYS">
+
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
-    <HBox spacing="20" HBox.hgrow="ALWAYS">
 
-    <!-- Thẻ 1: Tổng bệnh nhân -->
-        <StackPane style="-fx-background-color: #F1F8E9; -fx-background-radius: 10;" prefWidth="250" prefHeight="150" >
-            <VBox alignment="CENTER" spacing="10">
-                <Label text="👥" style="-fx-font-size: 36;" />
-                <Label text="Tổng bệnh nhân" style="-fx-font-size: 16; -fx-font-weight: bold;" />
-                <Label text="235" style="-fx-font-size: 28; -fx-text-fill: #2E7D32;" />
-            </VBox>
-        </StackPane>
-        <!-- Thẻ 3: Doanh thu hôm nay -->
-        <StackPane style="-fx-background-color: #FFF3E0; -fx-background-radius: 10;" prefWidth="250" prefHeight="150">
-            <VBox alignment="CENTER" spacing="10">
-                <Label text="💰" style="-fx-font-size: 36;" />
-                <Label text="Doanh thu hôm nay" style="-fx-font-size: 16; -fx-font-weight: bold;" />
-                <Label text="4.200.000₫" style="-fx-font-size: 28; -fx-text-fill: #EF6C00;" />
-            </VBox>
-        </StackPane>
+    <!-- Bộ lọc -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <ChoiceBox fx:id="filterTypeChoice" />
+        <ChoiceBox fx:id="dayChoice" />
+        <ChoiceBox fx:id="monthChoice" />
+        <ChoiceBox fx:id="yearChoice" />
+        <Label fx:id="resultLabel" />
+        <Button text="Lọc" onAction="#handleFilter" />
     </HBox>
 
+    <!-- Hai cột: Bệnh nhân & Doanh thu -->
+    <HBox spacing="20" >
+
+        <!-- Cột 1: Bệnh nhân -->
+        <VBox spacing="10" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <StackPane style="-fx-background-color: #F1F8E9; -fx-background-radius: 10;" prefHeight="150">
+                <VBox alignment="CENTER" spacing="10">
+                    <Label text="👥" style="-fx-font-size: 36;" />
+                    <Label text="Tổng bệnh nhân" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                    <Label fx:id="patientCountLabel" text="235" style="-fx-font-size: 28; -fx-text-fill: #2E7D32;" />
+                </VBox>
+            </StackPane>
+
+            <Label text="Biểu đồ số lượng bệnh nhân" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+            <StackPane fx:id="patientChartContainer"
+                       style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;"
+                       prefHeight="250"
+                       VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <!-- Cột 2: Doanh thu -->
+        <VBox spacing="10" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <StackPane style="-fx-background-color: #FFF3E0; -fx-background-radius: 10;" prefHeight="150">
+                <VBox alignment="CENTER" spacing="10">
+                    <Label text="💰" style="-fx-font-size: 36;" />
+                    <Label text="Doanh thu hôm nay" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                    <Label fx:id="revenueLabel" text="4.200.000₫" style="-fx-font-size: 28; -fx-text-fill: #EF6C00;" />
+                </VBox>
+            </StackPane>
+
+            <Label text="Biểu đồ doanh thu" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+            <StackPane fx:id="revenueChartContainer"
+                       style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;"
+                       prefHeight="250"
+                       VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </HBox>
 </VBox>

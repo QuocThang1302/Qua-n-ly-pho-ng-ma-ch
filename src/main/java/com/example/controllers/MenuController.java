@@ -11,7 +11,7 @@ import javafx.util.Duration;
 import java.util.List;
 
 public class MenuController {
-    @FXML private HBox btnDashboard, btnStaff, btnPatients, btnAnalytics,btnAppointment, btnLogout;
+    @FXML private HBox btnDashboard, btnStaff, btnPatients, btnAnalytics,btnAppointment,btnDutySchedule,btnMedicalReport,btnMedicine, btnLogout;
     @FXML private StackPane contentArea;
 
     private HBox currentActiveItem;
@@ -33,15 +33,28 @@ public class MenuController {
             setMenuActive(btnStaff);
             NavigationHelper.setContent(contentArea, "/views/staff.fxml");
         });
+        btnDutySchedule.setOnMouseClicked(e -> {
+            setMenuActive(btnDutySchedule);
+            NavigationHelper.setContent(contentArea, "/views/DutySchedule.fxml");
+        });
+
+        btnMedicalReport.setOnMouseClicked(e ->{
+            setMenuActive(btnMedicalReport);
+            NavigationHelper.setContent(contentArea,"/views/ListMedicalReport.fxml");
+        });
+        btnMedicine.setOnMouseClicked(e ->{
+            setMenuActive(btnMedicalReport);
+            NavigationHelper.setContent(contentArea,"/views/Medicine.fxml");
+        });
 
         btnPatients.setOnMouseClicked(e -> {
             setMenuActive(btnPatients);
             NavigationHelper.setContent(contentArea, "/views/patient.fxml");
         });
-
+        //bao cao thang
         btnAnalytics.setOnMouseClicked(e -> {
             setMenuActive(btnAnalytics);
-            NavigationHelper.setContent(contentArea, "/views/appointment.fxml");
+            //NavigationHelper.setContent(contentArea, "/views/appointment.fxml");
         });
         btnAppointment.setOnMouseClicked(e -> {
             setMenuActive(btnAppointment);

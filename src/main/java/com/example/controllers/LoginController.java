@@ -144,7 +144,7 @@ public class LoginController {
     // Phương thức kiểm tra tài khoản và mật khẩu từ cơ sở dữ liệu
     private boolean isValidLogin(String taiKhoan, String matKhau) {
         try (Connection conn = DatabaseConnector.connect()) {
-            String query = "SELECT * FROM NhanVien WHERE MaNhanVien = ? AND MatKhau = ?";
+            String query = "SELECT * FROM \"NhanVien\" WHERE \"MaNhanVien\" = ? AND \"MatKhau\" = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, taiKhoan);
             stmt.setString(2, matKhau);
