@@ -23,7 +23,7 @@
         <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="14.0"
               prefHeight="26.0" prefWidth="456.0"
               spacing="5"
-              style="-fx-background-radius: 20; -fx-padding: 6 12; -fx-background-color: #F9F9F9;"
+              style="-fx-background-radius: 20; -fx-padding: 6 12; -fx-background-color: #F1F8E9;"
               AnchorPane.leftAnchor="20"
               AnchorPane.rightAnchor="100"
               AnchorPane.topAnchor="20">
@@ -54,7 +54,7 @@
         </ImageView>
 
         <VBox spacing="15"
-              style="-fx-background-radius: 20; -fx-padding: 6 12; -fx-background-color: #F9F9F9;"
+              style="-fx-background-radius: 20; -fx-padding: 6 12; -fx-background-color: #F1F8E9;"
               AnchorPane.topAnchor="80"
               AnchorPane.leftAnchor="20"
               AnchorPane.rightAnchor="20"

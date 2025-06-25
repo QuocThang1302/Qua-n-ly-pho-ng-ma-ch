@@ -63,9 +63,13 @@
 
 /* Cell styling */
 .table-view .cell {
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
     -fx-text-fill: #333333;
     -fx-alignment: CENTER;
+}
+
+.table-view .table-row-cell:focused:selected .table-cell {
+    -fx-text-fill: white;
 }
 
 /* scroll bar */
