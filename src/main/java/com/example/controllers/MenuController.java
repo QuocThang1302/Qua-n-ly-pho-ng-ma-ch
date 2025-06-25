@@ -35,7 +35,7 @@ public class MenuController {
         });
         btnDutySchedule.setOnMouseClicked(e -> {
             setMenuActive(btnDutySchedule);
-            NavigationHelper.setContent(contentArea, "/views/DutySchedule.fxml");
+            NavigationHelper.setContent(contentArea, "/views/schedule_view.fxml");
         });
 
         btnMedicalReport.setOnMouseClicked(e ->{
