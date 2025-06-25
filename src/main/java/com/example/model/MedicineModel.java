@@ -9,16 +9,14 @@ public class MedicineModel {
     private String congDung;
     private int soLuong;
     private double giaTien;
-    private String donVi;
     private String huongDanSuDung;
 
-    public MedicineModel(String maThuoc, String tenThuoc, String congDung, int soLuong, double giaTien, String donVi, String huongDanSuDung) {
+    public MedicineModel(String maThuoc, String tenThuoc, String congDung, int soLuong, double giaTien, String huongDanSuDung) {
         this.maThuoc = maThuoc;
         this.tenThuoc = tenThuoc;
         this.congDung = congDung;
         this.soLuong = soLuong;
         this.giaTien = giaTien;
-        this.donVi = donVi;
         this.huongDanSuDung = huongDanSuDung;
     }
 
@@ -31,14 +29,6 @@ public class MedicineModel {
 
     public void setHuongDanSuDung(String huongDanSuDung) {
         this.huongDanSuDung = huongDanSuDung;
-    }
-
-    public String getDonVi() {
-        return donVi;
-    }
-
-    public void setDonVi(String donVi) {
-        this.donVi = donVi;
     }
 
     public double getGiaTien() {

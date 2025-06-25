@@ -28,8 +28,8 @@
     -fx-text-fill: black;
 }
 .app-logo-text {
-    -fx-font-family: "Times New Roman"
-        -fx-font-size: 52px;
+    -fx-font-family: "Times New Roman";
+    -fx-font-size: 52px;
     -fx-text-fill: linear-gradient(to right, #43cea2, #185a9d);
     -fx-font-weight: normal;
 }

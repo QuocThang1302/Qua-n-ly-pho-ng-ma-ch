@@ -41,7 +41,7 @@
 
         <Button text="Lưu" fx:id="btnSave" prefWidth="60"
                 GridPane.columnIndex="2" GridPane.rowIndex="2"
-                styleClass="save-button" onAction="#save"/>
+                styleClass="button" onAction="#save"/>
     </GridPane>
 
     <!-- TableView lịch sử khám -->

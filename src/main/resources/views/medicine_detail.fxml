@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<GridPane hgap="50" vgap="20" alignment="TOP_CENTER"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="com.example.controllers.MedicineDetailController"
+          style="-fx-padding: 20; -fx-background-color: white;"
+          prefWidth="785" prefHeight="300"
+          stylesheets="@../CSS/patient_detail_style.css">
+    <!-- Cột trái -->
+    <Label text="Tên thuốc" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
+    <TextField fx:id="tfName" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="text-field"/>
+
+    <Label text="Công dụng" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
+    <TextField fx:id="tfUse" GridPane.rowIndex="1" GridPane.columnIndex="1"
+               styleClass="text-field" GridPane.columnSpan="3"/>
+
+    <Label text="Số lượng" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
+    <TextField fx:id="tfQuantity" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="text-field"/>
+
+    <!-- Cột phải -->
+    <Label text="Mã thuốc" GridPane.rowIndex="0" GridPane.columnIndex="2" style="-fx-font-size: 14">
+        <GridPane.margin>
+            <Insets left="15"></Insets>
+        </GridPane.margin>
+    </Label>
+    <TextField fx:id="tfId" GridPane.rowIndex="0" GridPane.columnIndex="3" styleClass="text-field"/>
+
+    <Label text="Giá tiền" GridPane.rowIndex="2" GridPane.columnIndex="2" style="-fx-font-size: 14">
+        <GridPane.margin>
+            <Insets left="15"></Insets>
+        </GridPane.margin>
+    </Label>
+    <TextField fx:id="tfCost" GridPane.rowIndex="2" GridPane.columnIndex="3" styleClass="text-field"/>
+
+    <Label text="Hướng dẫn sử dụng" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
+    <TextField fx:id="tfGuide" GridPane.rowIndex="3" GridPane.columnIndex="1"
+               styleClass="text-field" GridPane.columnSpan="3"/>
+
+    <!-- Button -->
+    <Button text="Thêm" fx:id="btnAdd" prefWidth="80" prefHeight="35"
+            GridPane.columnIndex="1" GridPane.rowIndex="4" onAction="#add"
+            styleClass="btn-register" GridPane.halignment="RIGHT"/>
+
+    <Button text="Cập nhật" fx:id="btnUpdate" prefWidth="80" prefHeight="35"
+            GridPane.columnIndex="2" GridPane.rowIndex="4" onAction="#update"
+            styleClass="btn-update" GridPane.halignment="CENTER"/>
+
+    <Button text="Xóa" fx:id="btnDelete" prefWidth="80" prefHeight="35"
+            GridPane.columnIndex="3" GridPane.rowIndex="4" onAction="#delete"
+            styleClass="btn-delete" GridPane.halignment="LEFT"/>
+</GridPane>
