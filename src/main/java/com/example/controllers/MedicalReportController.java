@@ -69,7 +69,7 @@ public class MedicalReportController {
 
     private void setupButtons() {
         btnThemThuoc.setOnAction(e -> {
-            MedicineModel thuocMoi = new MedicineModel("T004", "Thuốc mới", "Chống mỏi", 1, 10000, "viên", "Uống khi cần");
+            MedicineModel thuocMoi = new MedicineModel("T004", "Thuốc mới", "Chống mỏi", 1, 10000, "Uống khi cần");
             danhSachThuoc.add(thuocMoi);
             updateTongTien();
         });
