@@ -154,3 +154,27 @@ INSERT INTO LichTruc (
   MaLichTruc, MaBacSi, NgayTruc, CongViec, TrangThai
 ) VALUES
 ('LT001', 'NV002', '2025-06-16', 'Khám tổng quát', 'Sẵn sàng');
+-- Thêm dữ liệu cho HenKhamBenh
+INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, NgayketThuc, MaBacSi, TinhTrang) VALUES
+('HK001', 'BN001', 'Đau đầu', '2025-06-25', '2025-06-25', 'NV002', 'Chờ khám'),
+('HK002', 'BN002', 'Sốt cao', '2025-06-24', '2025-06-24', 'NV002', 'Đã khám');
+
+-- Thêm dữ liệu cho PhieuKhamBenh
+INSERT INTO PhieuKhamBenh (MaPhieuKham, MaBenhNhan, NgayKham, NgayLapPhieu, ChanDoan, KetQuaKham, DieuTri, TienKham, MaBacSi) VALUES
+('PK001', 'BN001', '2025-06-25', '2025-06-25', 'Cảm cúm', 'Thân nhiệt cao', 'Uống thuốc', 50000.00, 'NV002'),
+('PK002', 'BN002', '2025-06-24', '2025-06-24', 'Viêm họng', 'Sưng họng', 'Kháng sinh', 60000.00, 'NV002');
+
+-- Thêm dữ liệu cho DonThuoc
+INSERT INTO DonThuoc (MaDonThuoc, MaPhieuKham, NgayLapDon) VALUES
+('DT001', 'PK001', '2025-06-25'),
+('DT002', 'PK002', '2025-06-24');
+
+-- Thêm dữ liệu cho CTDonThuoc
+INSERT INTO CTDonThuoc (MaDonThuoc, MaThuoc, SoLuong, GiaTien, HuongDanSuDung) VALUES
+('DT001', 'T001', 2, 1500.00, 'Uống 2 viên mỗi lần, 3 lần/ngày'),
+('DT002', 'T002', 1, 3000.00, 'Uống 1 viên sáng và tối');
+
+-- Thêm dữ liệu cho HoaDon
+INSERT INTO HoaDon (MaHoaDon, TenHoaDon, MaDonThuoc, MaPhieuKham, NgayLapHoaDon, GiaTien, TrangThai) VALUES
+('HD001', 'Hóa đơn BN001', 'DT001', 'PK001', '2025-06-25', 53000.00, 'Đã thanh toán'),
+('HD002', 'Hóa đơn BN002', 'DT002', 'PK002', '2025-06-24', 63000.00, 'Chưa thanh toán');
