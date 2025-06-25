@@ -12,11 +12,13 @@ public class BillModel {
     private String maDonThuoc;
     private LocalDateTime ngayLapDon;
     private List<MedicineModel> danhSachThuoc;
+    private String maPhieuKham;
 
     public BillModel() {
     }
 
-    public BillModel(String maHoaDon, double tongTien, double tienKham, String trangThai, String maDonThuoc, LocalDateTime ngayLapDon, List<MedicineModel> danhSachThuoc) {
+    public BillModel(String maHoaDon, double tongTien, double tienKham, String trangThai, String maDonThuoc,
+                     LocalDateTime ngayLapDon, List<MedicineModel> danhSachThuoc, String maPhieuKham) {
         this.maHoaDon = maHoaDon;
         this.tongTien = tongTien;
         this.tienKham = tienKham;
@@ -24,6 +26,7 @@ public class BillModel {
         this.maDonThuoc = maDonThuoc;
         this.ngayLapDon = ngayLapDon;
         this.danhSachThuoc = danhSachThuoc;
+        this.maPhieuKham = maPhieuKham;
     }
 
 
@@ -82,5 +85,13 @@ public class BillModel {
 
     public void setTienKham(double tienKham) {
         this.tienKham = tienKham;
+    }
+
+    public String getMaPhieuKham() {
+        return maPhieuKham;
+    }
+
+    public void setMaPhieuKham(String maPhieuKham) {
+        this.maPhieuKham = maPhieuKham;
     }
 }

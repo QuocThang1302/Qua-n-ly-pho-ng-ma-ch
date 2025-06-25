@@ -59,8 +59,7 @@ public class AppointmentDetailController {
             );
 
             BillModel bill = new BillModel(
-                    "HD001",300000,20000,"Da thanh toan","Ma don Thuoc",LocalDateTime.now(),thuocList
-            );
+                    "HD001",300000,20000,"Da thanh toan","Ma don Thuoc",LocalDateTime.now(),thuocList, "MaPhieuKham");
 
             MedicalReportModel report = new MedicalReportModel(
                     model.getMaKhamBenh(),

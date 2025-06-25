@@ -49,9 +49,11 @@ CREATE TABLE PhieuKhamBenh (
   MaPhieuKham VARCHAR(20) PRIMARY KEY,
   MaBenhNhan VARCHAR(20),
   NgayKham DATE,
+  NgayLapPhieu DATE,
   ChanDoan TEXT,
   KetQuaKham TEXT,
   DieuTri TEXT,
+  TienKham DECIMAL(10,2),
   MaBacSi VARCHAR(20)
 );
 
@@ -83,6 +85,7 @@ CREATE TABLE HoaDon (
   MaHoaDon VARCHAR(20) PRIMARY KEY,
   TenHoaDon VARCHAR(50),
   MaDonThuoc VARCHAR(20),
+  MaPhieuKham VARCHAR(20),
   NgayLapHoaDon DATE,
   GiaTien DECIMAL(10,2),
   TrangThai VARCHAR(50)
@@ -98,6 +101,7 @@ CREATE TABLE QuiDinh (
 
 -- Foreign keys
 ALTER TABLE HoaDon ADD FOREIGN KEY (MaDonThuoc) REFERENCES DonThuoc (MaDonThuoc);
+ALTER TABLE HoaDon ADD FOREIGN KEY (MaPhieuKham) REFERENCES PhieuKhamBenh (MaPhieuKham);
 ALTER TABLE DonThuoc ADD FOREIGN KEY (MaPhieuKham) REFERENCES PhieuKhamBenh (MaPhieuKham);
 ALTER TABLE LichTruc ADD FOREIGN KEY (MaBacSi) REFERENCES NhanVien (MaNhanVien);
 ALTER TABLE NhanVien ADD FOREIGN KEY (RoleID) REFERENCES Role (RoleID);

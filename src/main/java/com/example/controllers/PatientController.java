@@ -38,6 +38,7 @@ public class PatientController {
 
     private ObservableList<PatientModel> patientList;
     private FilteredList<PatientModel> filteredData;
+    private Runnable onDataChanged;
 
     @FXML
     public void initialize() {
@@ -83,6 +84,11 @@ public class PatientController {
             dialogStage.setTitle("Chi tiết bệnh nhân");
             dialogStage.initModality(Modality.APPLICATION_MODAL); // chặn tương tác với window chính
             dialogStage.setScene(new Scene(root));
+
+            // Truyền callback để refresh table khi có thay đổi
+            controller.setOnDataChanged(() -> {
+                refreshData(); // Gọi method refresh của PatientController
+            });
             dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
