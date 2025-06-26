@@ -108,7 +108,7 @@ public class StaffDetailController {
             String role = cbRole.getValue();
             LocalDate birthday = dpBirth.getValue();
             String gender = btnMale.isSelected() ? "Nam" : "Nữ";
-            double luong = 0; // tạm thời lương mặc định là 0
+            double luong = 1000; // tạm thời lương mặc định là 0
             StaffModel staff = new StaffModel(id, lastName, firstName, role, luong, birthday, gender, cccd, address, email, phone, password);
             boolean success = false;
             String errorMsg = null;
@@ -146,10 +146,11 @@ public class StaffDetailController {
                 alert.showAndWait();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Lỗi");
             alert.setHeaderText(null);
-            alert.setContentText("Vui lòng kiểm tra lại thông tin nhập vào!");
+            alert.setContentText("Vui lòng kiểm tra lại thông tin nhập vào!\\n" + e.getMessage());
             alert.showAndWait();
         }
     }
