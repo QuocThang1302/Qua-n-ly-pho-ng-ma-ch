@@ -75,7 +75,71 @@ public class MedicalReportController {
         });
 
         btnLuuPhieu.setOnAction(e -> {
-            System.out.println("💾 Phiếu khám đã được lưu.");
+            try {
+                // Lấy dữ liệu từ các trường giao diện
+                MedicalReportModel report = new MedicalReportModel();
+                report.setMaPhieuKham(tfMaPhieuKham.getText());
+                report.setMaBenhNhan(tfMaBenhNhan.getText());
+                report.setHoTen(tfHoTen.getText());
+                report.setNgaySinh(java.time.LocalDate.parse(tfNgaySinh.getText(), fmt));
+                report.setGioiTinh(tfGioiTinh.getText());
+                report.setSoDienThoai(tfSoDienThoai.getText());
+                report.setTenBacSi(tfTenBacSi.getText());
+                report.setLyDoKham(tfLyDoKham.getText());
+                report.setChanDoan(txtChanDoan.getText());
+                java.time.LocalDateTime now = java.time.LocalDateTime.now();
+                report.setNgayKham(now);
+                double tienKham = Double.parseDouble(tfTienKham.getText());
+
+                // Kiểm tra phiếu khám đã tồn tại chưa
+                boolean reportSuccess = false;
+                boolean isUpdate = false;
+                try {
+                    MedicalReportModel existing = com.example.DAO.MedicalReportDAO.getByMaPhieuKham(tfMaPhieuKham.getText());
+                    if (existing == null) {
+                        // Thêm mới
+                        reportSuccess = com.example.DAO.MedicalReportDAO.insertPhieuKhamBenh(report, now, now, "", "", tienKham);
+                    } else {
+                        // Cập nhật
+                        reportSuccess = com.example.DAO.MedicalReportDAO.updatePhieuKhamBenh(report, now, now, "", "", tienKham);
+                        isUpdate = true;
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                // Lưu hóa đơn (nếu có)
+                BillModel bill = new BillModel();
+                bill.setMaHoaDon("HD" + System.currentTimeMillis());
+                bill.setMaPhieuKham(tfMaPhieuKham.getText());
+                bill.setTienKham(tienKham);
+                bill.setTongTien(Double.parseDouble(tfTongTien.getText()));
+                bill.setDanhSachThuoc(danhSachThuoc);
+                bill.setNgayLapDon(now);
+                bill.setTrangThai("Đã lưu");
+                boolean billSuccess = com.example.DAO.BillDAO.insertBill(bill, "Hóa đơn khám bệnh", now);
+
+                if (reportSuccess && billSuccess) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Thành công");
+                    alert.setHeaderText(null);
+                    alert.setContentText((isUpdate ? "Cập nhật" : "Lưu mới") + " phiếu khám và hóa đơn thành công!");
+                    alert.showAndWait();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Thất bại");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Lưu phiếu khám hoặc hóa đơn thất bại! Vui lòng kiểm tra lại dữ liệu hoặc kết nối.");
+                    alert.showAndWait();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Lưu phiếu khám thất bại! Vui lòng kiểm tra lại dữ liệu hoặc kết nối.\n" + ex.getMessage());
+                alert.showAndWait();
+            }
         });
 
         btnInPhieu.setOnAction(e -> {

@@ -67,6 +67,94 @@ public class MedicineDAO {
         return null;
     }
 
+    public static boolean insertMedicine(MedicineModel medicine, LocalDate hanSuDung) {
+        String sql = """
+            INSERT INTO Thuoc (MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, DonVi, HuongDanSuDung, HanSuDung)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """;
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, medicine.getMaThuoc());
+            stmt.setString(2, medicine.getTenThuoc());
+            stmt.setString(3, medicine.getCongDung());
+            stmt.setInt(4, medicine.getSoLuong());
+            stmt.setDouble(5, medicine.getGiaTien());
+            stmt.setString(6, medicine.getDonVi());
+            stmt.setString(7, medicine.getHuongDanSuDung());
+            stmt.setDate(8, java.sql.Date.valueOf(hanSuDung));
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi thêm thuốc: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static void updateMedicine(MedicineModel medicine) {
+        String sql = """
+            UPDATE Thuoc
+            SET TenThuoc = ?, CongDung = ?, SoLuong = ?, GiaTien = ?, DonVi = ?, HuongDanSuDung = ?
+            WHERE MaThuoc = ?
+            """;
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, medicine.getTenThuoc());
+            stmt.setString(2, medicine.getCongDung());
+            stmt.setInt(3, medicine.getSoLuong());
+            stmt.setDouble(4, medicine.getGiaTien());
+            stmt.setString(5, medicine.getDonVi());
+            stmt.setString(6, medicine.getHuongDanSuDung());
+            stmt.setString(7, medicine.getMaThuoc());
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi cập nhật thuốc: " + e.getMessage());
+        }
+    }
+
+    public static boolean deleteMedicine(String maThuoc) {
+        String sql = "DELETE FROM Thuoc WHERE MaThuoc = ?";
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maThuoc);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi xoá thuốc: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static int countDistinctPrescriptionsByMedicineInMonth(String maThuoc, int year, int month) {
+        String sql = """
+        SELECT COUNT(DISTINCT ct.MaDonThuoc)
+        FROM CTDonThuoc ct
+        JOIN DonThuoc dt ON ct.MaDonThuoc = dt.MaDonThuoc
+        WHERE ct.MaThuoc = ?
+          AND EXTRACT(YEAR FROM dt.NgayLapDon) = ?
+          AND EXTRACT(MONTH FROM dt.NgayLapDon) = ?
+    """;
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, maThuoc);
+            stmt.setInt(2, year);
+            stmt.setInt(3, month);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi đếm đơn thuốc theo tháng cho thuốc " + maThuoc + ": " + e.getMessage());
+        }
+
+        return 0;
+    }
+
     public static List<MedicineModel> getMedicinesUsedInMonth(int year, int month) {
         List<MedicineModel> list = new ArrayList<>();
 
@@ -103,97 +191,4 @@ public class MedicineDAO {
 
         return list;
     }
-
-
-    public static void insertMedicine(MedicineModel medicine, LocalDate hanSuDung) {
-        String sql = """
-            INSERT INTO Thuoc (MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, DonVi, HuongDanSuDung, HanSuDung)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """;
-
-        try (Connection conn = DatabaseConnector.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, medicine.getMaThuoc());
-            stmt.setString(2, medicine.getTenThuoc());
-            stmt.setString(3, medicine.getCongDung());
-            stmt.setInt(4, medicine.getSoLuong());
-            stmt.setDouble(5, medicine.getGiaTien());
-            stmt.setString(6, medicine.getDonVi());
-            stmt.setString(7, medicine.getHuongDanSuDung());
-            stmt.setDate(8, Date.valueOf(hanSuDung));
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi thêm thuốc: " + e.getMessage());
-        }
-    }
-
-    public static void updateMedicine(MedicineModel medicine) {
-        String sql = """
-            UPDATE Thuoc
-            SET TenThuoc = ?, CongDung = ?, SoLuong = ?, GiaTien = ?, DonVi = ?, HuongDanSuDung = ?
-            WHERE MaThuoc = ?
-            """;
-
-        try (Connection conn = DatabaseConnector.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, medicine.getTenThuoc());
-            stmt.setString(2, medicine.getCongDung());
-            stmt.setInt(3, medicine.getSoLuong());
-            stmt.setDouble(4, medicine.getGiaTien());
-            stmt.setString(5, medicine.getDonVi());
-            stmt.setString(6, medicine.getHuongDanSuDung());
-            stmt.setString(7, medicine.getMaThuoc());
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi cập nhật thuốc: " + e.getMessage());
-        }
-    }
-
-    public static void deleteMedicine(String maThuoc) {
-        String sql = "DELETE FROM Thuoc WHERE MaThuoc = ?";
-        try (Connection conn = DatabaseConnector.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, maThuoc);
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi xoá thuốc: " + e.getMessage());
-        }
-    }
-
-    public static int countDistinctPrescriptionsByMedicineInMonth(String maThuoc, int year, int month) {
-        String sql = """
-        SELECT COUNT(DISTINCT ct.MaDonThuoc)
-        FROM CTDonThuoc ct
-        JOIN DonThuoc dt ON ct.MaDonThuoc = dt.MaDonThuoc
-        WHERE ct.MaThuoc = ?
-          AND EXTRACT(YEAR FROM dt.NgayLapDon) = ?
-          AND EXTRACT(MONTH FROM dt.NgayLapDon) = ?
-    """;
-
-        try (Connection conn = DatabaseConnector.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, maThuoc);
-            stmt.setInt(2, year);
-            stmt.setInt(3, month);
-
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi đếm đơn thuốc theo tháng cho thuốc " + maThuoc + ": " + e.getMessage());
-        }
-
-        return 0;
-    }
-
-
 }

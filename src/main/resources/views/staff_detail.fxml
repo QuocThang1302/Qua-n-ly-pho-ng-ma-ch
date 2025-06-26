@@ -26,6 +26,9 @@
     <Label text="Email" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
     <TextField fx:id="tfEmail" GridPane.rowIndex="4" GridPane.columnIndex="1" styleClass="text-field"/>
 
+    <Label text="Địa chỉ" GridPane.rowIndex="5" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
+    <TextField fx:id="tfAddress" GridPane.rowIndex="5" GridPane.columnIndex="1" styleClass="text-field"/>
+
     <!-- Cột phải -->
     <Label text="Vai trò" GridPane.rowIndex="0" GridPane.columnIndex="2" style="-fx-font-size: 14"/>
     <ComboBox fx:id="cbRole" GridPane.rowIndex="0" GridPane.columnIndex="3"
@@ -46,9 +49,8 @@
     <Label text="Mật khẩu" GridPane.rowIndex="4" GridPane.columnIndex="2" style="-fx-font-size: 14"/>
     <TextField fx:id="tfPassword" GridPane.rowIndex="4" GridPane.columnIndex="3" styleClass="text-field"/>
 
-    <Label text="Địa chỉ" GridPane.rowIndex="5" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
-    <TextField fx:id="tfAddress" GridPane.rowIndex="5" GridPane.columnIndex="1"
-               styleClass="text-field" GridPane.columnSpan="3"/>
+    <Label text="Lương" GridPane.rowIndex="5" GridPane.columnIndex="2" style="-fx-font-size: 14"/>
+    <TextField fx:id="tfSalary" GridPane.rowIndex="5" GridPane.columnIndex="3" styleClass="text-field"/>
 
     <!-- Button -->
     <Button text="Đăng ký" fx:id="btnRegister" prefWidth="80" prefHeight="35"
