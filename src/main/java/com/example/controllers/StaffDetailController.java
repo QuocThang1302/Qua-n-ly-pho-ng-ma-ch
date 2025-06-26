@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 public class StaffDetailController {
     @FXML
-    private TextField tfId, tfLastName, tfName, tfEmail, tfPhone, tfAddress, tfPassword, tfCCCD;
+    private TextField tfId, tfLastName, tfName, tfEmail, tfPhone, tfAddress, tfPassword, tfCCCD, tfLuong;
     @FXML
     private ComboBox<String> cbRole;
     @FXML
@@ -59,6 +59,8 @@ public class StaffDetailController {
 
         btnDelete.setVisible(false);
         btnDelete.setManaged(false);
+
+        // Bỏ lấy tfLuong, tạm thời không dùng trường lương
     }
 
     public void setStaff(StaffModel staffModel) {
@@ -94,6 +96,62 @@ public class StaffDetailController {
     }
 
     public void register(ActionEvent actionEvent) {
+        try {
+            String id = tfId.getText();
+            String lastName = tfLastName.getText();
+            String firstName = tfName.getText();
+            String email = tfEmail.getText();
+            String phone = tfPhone.getText();
+            String address = tfAddress.getText();
+            String password = tfPassword.getText();
+            String cccd = tfCCCD.getText();
+            String role = cbRole.getValue();
+            LocalDate birthday = dpBirth.getValue();
+            String gender = btnMale.isSelected() ? "Nam" : "Nữ";
+            double luong = 0; // tạm thời lương mặc định là 0
+            StaffModel staff = new StaffModel(id, lastName, firstName, role, luong, birthday, gender, cccd, address, email, phone, password);
+            boolean success = false;
+            String errorMsg = null;
+            try {
+                success = com.example.DAO.StaffDAO.insertStaff(staff);
+            } catch (Exception ex) {
+                Throwable cause = ex;
+                while (cause.getCause() != null) cause = cause.getCause();
+                if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+                    String msg = cause.getMessage();
+                    if (msg.contains("PRIMARY") || msg.contains("MaNhanVien")) {
+                        errorMsg = "Mã nhân viên đã tồn tại!";
+                    } else if (msg.contains("Email")) {
+                        errorMsg = "Email đã tồn tại!";
+                    } else if (msg.contains("CCCD")) {
+                        errorMsg = "CCCD đã tồn tại!";
+                    } else {
+                        errorMsg = "Dữ liệu bị trùng lặp!";
+                    }
+                } else {
+                    errorMsg = cause.getMessage();
+                }
+            }
+            if (success) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thành công");
+                alert.setHeaderText(null);
+                alert.setContentText("Đăng ký nhân viên thành công!");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Thất bại");
+                alert.setHeaderText(null);
+                alert.setContentText(errorMsg != null ? errorMsg : "Đăng ký nhân viên thất bại! Vui lòng kiểm tra lại thông tin nhập vào.");
+                alert.showAndWait();
+            }
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Vui lòng kiểm tra lại thông tin nhập vào!");
+            alert.showAndWait();
+        }
     }
 
     public void update(ActionEvent actionEvent) {
