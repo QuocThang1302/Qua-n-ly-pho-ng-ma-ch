@@ -67,12 +67,11 @@ public class MedicineDAO {
         return null;
     }
 
-    public static void insertMedicine(MedicineModel medicine, LocalDate hanSuDung) {
+    public static boolean insertMedicine(MedicineModel medicine, LocalDate hanSuDung) {
         String sql = """
             INSERT INTO Thuoc (MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, DonVi, HuongDanSuDung, HanSuDung)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """;
-
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -83,11 +82,11 @@ public class MedicineDAO {
             stmt.setDouble(5, medicine.getGiaTien());
             stmt.setString(6, medicine.getDonVi());
             stmt.setString(7, medicine.getHuongDanSuDung());
-            stmt.setDate(8, Date.valueOf(hanSuDung));
-            stmt.executeUpdate();
-
+            stmt.setDate(8, java.sql.Date.valueOf(hanSuDung));
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Lỗi khi thêm thuốc: " + e.getMessage());
+            return false;
         }
     }
 
@@ -115,16 +114,15 @@ public class MedicineDAO {
         }
     }
 
-    public static void deleteMedicine(String maThuoc) {
+    public static boolean deleteMedicine(String maThuoc) {
         String sql = "DELETE FROM Thuoc WHERE MaThuoc = ?";
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setString(1, maThuoc);
-            stmt.executeUpdate();
-
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Lỗi khi xoá thuốc: " + e.getMessage());
+            return false;
         }
     }
 }
