@@ -7,6 +7,7 @@ public class StaffModel {
     private String lastname;
     private String firstname;
     private String role;
+    private double luong;
     private LocalDate birthday;
     private String gender;
     private String cccd;
@@ -15,11 +16,17 @@ public class StaffModel {
     private String phone;
     private String password;
 
-    public StaffModel(String id, String lastname, String firstname, String role, LocalDate birthday, String gender, String cccd, String address, String email, String phone, String password) {
+    public StaffModel() {
+
+    }
+
+    public StaffModel(String id, String lastname, String firstname, String role, double luong, LocalDate birthday,
+                      String gender, String cccd, String address, String email, String phone, String password) {
         this.id = id;
         this.lastname = lastname;
         this.firstname = firstname;
         this.role = role;
+        this.luong = luong;
         this.birthday = birthday;
         this.gender = gender;
         this.cccd = cccd;
@@ -51,6 +58,13 @@ public class StaffModel {
     }
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public double getLuong() {
+        return luong;
+    }
+    public void setLuong(double luong) {
+        this.luong = luong;
     }
 
     public LocalDate getBirthday() {
@@ -101,4 +115,5 @@ public class StaffModel {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }

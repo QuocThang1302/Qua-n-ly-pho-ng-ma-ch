@@ -37,6 +37,9 @@ public class FilterDate {
     public Year getYear() { return year; }
     public YearMonth getYearMonth() { return yearMonth; }
     public LocalDate getLocalDate() { return localDate; }
+    public String getMode() {
+        return mode;
+    }
 
     public void setYear(Year year) {
         this.year = year;

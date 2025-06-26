@@ -4,6 +4,7 @@ import com.example.model.DatabaseConnector;
 import com.example.model.MedicineModel;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +13,8 @@ public class MedicineDAO {
     public static List<MedicineModel> getAllMedicines() {
         List<MedicineModel> list = new ArrayList<>();
         String sql = """
-                SELECT t.MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien,
-                       (SELECT HuongDanSuDung FROM CTDonThuoc ct WHERE ct.MaThuoc = t.MaThuoc LIMIT 1) AS HuongDanSuDung
-                FROM Thuoc t
+                SELECT MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, DonVi, HuongDanSuDung
+                FROM Thuoc
                 """;
 
         try (Connection conn = DatabaseConnector.connect();
@@ -28,6 +28,7 @@ public class MedicineDAO {
                 m.setCongDung(rs.getString("CongDung"));
                 m.setSoLuong(rs.getInt("SoLuong"));
                 m.setGiaTien(rs.getDouble("GiaTien"));
+                m.setDonVi(rs.getString("DonVi"));
                 m.setHuongDanSuDung(rs.getString("HuongDanSuDung"));
                 list.add(m);
             }
@@ -39,9 +40,8 @@ public class MedicineDAO {
 
     public static MedicineModel getMedicineById(String maThuoc) {
         String sql = """
-                SELECT t.MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien,
-                       (SELECT HuongDanSuDung FROM CTDonThuoc ct WHERE ct.MaThuoc = t.MaThuoc LIMIT 1) AS HuongDanSuDung
-                FROM Thuoc t WHERE t.MaThuoc = ?
+                SELECT MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, DonVi, HuongDanSuDung
+                FROM Thuoc WHERE MaThuoc = ?
                 """;
 
         try (Connection conn = DatabaseConnector.connect();
@@ -56,6 +56,7 @@ public class MedicineDAO {
                     m.setCongDung(rs.getString("CongDung"));
                     m.setSoLuong(rs.getInt("SoLuong"));
                     m.setGiaTien(rs.getDouble("GiaTien"));
+                    m.setDonVi(rs.getString("DonVi"));
                     m.setHuongDanSuDung(rs.getString("HuongDanSuDung"));
                     return m;
                 }
@@ -66,8 +67,12 @@ public class MedicineDAO {
         return null;
     }
 
-    public static void insertMedicine(MedicineModel medicine) {
-        String sql = "INSERT INTO Thuoc (MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, HanSuDung) VALUES (?, ?, ?, ?, ?, CURRENT_DATE)";
+    public static void insertMedicine(MedicineModel medicine, LocalDate hanSuDung) {
+        String sql = """
+            INSERT INTO Thuoc (MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, DonVi, HuongDanSuDung, HanSuDung)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """;
+
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -76,6 +81,9 @@ public class MedicineDAO {
             stmt.setString(3, medicine.getCongDung());
             stmt.setInt(4, medicine.getSoLuong());
             stmt.setDouble(5, medicine.getGiaTien());
+            stmt.setString(6, medicine.getDonVi());
+            stmt.setString(7, medicine.getHuongDanSuDung());
+            stmt.setDate(8, Date.valueOf(hanSuDung));
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -84,7 +92,12 @@ public class MedicineDAO {
     }
 
     public static void updateMedicine(MedicineModel medicine) {
-        String sql = "UPDATE Thuoc SET TenThuoc = ?, CongDung = ?, SoLuong = ?, GiaTien = ? WHERE MaThuoc = ?";
+        String sql = """
+            UPDATE Thuoc
+            SET TenThuoc = ?, CongDung = ?, SoLuong = ?, GiaTien = ?, DonVi = ?, HuongDanSuDung = ?
+            WHERE MaThuoc = ?
+            """;
+
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -92,7 +105,9 @@ public class MedicineDAO {
             stmt.setString(2, medicine.getCongDung());
             stmt.setInt(3, medicine.getSoLuong());
             stmt.setDouble(4, medicine.getGiaTien());
-            stmt.setString(5, medicine.getMaThuoc());
+            stmt.setString(5, medicine.getDonVi());
+            stmt.setString(6, medicine.getHuongDanSuDung());
+            stmt.setString(7, medicine.getMaThuoc());
             stmt.executeUpdate();
 
         } catch (SQLException e) {

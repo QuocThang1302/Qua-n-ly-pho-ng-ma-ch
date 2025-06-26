@@ -2,6 +2,7 @@ package com.example.DAO;
 
 import com.example.model.BillModel;
 import com.example.model.DatabaseConnector;
+import com.example.model.FilterDate;
 import com.example.model.MedicineModel;
 
 import java.sql.*;
@@ -186,48 +187,41 @@ public class BillDAO {
     }
 
     // Tính tổng hóa đơn
-    public static double getTotalRevenueByDate(LocalDate date) {
-        String sql = "SELECT SUM(GiaTien) AS TongTien FROM HoaDon WHERE DATE(NgayLapHoaDon) = ?";
-        try (Connection conn = DatabaseConnector.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    public static double getTotalRevenue(FilterDate filterDate) {
+        String sql = "";
+        try (Connection conn = DatabaseConnector.connect()) {
+            PreparedStatement stmt = null;
 
-            stmt.setDate(1, Date.valueOf(date));
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return rs.getDouble("TongTien");
+            switch (filterDate.getMode()) {
+                case "Năm" -> {
+                    sql = "SELECT SUM(GiaTien) AS TongTien FROM HoaDon WHERE EXTRACT(YEAR FROM NgayLapHoaDon) = ?";
+                    stmt = conn.prepareStatement(sql);
+                    stmt.setInt(1, filterDate.getYear().getValue());
+                }
+                case "Tháng" -> {
+                    sql = "SELECT SUM(GiaTien) AS TongTien FROM HoaDon WHERE EXTRACT(MONTH FROM NgayLapHoaDon) = ? AND EXTRACT(YEAR FROM NgayLapHoaDon) = ?";
+                    stmt = conn.prepareStatement(sql);
+                    stmt.setInt(1, filterDate.getYearMonth().getMonthValue());
+                    stmt.setInt(2, filterDate.getYearMonth().getYear());
+                }
+                case "Ngày" -> {
+                    sql = "SELECT SUM(GiaTien) AS TongTien FROM HoaDon WHERE DATE(NgayLapHoaDon) = ?";
+                    stmt = conn.prepareStatement(sql);
+                    stmt.setDate(1, Date.valueOf(filterDate.getLocalDate()));
+                }
+            }
+
+            if (stmt != null) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) return rs.getDouble("TongTien");
+                }
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi tính tổng tiền theo ngày: " + e.getMessage());
+            System.err.println("Lỗi khi tính tổng doanh thu: " + e.getMessage());
         }
         return 0.0;
-    }
-    public static double getTotalRevenueByMonth(int month, int year) {
-        String sql = "SELECT SUM(GiaTien) AS TongTien FROM HoaDon WHERE EXTRACT(MONTH FROM NgayLapHoaDon) = ? AND EXTRACT(YEAR FROM NgayLapHoaDon) = ?";
-        try (Connection conn = DatabaseConnector.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, month);
-            stmt.setInt(2, year);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return rs.getDouble("TongTien");
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi tính tổng tiền theo tháng: " + e.getMessage());
-        }
-        return 0.0;
     }
-    public static double getTotalRevenueByYear(int year) {
-        String sql = "SELECT SUM(GiaTien) AS TongTien FROM HoaDon WHERE EXTRACT(YEAR FROM NgayLapHoaDon) = ?";
-        try (Connection conn = DatabaseConnector.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, year);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return rs.getDouble("TongTien");
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi tính tổng tiền theo năm: " + e.getMessage());
-        }
-        return 0.0;
-    }
 
 }

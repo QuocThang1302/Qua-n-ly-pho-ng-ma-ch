@@ -12,6 +12,7 @@ CREATE TABLE NhanVien (
   Ho VARCHAR(50),
   Ten VARCHAR(50),
   RoleID VARCHAR(20),
+  Luong DECIMAL(15,2),
   NgaySinh DATE,
   GioiTinh VARCHAR(10),
   CCCD VARCHAR(20),
@@ -63,6 +64,8 @@ CREATE TABLE Thuoc (
   CongDung TEXT,
   SoLuong INT,
   GiaTien DECIMAL(10,2),
+  DonVi VARCHAR(50),
+  HuongDanSuDung TEXT,
   HanSuDung DATE
 );
 
@@ -121,16 +124,16 @@ INSERT INTO Role (RoleID, TenRole) VALUES
 ('NURSE', 'Y Tá');
 
 INSERT INTO NhanVien (
-  MaNhanVien, Ho, Ten, RoleID, NgaySinh, GioiTinh,
+  MaNhanVien, Ho, Ten, RoleID, Luong, NgaySinh, GioiTinh,
   CCCD, DiaChi, SDT, Email, MatKhau
 ) VALUES
-('NV001', 'Nguyen', 'Admin', 'ADMIN', '1985-01-01', 'Nam',
+('NV001', 'Nguyen', 'Admin', 'ADMIN', 20000000.00, '1985-01-01', 'Nam',
  '0123456789', 'Hà Nội', '0900000001', 'admin@example.com', 'admin123'),
 
-('NV002', 'Le', 'Bac Si', 'DOCTOR', '1990-02-02', 'Nữ',
+('NV002', 'Le', 'Bac Si', 'DOCTOR', 18000000.00, '1990-02-02', 'Nữ',
  '0123456790', 'Hồ Chí Minh', '0900000002', 'doctor@example.com', 'doctor123'),
 
-('NV003', 'Tran', 'Quan Ly', 'MANAGER', '1988-03-03', 'Nam',
+('NV003', 'Tran', 'Quan Ly', 'MANAGER', 22000000.00, '1988-03-03', 'Nam',
  '0123456791', 'Đà Nẵng', '0900000003', 'manager@example.com', 'manager123');
 
 INSERT INTO BenhNhan (
@@ -140,10 +143,10 @@ INSERT INTO BenhNhan (
 ('BN002', 'Nguyen', 'Thi B', '1998-07-15', 'Nữ', '0912345678');
 
 INSERT INTO Thuoc (
-  MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, HanSuDung
+  MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, DonVi, HuongDanSuDung, HanSuDung
 ) VALUES
-('T001', 'Paracetamol', 'Hạ sốt, giảm đau', 100, 1500.00, '2026-01-01'),
-('T002', 'Amoxicillin', 'Kháng sinh', 50, 3000.00, '2025-12-31');
+('T001', 'Paracetamol', 'Hạ sốt, giảm đau', 100, 1500.00, 'viên', 'Uống sau ăn, 1 viên mỗi 6 giờ', '2026-01-01'),
+('T002', 'Amoxicillin', 'Kháng sinh', 50, 3000.00, 'viên', 'Uống trước ăn, 1 viên x 3 lần/ngày', '2025-12-31');
 
 INSERT INTO QuiDinh (
   MaQuiDinh, TenQuiDinh, MoTa, NgayCapNhat, NguoiCapNhat

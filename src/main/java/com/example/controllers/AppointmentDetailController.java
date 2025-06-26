@@ -53,9 +53,9 @@ public class AppointmentDetailController {
             // BillModel bill = report.getHoaDon();
             // Dữ liệu mẫu (tạm thời, chưa dùng DAO)
             List<MedicineModel> thuocList = List.of(
-                    new MedicineModel("T001", "Paracetamol", "Hạ sốt", 10, 5000, "Uống sau ăn"),
-                    new MedicineModel("T002", "Amoxicillin", "Kháng sinh", 20, 3000, "2 lần/ngày"),
-                    new MedicineModel("T003", "Vitamin C", "Tăng đề kháng", 15, 2000, "Uống buổi sáng")
+                    new MedicineModel("T001", "Paracetamol", "Hạ sốt", 10, 5000, "viên", "Uống sau ăn"),
+                    new MedicineModel("T002", "Amoxicillin", "Kháng sinh", 20, 3000, "viên", "2 lần/ngày"),
+                    new MedicineModel("T003", "Vitamin C", "Tăng đề kháng", 15, 2000, "viên", "Uống buổi sáng")
             );
 
             BillModel bill = new BillModel(

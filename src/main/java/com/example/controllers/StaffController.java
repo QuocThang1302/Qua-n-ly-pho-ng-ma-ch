@@ -1,13 +1,28 @@
 package com.example.controllers;
 
+import com.example.DAO.StaffDAO;
 import com.example.model.StaffModel;
+
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import javafx.beans.property.SimpleStringProperty;
+
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+
 
 import java.io.IOException;
 
@@ -15,7 +30,7 @@ public class StaffController {
     @FXML
     private TableView<StaffModel> tvStaff;
     @FXML
-    private TableColumn<StaffModel, Integer> idCol;
+    private TableColumn<StaffModel, String> idCol;
     @FXML
     private TableColumn<StaffModel, String> nameCol;
     @FXML
@@ -66,6 +81,7 @@ public class StaffController {
                 e.printStackTrace();
             }
         });
+        loadStaffData();
     }
 
     private void showStaffDetailPopUp(StaffModel staffModel) {
@@ -87,4 +103,43 @@ public class StaffController {
             e.printStackTrace();
         }
     }
+
+    private void loadStaffData() {
+        ObservableList<StaffModel> staffList = FXCollections.observableArrayList(StaffDAO.getAll());
+
+        // Tìm kiếm
+        FilteredList<StaffModel> filteredData = new FilteredList<>(staffList, p -> true);
+        tfSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(staff -> {
+                if (newValue == null || newValue.isEmpty()) return true;
+                String filter = newValue.toLowerCase();
+                return staff.getId().toLowerCase().contains(filter)
+                        || staff.getFirstname().toLowerCase().contains(filter)
+                        || staff.getLastname().toLowerCase().contains(filter)
+                        || staff.getRole().toLowerCase().contains(filter)
+                        || staff.getPhone().toLowerCase().contains(filter);
+            });
+        });
+
+        // Sắp xếp
+        SortedList<StaffModel> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(tvStaff.comparatorProperty());
+        tvStaff.setItems(sortedData);
+
+        // Cột hiển thị
+        idCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getId()));
+        nameCol.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getLastname() + " " + data.getValue().getFirstname()));
+        salaryCol.setCellValueFactory(data -> new SimpleStringProperty(
+                String.format("%.0f", data.getValue().getLuong())));
+        roleCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getRole()));
+        phoneCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPhone()));
+        birthCol.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getBirthday().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
+
+        // Tổng số nhân viên
+        lblTotalStaffs.setText("Tổng: " + staffList.size() + " nhân viên");
+    }
+
+
 }

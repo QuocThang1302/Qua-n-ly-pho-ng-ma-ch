@@ -2,9 +2,12 @@ package com.example.DAO;
 
 import com.example.model.AppointmentModel;
 import com.example.model.DatabaseConnector;
+import com.example.model.FilterDate;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HenKhamBenhDAO {
 
@@ -116,5 +119,44 @@ public class HenKhamBenhDAO {
         }
 
         return false;
+    }
+
+    // ✅ 5. Đếm số lượng bệnh nhân khác nhau theo ngày/tháng/năm
+    public static int countDistinctPatientsByDate(FilterDate filter) {
+        StringBuilder sql = new StringBuilder("""
+        SELECT COUNT(DISTINCT MaBenhNhan) AS SoBenhNhan
+        FROM HenKhamBenh
+        WHERE
+    """);
+
+        switch (filter.getMode()) {
+            case "Năm" -> sql.append(" EXTRACT(YEAR FROM NgayKham) = ?");
+            case "Tháng" -> sql.append(" EXTRACT(YEAR FROM NgayKham) = ? AND EXTRACT(MONTH FROM NgayKham) = ?");
+            case "Ngày" -> sql.append(" NgayKham = ?");
+            default -> throw new IllegalArgumentException("Chế độ lọc không hợp lệ: " + filter.getMode());
+        }
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+            switch (filter.getMode()) {
+                case "Năm" -> stmt.setInt(1, filter.getYear().getValue());
+                case "Tháng" -> {
+                    stmt.setInt(1, filter.getYearMonth().getYear());
+                    stmt.setInt(2, filter.getYearMonth().getMonthValue());
+                }
+                case "Ngày" -> stmt.setDate(1, Date.valueOf(filter.getLocalDate()));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("SoBenhNhan");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 }
