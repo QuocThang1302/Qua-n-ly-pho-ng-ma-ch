@@ -216,4 +216,69 @@ public class MedicineDetailController {
             alert.showAndWait();
         }
     }
+
+    public void btnLuuPhieu(ActionEvent actionEvent) {
+        try {
+            String id = tfId.getText();
+            String ten = tfName.getText();
+            String congDung = tfUse.getText();
+            int soLuong = Integer.parseInt(tfQuantity.getText());
+            double giaTien = Double.parseDouble(tfCost.getText());
+            String donVi = cbUnit.getEditor().getText();
+            String huongDan = tfGuide.getText();
+            MedicineModel medicine = new MedicineModel(id, ten, congDung, soLuong, giaTien, donVi, huongDan);
+            boolean success = false;
+            String errorMsg = null;
+            // Kiểm tra thuốc đã tồn tại chưa
+            MedicineModel existing = null;
+            try {
+                existing = com.example.DAO.MedicineDAO.getMedicineById(id);
+            } catch (Exception ex) {
+                // Bỏ qua, chỉ kiểm tra null
+            }
+            try {
+                if (existing == null) {
+                    // Thêm mới
+                    success = com.example.DAO.MedicineDAO.insertMedicine(medicine, java.time.LocalDate.now());
+                } else {
+                    // Cập nhật
+                    com.example.DAO.MedicineDAO.updateMedicine(medicine);
+                    success = true;
+                }
+            } catch (Exception ex) {
+                Throwable cause = ex;
+                while (cause.getCause() != null) cause = cause.getCause();
+                if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+                    String msg = cause.getMessage();
+                    if (msg.contains("PRIMARY") || msg.contains("MaThuoc")) {
+                        errorMsg = "Mã thuốc đã tồn tại!";
+                    } else {
+                        errorMsg = "Dữ liệu bị trùng lặp!";
+                    }
+                } else {
+                    errorMsg = cause.getMessage();
+                }
+            }
+            if (success) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thành công");
+                alert.setHeaderText(null);
+                alert.setContentText(existing == null ? "Lưu phiếu thuốc (thêm mới) thành công!" : "Lưu phiếu thuốc (cập nhật) thành công!");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Thất bại");
+                alert.setHeaderText(null);
+                alert.setContentText(errorMsg != null ? errorMsg : "Lưu phiếu thuốc thất bại! Vui lòng kiểm tra lại thông tin nhập vào.");
+                alert.showAndWait();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Vui lòng kiểm tra lại thông tin nhập vào!\n" + e.getMessage());
+            alert.showAndWait();
+        }
+    }
 }

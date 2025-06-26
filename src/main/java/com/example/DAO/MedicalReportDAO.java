@@ -330,4 +330,23 @@ public class MedicalReportDAO {
         }
         return false;
     }
+
+    public static MedicalReportModel getByMaPhieuKham(String maPhieuKham) {
+        String sql = "SELECT * FROM PhieuKhamBenh WHERE MaPhieuKham = ?";
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maPhieuKham);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    MedicalReportModel report = new MedicalReportModel();
+                    report.setMaPhieuKham(rs.getString("MaPhieuKham"));
+                    // Có thể set thêm các trường khác nếu cần
+                    return report;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi kiểm tra mã phiếu khám: " + e.getMessage());
+        }
+        return null;
+    }
 }
