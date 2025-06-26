@@ -14,15 +14,9 @@ public class MedicineDetailController {
     @FXML
     private TextField tfId, tfUse, tfName, tfQuantity, tfCost, tfGuide;
     @FXML
-    private ComboBox<String> cbRole;
+    private ComboBox<String> cbUnit;
     @FXML
-    private DatePicker dpBirth;
-    @FXML
-    private ToggleButton btnMale;
-    @FXML
-    private ToggleButton btnFemale;
-    @FXML
-    Button btnAdd, btnUpdate, btnDelete;
+    private Button btnAdd, btnUpdate, btnDelete;
 
     @FXML
     public void initialize() {
@@ -35,6 +29,20 @@ public class MedicineDetailController {
 
         btnDelete.setVisible(false);
         btnDelete.setManaged(false);
+
+        // code của combo box
+        cbUnit.getItems().addAll( "viên",
+                "vỉ",
+                "gói",
+                "ống",
+                "chai",
+                "lọ",
+                "tuýp",
+                "ml",
+                "mg",
+                "g",
+                "mcg",
+                "IU");
     }
 
     public void setMedicine(MedicineModel medicineModel) {
@@ -54,6 +62,7 @@ public class MedicineDetailController {
             tfQuantity.setText(String.valueOf(medicineModel.getSoLuong()));
             tfCost.setText(String.valueOf(medicineModel.getGiaTien()));
             tfGuide.setText(medicineModel.getHuongDanSuDung());
+            cbUnit.getEditor().setText(medicineModel.getDonVi());
         }
     }
 

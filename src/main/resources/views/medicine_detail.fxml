@@ -15,8 +15,7 @@
     <TextField fx:id="tfName" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="text-field"/>
 
     <Label text="Công dụng" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
-    <TextField fx:id="tfUse" GridPane.rowIndex="1" GridPane.columnIndex="1"
-               styleClass="text-field" GridPane.columnSpan="3"/>
+    <TextField fx:id="tfUse" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="text-field"/>
 
     <Label text="Số lượng" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
     <TextField fx:id="tfQuantity" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="text-field"/>
@@ -28,6 +27,14 @@
         </GridPane.margin>
     </Label>
     <TextField fx:id="tfId" GridPane.rowIndex="0" GridPane.columnIndex="3" styleClass="text-field"/>
+
+    <Label text="Đơn vị tính" GridPane.rowIndex="1" GridPane.columnIndex="2" style="-fx-font-size: 14">
+        <GridPane.margin>
+            <Insets left="15"></Insets>
+        </GridPane.margin>
+    </Label>
+    <ComboBox fx:id="cbUnit" GridPane.rowIndex="1" GridPane.columnIndex="3"
+              styleClass="text-field" editable="true"/>
 
     <Label text="Giá tiền" GridPane.rowIndex="2" GridPane.columnIndex="2" style="-fx-font-size: 14">
         <GridPane.margin>

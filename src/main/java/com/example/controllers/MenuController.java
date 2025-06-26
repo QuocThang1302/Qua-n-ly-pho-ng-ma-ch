@@ -54,7 +54,7 @@ public class MenuController {
         //bao cao thang
         btnAnalytics.setOnMouseClicked(e -> {
             setMenuActive(btnAnalytics);
-            //NavigationHelper.setContent(contentArea, "/views/appointment.fxml");
+            NavigationHelper.setContent(contentArea, "/views/monthly_report.fxml");
         });
         btnAppointment.setOnMouseClicked(e -> {
             setMenuActive(btnAppointment);

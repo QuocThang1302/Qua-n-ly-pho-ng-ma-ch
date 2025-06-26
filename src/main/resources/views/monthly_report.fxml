@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<AnchorPane prefHeight="1024" prefWidth="1090"
+            style="-fx-background-color: #F1F8E9;"
+            stylesheets="@../CSS/report.css"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.controllers.MonthlyReportController">
+    <VBox spacing="15"
+          style="-fx-background-radius: 20; -fx-padding: 6 12; -fx-background-color: #F1F8E9;"
+          AnchorPane.topAnchor="0"
+          AnchorPane.leftAnchor="20"
+          AnchorPane.rightAnchor="20"
+          AnchorPane.bottomAnchor="20">
+
+        <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="14.0"
+              prefHeight="26.0" prefWidth="456.0"
+              spacing="5"
+              style="-fx-background-radius: 20; -fx-padding: 6 12; -fx-background-color: White;">
+            <VBox.margin>
+                <Insets left="15" top="15" right="15"/>
+            </VBox.margin>
+
+            <Label fx:id="lblPatient" text="Báo cáo doanh thu theo tháng" style="-fx-font-size: 16px; -fx-font-weight: bold;">
+                <HBox.margin>
+                    <Insets left="15"/>
+                </HBox.margin>
+            </Label>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <HBox.margin>
+                    <Insets right="15"/>
+                </HBox.margin>
+
+                <Label text="Chọn tháng/năm:" style="-fx-font-weight: bold"/>
+                <ComboBox fx:id="cbMonthPatient" prefWidth="80"/>
+                <ComboBox fx:id="cbYearPatient" prefWidth="80"/>
+            </HBox>
+        </HBox>
+
+        <TableView fx:id="tvPatient" VBox.vgrow="ALWAYS">
+            <VBox.margin>
+                <Insets left="15" right="15" bottom="15"/>
+            </VBox.margin>
+
+            <columns>
+                <TableColumn text="STT" fx:id="numberPatientCol"/>
+                <TableColumn text="Ngày" fx:id="dateCol"/>
+                <TableColumn text="Số bệnh nhân" fx:id="patientCountCol"/>
+                <TableColumn text="Doanh thu" fx:id="revenueCol"/>
+                <TableColumn text="Tỷ lệ" fx:id="rateCol"/>
+            </columns>
+        </TableView>
+
+        <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="14.0"
+              prefHeight="26.0" prefWidth="456.0"
+              spacing="5"
+              style="-fx-background-radius: 20; -fx-padding: 6 12; -fx-background-color: White;">
+            <VBox.margin>
+                <Insets left="15" top="15" right="15"/>
+            </VBox.margin>
+
+            <Label fx:id="lblMedicine" text="Báo cáo sử dụng thuốc" style="-fx-font-size: 16px; -fx-font-weight: bold;">
+                <HBox.margin>
+                    <Insets left="15"/>
+                </HBox.margin>
+            </Label>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <HBox.margin>
+                    <Insets right="15"/>
+                </HBox.margin>
+
+                <Label text="Chọn tháng/năm:" style="-fx-font-weight: bold"/>
+                <ComboBox fx:id="cbMonthMedicine" prefWidth="80"/>
+                <ComboBox fx:id="cbYearMedicine" prefWidth="80"/>
+            </HBox>
+        </HBox>
+
+        <TableView fx:id="tvMedicine" VBox.vgrow="ALWAYS">
+            <VBox.margin>
+                <Insets left="15" right="15" bottom="15"/>
+            </VBox.margin>
+
+            <columns>
+                <TableColumn text="STT" fx:id="numberMedicineCol"/>
+                <TableColumn text="Thuốc" fx:id="medicineCol"/>
+                <TableColumn text="Đơn vị tính" fx:id="unitCol"/>
+                <TableColumn text="Số lượng" fx:id="quantityCol"/>
+                <TableColumn text="Số lần dùng" fx:id="useCol"/>
+            </columns>
+        </TableView>
+    </VBox>
+</AnchorPane>

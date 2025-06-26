@@ -51,7 +51,7 @@ public class PatientDetailDialogController {
     @FXML
     private TableColumn<MedicalReportModel, String> costCol;
     @FXML
-    private TableColumn<MedicalReportModel, String> treatCol;
+    private TableColumn<MedicalReportModel, String> reasonCol;
     @FXML
     private TableColumn<MedicalReportModel, String> doctorCol;
     private PatientModel currentPatient;
@@ -86,7 +86,7 @@ public class PatientDetailDialogController {
         // code của table view
         dateCol.prefWidthProperty().bind(tvKhamBenh.widthProperty().multiply(0.2));
         resultCol.prefWidthProperty().bind(tvKhamBenh.widthProperty().multiply(0.2));
-        treatCol.prefWidthProperty().bind(tvKhamBenh.widthProperty().multiply(0.2));
+        reasonCol.prefWidthProperty().bind(tvKhamBenh.widthProperty().multiply(0.2));
         costCol.prefWidthProperty().bind(tvKhamBenh.widthProperty().multiply(0.2));
         doctorCol.prefWidthProperty().bind(tvKhamBenh.widthProperty().multiply(0.2));
 
@@ -137,7 +137,7 @@ public class PatientDetailDialogController {
         resultCol.setCellValueFactory(new PropertyValueFactory<>("chanDoan"));
 
         // Cột điều trị/lý do khám (treatCol)
-        treatCol.setCellValueFactory(new PropertyValueFactory<>("lyDoKham"));
+        reasonCol.setCellValueFactory(new PropertyValueFactory<>("lyDoKham"));
 
         // Cột chi phí (costCol) - từ hoaDon
         costCol.setCellValueFactory(cellData -> {

@@ -22,7 +22,7 @@
         <TextField fx:id="tfName" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="text-field"/>
 
         <Label text="Ngày sinh" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
-        <DatePicker fx:id="dpBirth" styleClass="date-picker"
+        <DatePicker fx:id="dpBirth" styleClass="date-picker" editable="true"
                     GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
         <!-- Cột phải -->
@@ -52,8 +52,8 @@
 
         <columns>
             <TableColumn text="Ngày khám" fx:id="dateCol"/>
+            <TableColumn text="Lý do khám" fx:id="reasonCol"/>
             <TableColumn text="Kết quả khám" fx:id="resultCol"/>
-            <TableColumn text="Điều trị" fx:id="treatCol"/>
             <TableColumn text="Tổng chi phí" fx:id="costCol"/>
             <TableColumn text="Bác sĩ" fx:id="doctorCol"/>
         </columns>

@@ -33,6 +33,11 @@
     -fx-border-width: 0;
     -fx-text-fill: black;
     -fx-font-size: 13;
+    -fx-alignment: CENTER;
+}
+
+.combo-box .list-cell {
+    -fx-alignment: CENTER;
 }
 
 .male-toggle-button {
@@ -141,7 +146,7 @@
 
 /* Cell styling */
 .table-view .cell {
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
     -fx-text-fill: #333333;
     -fx-alignment: CENTER;
 }

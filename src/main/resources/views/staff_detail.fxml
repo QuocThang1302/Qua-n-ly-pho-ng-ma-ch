@@ -20,7 +20,7 @@
     <TextField fx:id="tfCCCD" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="text-field"/>
 
     <Label text="Ngày sinh" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
-    <DatePicker fx:id="dpBirth" styleClass="date-picker"
+    <DatePicker fx:id="dpBirth" styleClass="date-picker" editable="true"
                 GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
     <Label text="Email" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-size: 14"/>
