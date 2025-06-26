@@ -6,6 +6,7 @@ import com.calendarfx.view.CalendarView;
 import com.calendarfx.view.DayViewBase;
 import com.calendarfx.view.WeekView;
 import com.calendarfx.view.page.WeekPage;
+import com.example.DAO.DutyShiftDAO;
 import com.example.model.DutyShiftModel;
 import com.example.model.Role;
 import com.example.model.ScheduleEntry;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ScheduleController {
@@ -89,7 +91,7 @@ public class ScheduleController {
             return;
         }
 
-        DutyShiftModel duty = new DutyShiftModel(name, role, date, shift);
+        DutyShiftModel duty = new DutyShiftModel(null, name, role, date, shift);
 
         // Lấy hoặc tạo Calendar theo vai trò
         Calendar roleCalendar = roleCalendars.computeIfAbsent(role, r -> {
@@ -116,11 +118,16 @@ public class ScheduleController {
     }
 
     private void loadSampleEntries() {
+        List<DutyShiftModel> shiftList = DutyShiftDAO.getAllDutyShifts();
+
+        for (DutyShiftModel duty : shiftList) {
+            addSampleEntry(duty);
+        }
         LocalDate today = LocalDate.now();
-        addSampleEntry(new DutyShiftModel("Nguyen Van A", Role.DOCTOR, today, "Sáng"));
-        addSampleEntry(new DutyShiftModel("Tran Thi B", Role.DOCTOR, today, "Sáng"));
-        addSampleEntry(new DutyShiftModel("Le Van C", Role.NURSE, today, "Chiều"));
-        addSampleEntry(new DutyShiftModel("Pham Thi D", Role.NURSE, today.plusDays(1), "Tối"));
+        addSampleEntry(new DutyShiftModel("BS001", "Nguyen Van A", Role.DOCTOR, today, "Sáng"));
+        addSampleEntry(new DutyShiftModel("BS002", "Tran Thi B", Role.DOCTOR, today, "Sáng"));
+        addSampleEntry(new DutyShiftModel("YT001", "Le Van C", Role.NURSE, today, "Chiều"));
+        addSampleEntry(new DutyShiftModel("YT002", "Pham Thi D", Role.NURSE, today.plusDays(1), "Tối"));
     }
 
     private void addSampleEntry(DutyShiftModel duty) {

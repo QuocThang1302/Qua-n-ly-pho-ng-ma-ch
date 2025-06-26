@@ -31,6 +31,7 @@ CREATE TABLE LichTruc (
   MaLichTruc VARCHAR(20) PRIMARY KEY,
   MaBacSi VARCHAR(20),
   NgayTruc DATE,
+  CaTruc TEXT,
   CongViec VARCHAR(100),
   TrangThai VARCHAR(50)
 );
@@ -154,9 +155,13 @@ INSERT INTO QuiDinh (
 ('QD001', 'Thời gian khám', 'Khám bệnh từ 8h đến 17h hàng ngày', '2024-12-01', 'NV003');
 
 INSERT INTO LichTruc (
-  MaLichTruc, MaBacSi, NgayTruc, CongViec, TrangThai
+  MaLichTruc, MaBacSi, NgayTruc, CaTruc, CongViec, TrangThai
 ) VALUES
-('LT001', 'NV002', '2025-06-16', 'Khám tổng quát', 'Sẵn sàng');
+('LT001', 'NV002', '2025-06-16', 'Sáng', 'Khám tổng quát', 'Sẵn sàng'),
+('LT002', 'NV002', CURRENT_DATE, 'Sáng', 'Khám tổng quát', 'Sẵn sàng'),
+('LT003', 'NV002', CURRENT_DATE, 'Chiều', 'Khám chuyên khoa', 'Sẵn sàng'),
+('LT004', 'NV002', CURRENT_DATE + INTERVAL '1 day', 'Sáng', 'Tư vấn sức khỏe', 'Sẵn sàng'),
+('LT005', 'NV002', CURRENT_DATE + INTERVAL '1 day', 'Chiều', 'Khám tổng quát', 'Sẵn sàng');
 -- Thêm dữ liệu cho HenKhamBenh
 INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, NgayketThuc, MaBacSi, TinhTrang) VALUES
 ('HK001', 'BN001', 'Đau đầu', '2025-06-25', '2025-06-25', 'NV002', 'Chờ khám'),
