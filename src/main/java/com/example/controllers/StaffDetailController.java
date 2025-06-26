@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 public class StaffDetailController {
     @FXML
-    private TextField tfId, tfLastName, tfName, tfEmail, tfPhone, tfAddress, tfPassword, tfCCCD, tfLuong;
+    private TextField tfId, tfLastName, tfName, tfEmail, tfPhone, tfAddress, tfPassword, tfCCCD, tfSalary;
     @FXML
     private ComboBox<String> cbRole;
     @FXML
@@ -59,8 +59,6 @@ public class StaffDetailController {
 
         btnDelete.setVisible(false);
         btnDelete.setManaged(false);
-
-        // Bỏ lấy tfLuong, tạm thời không dùng trường lương
     }
 
     public void setStaff(StaffModel staffModel) {
@@ -82,6 +80,7 @@ public class StaffDetailController {
             tfAddress.setText(staffModel.getAddress());
             tfPassword.setText(staffModel.getPassword());
             tfCCCD.setText(staffModel.getCccd());
+            tfSalary.setText(String.valueOf(staffModel.getLuong()));
 
             cbRole.setValue(staffModel.getRole());
 
