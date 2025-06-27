@@ -19,6 +19,7 @@ import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import java.awt.Desktop;
 
 public class MedicalReportController {
 
@@ -154,7 +155,34 @@ public class MedicalReportController {
         });
 
         btnInPhieu.setOnAction(e -> {
-            System.out.println("🖨 In phiếu...");
+            try {
+                String fileName = "PhieuKham_" + tfMaPhieuKham.getText() + ".pdf";
+                File pdfFile = new File(System.getProperty("user.home"), fileName);
+                if (pdfFile.exists()) {
+                    if (Desktop.isDesktopSupported()) {
+                        Desktop.getDesktop().open(pdfFile);
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Lỗi in phiếu");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Không hỗ trợ mở file PDF trên hệ điều hành này.");
+                        alert.showAndWait();
+                    }
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Lỗi in phiếu");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Chưa có file PDF phiếu khám. Hãy xuất PDF trước khi in!");
+                    alert.showAndWait();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi in phiếu");
+                alert.setHeaderText(null);
+                alert.setContentText("Không thể mở file PDF: " + ex.getMessage());
+                alert.showAndWait();
+            }
         });
 
         btnXuatPdf.setOnAction(e -> {
