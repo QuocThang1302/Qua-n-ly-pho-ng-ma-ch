@@ -6,8 +6,19 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Cell;
+import java.io.File;
 
 import java.time.format.DateTimeFormatter;
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 
 public class MedicalReportController {
 
@@ -147,7 +158,62 @@ public class MedicalReportController {
         });
 
         btnXuatPdf.setOnAction(e -> {
-            System.out.println("📄 Xuất PDF...");
+            try {
+                String fileName = "PhieuKham_" + tfMaPhieuKham.getText() + ".pdf";
+                File pdfFile = new File(System.getProperty("user.home"), fileName);
+                PdfWriter writer = new PdfWriter(pdfFile.getAbsolutePath());
+                PdfDocument pdf = new PdfDocument(writer);
+                Document document = new Document(pdf);
+
+                // Load Times New Roman font (Unicode)
+                String fontPath = "src/main/resources/assets/Times New Roman.ttf";
+                PdfFont font = PdfFontFactory.createFont(fontPath, PdfEncodings.IDENTITY_H);
+
+                document.setFont(font);
+
+                document.add(new Paragraph("PHIẾU KHÁM BỆNH").setFont(font).setBold().setFontSize(16));
+                document.add(new Paragraph("Mã phiếu khám: " + tfMaPhieuKham.getText()).setFont(font));
+                document.add(new Paragraph("Mã bệnh nhân: " + tfMaBenhNhan.getText()).setFont(font));
+                document.add(new Paragraph("Họ tên: " + tfHoTen.getText()).setFont(font));
+                document.add(new Paragraph("Ngày sinh: " + tfNgaySinh.getText()).setFont(font));
+                document.add(new Paragraph("Giới tính: " + tfGioiTinh.getText()).setFont(font));
+                document.add(new Paragraph("Số điện thoại: " + tfSoDienThoai.getText()).setFont(font));
+                document.add(new Paragraph("Bác sĩ: " + tfTenBacSi.getText()).setFont(font));
+                document.add(new Paragraph("Lý do khám: " + tfLyDoKham.getText()).setFont(font));
+                document.add(new Paragraph("Ngày lập: " + tfNgayLap.getText()).setFont(font));
+                document.add(new Paragraph("Chẩn đoán: " + txtChanDoan.getText()).setFont(font));
+                document.add(new Paragraph(" ").setFont(font));
+                document.add(new Paragraph("--- DANH SÁCH THUỐC ---").setFont(font));
+
+                Table table = new Table(new float[]{4, 2, 3});
+                table.addHeaderCell(new Cell().add(new Paragraph("Tên thuốc").setFont(font)));
+                table.addHeaderCell(new Cell().add(new Paragraph("Số lượng").setFont(font)));
+                table.addHeaderCell(new Cell().add(new Paragraph("Đơn giá").setFont(font)));
+                for (MedicineModel thuoc : danhSachThuoc) {
+                    table.addCell(new Cell().add(new Paragraph(thuoc.getTenThuoc()).setFont(font)));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(thuoc.getSoLuong())).setFont(font)));
+                    table.addCell(new Cell().add(new Paragraph(String.format("%.0f", thuoc.getGiaTien())).setFont(font)));
+                }
+                document.add(table);
+                document.add(new Paragraph(" ").setFont(font));
+                document.add(new Paragraph("Tiền thuốc: " + tfTienThuoc.getText()).setFont(font));
+                document.add(new Paragraph("Tiền khám: " + tfTienKham.getText()).setFont(font));
+                document.add(new Paragraph("Tổng tiền: " + tfTongTien.getText()).setFont(font));
+
+                document.close();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Xuất PDF thành công");
+                alert.setHeaderText(null);
+                alert.setContentText("Đã xuất phiếu khám ra file: " + pdfFile.getAbsolutePath());
+                alert.showAndWait();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi xuất PDF");
+                alert.setHeaderText(null);
+                alert.setContentText("Không thể xuất PDF: " + ex.getMessage());
+                alert.showAndWait();
+            }
         });
     }
 
