@@ -125,4 +125,70 @@ public class MedicineDAO {
             return false;
         }
     }
+
+    public static int countDistinctPrescriptionsByMedicineInMonth(String maThuoc, int year, int month) {
+        String sql = """
+        SELECT COUNT(DISTINCT ct.MaDonThuoc)
+        FROM CTDonThuoc ct
+        JOIN DonThuoc dt ON ct.MaDonThuoc = dt.MaDonThuoc
+        WHERE ct.MaThuoc = ?
+          AND EXTRACT(YEAR FROM dt.NgayLapDon) = ?
+          AND EXTRACT(MONTH FROM dt.NgayLapDon) = ?
+    """;
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, maThuoc);
+            stmt.setInt(2, year);
+            stmt.setInt(3, month);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi đếm đơn thuốc theo tháng cho thuốc " + maThuoc + ": " + e.getMessage());
+        }
+
+        return 0;
+    }
+
+    public static List<MedicineModel> getMedicinesUsedInMonth(int year, int month) {
+        List<MedicineModel> list = new ArrayList<>();
+
+        String sql = """
+        SELECT DISTINCT t.MaThuoc, t.TenThuoc, t.CongDung, t.SoLuong, t.GiaTien, t.DonVi, t.HuongDanSuDung
+        FROM Thuoc t
+        JOIN CTDonThuoc ct ON t.MaThuoc = ct.MaThuoc
+        JOIN DonThuoc dt ON ct.MaDonThuoc = dt.MaDonThuoc
+        WHERE EXTRACT(YEAR FROM dt.NgayLapDon) = ? AND EXTRACT(MONTH FROM dt.NgayLapDon) = ?
+    """;
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, year);
+            stmt.setInt(2, month);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                MedicineModel m = new MedicineModel();
+                m.setMaThuoc(rs.getString("MaThuoc"));
+                m.setTenThuoc(rs.getString("TenThuoc"));
+                m.setCongDung(rs.getString("CongDung"));
+                m.setSoLuong(rs.getInt("SoLuong"));
+                m.setGiaTien(rs.getDouble("GiaTien"));
+                m.setDonVi(rs.getString("DonVi"));
+                m.setHuongDanSuDung(rs.getString("HuongDanSuDung"));
+                list.add(m);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lọc thuốc theo tháng: " + e.getMessage());
+        }
+
+        return list;
+    }
 }
