@@ -217,7 +217,7 @@ public class MedicalReportDAO {
         INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
         INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
         LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
-        WHERE h.MaBenhNhan = ? AND nv.RoleID = 'Doctor'
+        WHERE h.MaBenhNhan = ? AND nv.RoleID = 'DOCTOR'
         ORDER BY p.NgayLapPhieu DESC
     """;
 
