@@ -8,10 +8,10 @@ public enum Role {
 
     public static Role fromVietnamese(String name) {
         return switch (name.toLowerCase()) {
-            case "Bác sĩ" -> DOCTOR;
-            case "Y tá" -> NURSE;
-            case "Quản lý" -> MANAGER;
-            case "Quản trị" -> ADMIN;
+            case "bác sĩ" -> DOCTOR;
+            case "y tá" -> NURSE;
+            case "quản lý" -> MANAGER;
+            case "quản trị" -> ADMIN;
             default -> throw new IllegalArgumentException("Vai trò không hợp lệ: " + name);
         };
     }
