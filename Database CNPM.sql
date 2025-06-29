@@ -119,10 +119,10 @@ ALTER TABLE QuiDinh ADD FOREIGN KEY (NguoiCapNhat) REFERENCES NhanVien (MaNhanVi
 
 -- Data
 INSERT INTO Role (RoleID, TenRole) VALUES
-('ADMIN', 'Quản trị viên'),
-('DOCTOR', 'Bác sĩ'),
-('MANAGER', 'Quản lý'),
-('NURSE', 'Y Tá');
+('Admin', 'Quản trị viên'),
+('Doctor', 'Bác sĩ'),
+('Manager', 'Quản lý'),
+('Nurse', 'Y Tá');
 
 INSERT INTO NhanVien (
   MaNhanVien, Ho, Ten, RoleID, Luong, NgaySinh, GioiTinh,

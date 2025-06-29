@@ -14,7 +14,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
-
+import java.util.UUID;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -77,6 +77,8 @@ public class ScheduleController {
         String shift = shiftChoice.getValue();
         String name = nameField.getText().trim();
         String roleText = roleField.getText().trim();
+        String doctorId = "NV002";
+
 
         if (date == null || name.isEmpty() || roleText.isEmpty()) {
             showStatus("Vui lòng nhập đầy đủ thông tin.", true);
@@ -91,7 +93,17 @@ public class ScheduleController {
             return;
         }
 
-        DutyShiftModel duty = new DutyShiftModel(null, name, role, date, shift);
+        DutyShiftModel duty = new DutyShiftModel(doctorId, name, role, date, shift);
+        String maLichTruc = UUID.randomUUID().toString().substring(0, 20);
+
+        String congViec = roleText;
+        String trangThai = "Sẵn sàng";
+
+        boolean success = DutyShiftDAO.insertDutyShift(duty, maLichTruc, congViec, trangThai);
+        if (!success) {
+            showStatus("Lỗi khi lưu lịch trực vào CSDL.", true);
+            return;
+        }
 
         // Lấy hoặc tạo Calendar theo vai trò
         Calendar roleCalendar = roleCalendars.computeIfAbsent(role, r -> {
@@ -100,6 +112,7 @@ public class ScheduleController {
             calendarSource.getCalendars().add(c);
             return c;
         });
+
 
         // Tạo entry và đồng bộ từ model
         ScheduleEntry entry = new ScheduleEntry(name, duty);

@@ -26,7 +26,7 @@ public class StaffDetailController {
     @FXML
     public void initialize() {
         // code của combo box
-        cbRole.getItems().addAll("Bác sĩ", "Y tá", "Quản lý", "Admin");
+        cbRole.getItems().addAll("DOCTOR", "NURSE", "MANAGER", "ADMIN");
 
         // code của toggle button
         ToggleGroup genderGroup = new ToggleGroup();

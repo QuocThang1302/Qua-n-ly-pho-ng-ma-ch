@@ -28,11 +28,18 @@ public class ScheduleEntry extends Entry<String> {
     public void syncFromModel() {
         setTitle(model.getTenNguoiTruc() + " - " + model.getVaiTro().toVietnamese());
         setLocation(model.getCaTruc());
+
+        java.time.LocalTime[] shiftTimes = ScheduleEntry.SHIFTS.get(model.getCaTruc());
+        if (shiftTimes == null) {
+            throw new IllegalArgumentException("Ca trực không hợp lệ: " + model.getCaTruc());
+        }
+
         setInterval(
-                LocalDateTime.of(model.getNgay(), ScheduleEntry.SHIFTS.get(model.getCaTruc())[0]),
-                LocalDateTime.of(model.getNgay(), ScheduleEntry.SHIFTS.get(model.getCaTruc())[1])
+                LocalDateTime.of(model.getNgay(), shiftTimes[0]),
+                LocalDateTime.of(model.getNgay(), shiftTimes[1])
         );
     }
+
 
     // Optional: bạn có thể đặt lại giờ trực ở đây nếu muốn tuỳ chỉnh thêm
     public static final java.util.Map<String, java.time.LocalTime[]> SHIFTS = java.util.Map.of(
