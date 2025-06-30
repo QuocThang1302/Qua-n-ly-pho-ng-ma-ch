@@ -50,10 +50,10 @@
     <right>
         <AnchorPane prefHeight="512.0" prefWidth="353.0" BorderPane.alignment="CENTER">
             <children>
-                <ImageView fitHeight="339.0" fitWidth="347.0" layoutX="1.0" layoutY="125.0" opacity="0.82" pickOnBounds="true" preserveRatio="true">
-<!--                    <image>-->
-<!--                        <Image url="@../../../../../../Downloads/hospital.png" />-->
-<!--                    </image>-->
+                <ImageView fitHeight="339.0" fitWidth="347.0" layoutX="5.0" layoutY="74.0" opacity="0.82" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/assets/hospital2.png" />
+                    </image>
                     <effect>
                         <Blend />
                     </effect>

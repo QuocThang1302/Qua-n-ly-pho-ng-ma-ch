@@ -4,8 +4,12 @@ import com.example.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.layout.Document;
@@ -13,28 +17,23 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Cell;
 import java.io.File;
-
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import java.awt.Desktop;
 
-public class MedicalReportController {
+public class MedicalReportController implements MedicineDataChangeListener {
 
     @FXML private TextField tfMaPhieuKham, tfMaBenhNhan, tfHoTen, tfNgaySinh, tfGioiTinh,
             tfSoDienThoai, tfTenBacSi, tfLyDoKham, tfNgayLap;
-
     @FXML private TextArea txtChanDoan;
-
     @FXML private TextField tfNgayHoaDon, tfTienThuoc, tfTienKham, tfTongTien;
-
     @FXML private TableView<MedicineModel> tableThuocHoaDon;
     @FXML private TableColumn<MedicineModel, String> colTenThuoc;
     @FXML private TableColumn<MedicineModel, Integer> colSoLuong;
     @FXML private TableColumn<MedicineModel, Double> colDonGia;
-
     @FXML private Button btnThemThuoc, btnLuuPhieu, btnInPhieu, btnXuatPdf;
 
     private ObservableList<MedicineModel> danhSachThuoc = FXCollections.observableArrayList();
@@ -58,10 +57,7 @@ public class MedicalReportController {
 
         if (bill != null) {
             tfNgayHoaDon.setText(bill.getNgayLapDon().format(fmt));
-            double tienThuoc = 0;
-            for(MedicineModel thuoc : bill.getDanhSachThuoc()){
-                tienThuoc += thuoc.getGiaTien();
-            }
+            double tienThuoc = bill.getDanhSachThuoc().stream().mapToDouble(thuoc -> thuoc.getGiaTien() * thuoc.getSoLuong()).sum();
             tfTienThuoc.setText(String.format("%.0f", tienThuoc));
             tfTienKham.setText(String.format("%.0f", bill.getTienKham()));
             tfTongTien.setText(String.format("%.0f", bill.getTongTien()));
@@ -70,9 +66,9 @@ public class MedicalReportController {
             }
         }
 
-        colTenThuoc.setCellValueFactory(new PropertyValueFactory<>("tenThuoc"));
-        colSoLuong.setCellValueFactory(new PropertyValueFactory<>("soLuong"));
-        colDonGia.setCellValueFactory(new PropertyValueFactory<>("donGia"));
+        colTenThuoc.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("tenThuoc"));
+        colSoLuong.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("soLuong"));
+        colDonGia.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("giaTien"));
         tableThuocHoaDon.setItems(danhSachThuoc);
 
         setupButtons();
@@ -80,15 +76,25 @@ public class MedicalReportController {
     }
 
     private void setupButtons() {
-        btnThemThuoc.setOnAction(e -> {
-            MedicineModel thuocMoi = new MedicineModel("T004", "Thuốc mới", "Chống mỏi", 1, 10000, "viên", "Uống khi cần");
-            danhSachThuoc.add(thuocMoi);
-            updateTongTien();
+        btnThemThuoc.setOnAction(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medicine_detail.fxml"));
+                Parent root = loader.load();
+                MedicineDetailController controller = loader.getController();
+                controller.setDataChangeListener(this);
+                Stage dialogStage = new Stage();
+                dialogStage.setTitle("Thêm thuốc");
+                dialogStage.initModality(Modality.APPLICATION_MODAL);
+                dialogStage.setScene(new Scene(root));
+                dialogStage.showAndWait();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                showAlert("Lỗi", "Không thể mở cửa sổ thêm thuốc: " + ex.getMessage(), Alert.AlertType.ERROR);
+            }
         });
 
-        btnLuuPhieu.setOnAction(e -> {
+        btnLuuPhieu.setOnAction(eventLuu -> {
             try {
-                // Lấy dữ liệu từ các trường giao diện
                 MedicalReportModel report = new MedicalReportModel();
                 report.setMaPhieuKham(tfMaPhieuKham.getText());
                 report.setMaBenhNhan(tfMaBenhNhan.getText());
@@ -102,25 +108,24 @@ public class MedicalReportController {
                 java.time.LocalDateTime now = java.time.LocalDateTime.now();
                 report.setNgayKham(now);
                 double tienKham = Double.parseDouble(tfTienKham.getText());
+                if (tienKham < 0) throw new IllegalArgumentException("Tiền khám không thể âm!");
 
-                // Kiểm tra phiếu khám đã tồn tại chưa
                 boolean reportSuccess = false;
                 boolean isUpdate = false;
                 try {
                     MedicalReportModel existing = com.example.DAO.MedicalReportDAO.getByMaPhieuKham(tfMaPhieuKham.getText());
                     if (existing == null) {
-                        // Thêm mới
                         reportSuccess = com.example.DAO.MedicalReportDAO.insertPhieuKhamBenh(report, now, now, "", "", tienKham);
                     } else {
-                        // Cập nhật
                         reportSuccess = com.example.DAO.MedicalReportDAO.updatePhieuKhamBenh(report, now, now, "", "", tienKham);
                         isUpdate = true;
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                    showAlert("Lỗi", "Lưu phiếu khám thất bại: " + ex.getMessage(), Alert.AlertType.ERROR);
+                    return;
                 }
 
-                // Lưu hóa đơn (nếu có)
                 BillModel bill = new BillModel();
                 bill.setMaHoaDon("HD" + System.currentTimeMillis());
                 bill.setMaPhieuKham(tfMaPhieuKham.getText());
@@ -132,29 +137,21 @@ public class MedicalReportController {
                 boolean billSuccess = com.example.DAO.BillDAO.insertBill(bill, "Hóa đơn khám bệnh", now);
 
                 if (reportSuccess && billSuccess) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Thành công");
-                    alert.setHeaderText(null);
-                    alert.setContentText((isUpdate ? "Cập nhật" : "Lưu mới") + " phiếu khám và hóa đơn thành công!");
-                    alert.showAndWait();
+                    showAlert("Thành công", (isUpdate ? "Cập nhật" : "Lưu mới") + " phiếu khám và hóa đơn thành công!", Alert.AlertType.INFORMATION);
                 } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Thất bại");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Lưu phiếu khám hoặc hóa đơn thất bại! Vui lòng kiểm tra lại dữ liệu hoặc kết nối.");
-                    alert.showAndWait();
+                    showAlert("Thất bại", "Lưu phiếu khám hoặc hóa đơn thất bại!", Alert.AlertType.ERROR);
                 }
+            } catch (NumberFormatException ex) {
+                showAlert("Lỗi", "Vui lòng nhập tiền khám hợp lệ!", Alert.AlertType.ERROR);
+            } catch (IllegalArgumentException ex) {
+                showAlert("Lỗi", ex.getMessage(), Alert.AlertType.ERROR);
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi");
-                alert.setHeaderText(null);
-                alert.setContentText("Lưu phiếu khám thất bại! Vui lòng kiểm tra lại dữ liệu hoặc kết nối.\n" + ex.getMessage());
-                alert.showAndWait();
+                showAlert("Lỗi", "Lưu phiếu khám thất bại: " + ex.getMessage(), Alert.AlertType.ERROR);
             }
         });
 
-        btnInPhieu.setOnAction(e -> {
+        btnInPhieu.setOnAction(eventIn -> {
             try {
                 String fileName = "PhieuKham_" + tfMaPhieuKham.getText() + ".pdf";
                 File pdfFile = new File(System.getProperty("user.home"), fileName);
@@ -162,41 +159,26 @@ public class MedicalReportController {
                     if (Desktop.isDesktopSupported()) {
                         Desktop.getDesktop().open(pdfFile);
                     } else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Lỗi in phiếu");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Không hỗ trợ mở file PDF trên hệ điều hành này.");
-                        alert.showAndWait();
+                        showAlert("Lỗi in phiếu", "Không hỗ trợ mở file PDF trên hệ điều hành này.", Alert.AlertType.ERROR);
                     }
                 } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Lỗi in phiếu");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Chưa có file PDF phiếu khám. Hãy xuất PDF trước khi in!");
-                    alert.showAndWait();
+                    showAlert("Lỗi in phiếu", "Chưa có file PDF phiếu khám. Hãy xuất PDF trước!", Alert.AlertType.ERROR);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi in phiếu");
-                alert.setHeaderText(null);
-                alert.setContentText("Không thể mở file PDF: " + ex.getMessage());
-                alert.showAndWait();
+                showAlert("Lỗi in phiếu", "Không thể mở file PDF: " + ex.getMessage(), Alert.AlertType.ERROR);
             }
         });
 
-        btnXuatPdf.setOnAction(e -> {
+        btnXuatPdf.setOnAction(eventXuat -> {
             try {
                 String fileName = "PhieuKham_" + tfMaPhieuKham.getText() + ".pdf";
                 File pdfFile = new File(System.getProperty("user.home"), fileName);
                 PdfWriter writer = new PdfWriter(pdfFile.getAbsolutePath());
                 PdfDocument pdf = new PdfDocument(writer);
                 Document document = new Document(pdf);
-
-                // Load Times New Roman font (Unicode)
                 String fontPath = "src/main/resources/assets/Times New Roman.ttf";
                 PdfFont font = PdfFontFactory.createFont(fontPath, PdfEncodings.IDENTITY_H);
-
                 document.setFont(font);
 
                 document.add(new Paragraph("PHIẾU KHÁM BỆNH").setFont(font).setBold().setFontSize(16));
@@ -229,18 +211,10 @@ public class MedicalReportController {
                 document.add(new Paragraph("Tổng tiền: " + tfTongTien.getText()).setFont(font));
 
                 document.close();
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Xuất PDF thành công");
-                alert.setHeaderText(null);
-                alert.setContentText("Đã xuất phiếu khám ra file: " + pdfFile.getAbsolutePath());
-                alert.showAndWait();
+                showAlert("Xuất PDF thành công", "Đã xuất phiếu khám ra file: " + pdfFile.getAbsolutePath(), Alert.AlertType.INFORMATION);
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi xuất PDF");
-                alert.setHeaderText(null);
-                alert.setContentText("Không thể xuất PDF: " + ex.getMessage());
-                alert.showAndWait();
+                showAlert("Lỗi xuất PDF", "Không thể xuất PDF: " + ex.getMessage(), Alert.AlertType.ERROR);
             }
         });
     }
@@ -253,7 +227,7 @@ public class MedicalReportController {
         try {
             double tienKham = Double.parseDouble(tfTienKham.getText());
             tfTongTien.setText(String.format("%.0f", tongTien + tienKham));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ex) {
             tfTongTien.setText(String.format("%.0f", tongTien));
         }
     }
@@ -264,5 +238,22 @@ public class MedicalReportController {
         txtChanDoan.setEditable(editable);
         btnThemThuoc.setVisible(!editable);
         btnLuuPhieu.setVisible(!editable);
+    }
+
+    @Override
+    public void onDataChanged(MedicineModel updatedMedicine, String action) {
+        if ("INSERT".equals(action)) {
+            danhSachThuoc.add(updatedMedicine);
+            updateTongTien();
+        }
+        // Không xử lý UPDATE hoặc DELETE vì MedicalReportController chỉ cần thêm thuốc mới
+    }
+
+    private void showAlert(String title, String content, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
