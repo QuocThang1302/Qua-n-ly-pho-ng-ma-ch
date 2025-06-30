@@ -1,5 +1,7 @@
 package com.example.controllers;
 
+import com.example.model.StaffModel;
+
 public interface StaffDataChangeListener {
-    void onDataChanged();
+    void onDataChanged(StaffModel updatedStaff, String action);
 }

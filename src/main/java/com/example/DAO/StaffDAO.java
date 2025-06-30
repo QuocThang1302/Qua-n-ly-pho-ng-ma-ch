@@ -33,9 +33,8 @@ public class StaffDAO {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e); // Ném lại ngoại lệ để xử lý ở controller
         }
-        return false;
     }
 
     public static boolean updateStaff(StaffModel staff) {
@@ -63,9 +62,8 @@ public class StaffDAO {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e); // Ném lại ngoại lệ
         }
-        return false;
     }
 
     public static boolean deleteStaff(String id) {
@@ -77,9 +75,8 @@ public class StaffDAO {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e); // Ném lại ngoại lệ
         }
-        return false;
     }
 
     public static StaffModel getById(String id) {
@@ -94,14 +91,14 @@ public class StaffDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e); // Ném lại ngoại lệ
         }
         return null;
     }
 
     public static List<StaffModel> getAll() {
         List<StaffModel> list = new ArrayList<>();
-        String sql = "SELECT * FROM NhanVien";
+        String sql = "SELECT * FROM NhanVien ORDER BY MaNhanVien"; // Thêm ORDER BY
         try (Connection conn = DatabaseConnector.connect();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -111,7 +108,7 @@ public class StaffDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e); // Ném lại ngoại lệ
         }
         return list;
     }
@@ -122,7 +119,7 @@ public class StaffDAO {
         staff.setLastname(rs.getString("Ho"));
         staff.setFirstname(rs.getString("Ten"));
         staff.setRole(rs.getString("RoleID"));
-        staff.setLuong(rs.getDouble("Luong")); // ✅ dùng getDouble
+        staff.setLuong(rs.getDouble("Luong"));
         staff.setBirthday(rs.getDate("NgaySinh").toLocalDate());
         staff.setGender(rs.getString("GioiTinh"));
         staff.setCccd(rs.getString("CCCD"));

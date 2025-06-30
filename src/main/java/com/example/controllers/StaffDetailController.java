@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -24,28 +23,22 @@ public class StaffDetailController {
     @FXML
     private Button btnRegister, btnUpdate, btnDelete;
 
-    private StaffDataChangeListener dataChangeListener; // Callback
+    private StaffDataChangeListener dataChangeListener;
 
-    // Setter để thiết lập callback
     public void setDataChangeListener(StaffDataChangeListener listener) {
         this.dataChangeListener = listener;
     }
 
     @FXML
     public void initialize() {
-        // Code của combo box
         cbRole.getItems().addAll("DOCTOR", "NURSE", "MANAGER", "ADMIN");
 
-        // Code của toggle button
         ToggleGroup genderGroup = new ToggleGroup();
         btnMale.setToggleGroup(genderGroup);
         btnFemale.setToggleGroup(genderGroup);
-
         btnMale.setSelected(true);
 
-        // Code của date picker
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         dpBirth.setConverter(new StringConverter<LocalDate>() {
             @Override
             public String toString(LocalDate date) {
@@ -58,13 +51,10 @@ public class StaffDetailController {
             }
         });
 
-        // Code của button
         btnRegister.setVisible(true);
         btnRegister.setManaged(true);
-
         btnUpdate.setVisible(false);
         btnUpdate.setManaged(false);
-
         btnDelete.setVisible(false);
         btnDelete.setManaged(false);
     }
@@ -73,10 +63,8 @@ public class StaffDetailController {
         if (staffModel != null) {
             btnRegister.setVisible(false);
             btnRegister.setManaged(false);
-
             btnUpdate.setVisible(true);
             btnUpdate.setManaged(true);
-
             btnDelete.setVisible(true);
             btnDelete.setManaged(true);
 
@@ -89,204 +77,184 @@ public class StaffDetailController {
             tfPassword.setText(staffModel.getPassword());
             tfCCCD.setText(staffModel.getCccd());
             tfSalary.setText(String.valueOf(staffModel.getLuong()));
-
             cbRole.setValue(staffModel.getRole());
+            dpBirth.setValue(staffModel.getBirthday());
 
             String gioitinh = staffModel.getGender();
             if ("Nam".equals(gioitinh)) {
                 btnMale.setSelected(true);
+                btnFemale.setSelected(false);
             } else {
                 btnFemale.setSelected(true);
+                btnMale.setSelected(false);
             }
-
-            dpBirth.setValue(staffModel.getBirthday());
         }
     }
 
     public void register(ActionEvent actionEvent) {
         try {
             String id = tfId.getText();
+            if (id == null || id.trim().isEmpty()) throw new IllegalArgumentException("Mã nhân viên không được để trống!");
             String lastName = tfLastName.getText();
+            if (lastName == null || lastName.trim().isEmpty()) throw new IllegalArgumentException("Họ không được để trống!");
             String firstName = tfName.getText();
+            if (firstName == null || firstName.trim().isEmpty()) throw new IllegalArgumentException("Tên không được để trống!");
             String email = tfEmail.getText();
             String phone = tfPhone.getText();
             String address = tfAddress.getText();
             String password = tfPassword.getText();
             String cccd = tfCCCD.getText();
             String role = cbRole.getValue();
+            if (role == null) throw new IllegalArgumentException("Vui lòng chọn vai trò!");
             LocalDate birthday = dpBirth.getValue();
+            if (birthday == null) throw new IllegalArgumentException("Vui lòng chọn ngày sinh!");
             String gender = btnMale.isSelected() ? "Nam" : "Nữ";
-            double luong = 1000; // Tạm thời lương mặc định
+            double luong = tfSalary.getText().isEmpty() ? 1000 : Double.parseDouble(tfSalary.getText());
+            if (luong < 0) throw new IllegalArgumentException("Lương không thể âm!");
+
             StaffModel staff = new StaffModel(id, lastName, firstName, role, luong, birthday, gender, cccd, address, email, phone, password);
-            boolean success = false;
-            String errorMsg = null;
             try {
-                success = com.example.DAO.StaffDAO.insertStaff(staff);
+                boolean success = com.example.DAO.StaffDAO.insertStaff(staff);
+                if (success) {
+                    showAlert("Thành công", "Đăng ký nhân viên thành công!", Alert.AlertType.INFORMATION);
+                    Stage stage = (Stage) btnRegister.getScene().getWindow();
+                    stage.close();
+                    if (dataChangeListener != null) {
+                        dataChangeListener.onDataChanged(staff, "INSERT");
+                    }
+                } else {
+                    showAlert("Thất bại", "Đăng ký nhân viên thất bại! Vui lòng kiểm tra lại thông tin.", Alert.AlertType.ERROR);
+                }
             } catch (Exception ex) {
                 Throwable cause = ex;
                 while (cause.getCause() != null) cause = cause.getCause();
                 if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
                     String msg = cause.getMessage();
                     if (msg.contains("PRIMARY") || msg.contains("MaNhanVien")) {
-                        errorMsg = "Mã nhân viên đã tồn tại!";
+                        showAlert("Thất bại", "Mã nhân viên đã tồn tại!", Alert.AlertType.ERROR);
                     } else if (msg.contains("Email")) {
-                        errorMsg = "Email đã tồn tại!";
+                        showAlert("Thất bại", "Email đã tồn tại!", Alert.AlertType.ERROR);
                     } else if (msg.contains("CCCD")) {
-                        errorMsg = "CCCD đã tồn tại!";
+                        showAlert("Thất bại", "CCCD đã tồn tại!", Alert.AlertType.ERROR);
                     } else {
-                        errorMsg = "Dữ liệu bị trùng lặp!";
+                        showAlert("Thất bại", "Dữ liệu bị trùng lặp!", Alert.AlertType.ERROR);
                     }
                 } else {
-                    errorMsg = cause.getMessage();
+                    showAlert("Thất bại", "Lỗi: " + cause.getMessage(), Alert.AlertType.ERROR);
                 }
             }
-            if (success) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thành công");
-                alert.setHeaderText(null);
-                alert.setContentText("Đăng ký nhân viên thành công!");
-                alert.showAndWait();
-
-                // Đóng cửa sổ và gọi callback
-                Stage stage = (Stage) btnRegister.getScene().getWindow();
-                stage.close();
-                if (dataChangeListener != null) {
-                    dataChangeListener.onDataChanged();
-                }
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Thất bại");
-                alert.setHeaderText(null);
-                alert.setContentText(errorMsg != null ? errorMsg : "Đăng ký nhân viên thất bại! Vui lòng kiểm tra lại thông tin nhập vào.");
-                alert.showAndWait();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
-            alert.setHeaderText(null);
-            alert.setContentText("Vui lòng kiểm tra lại thông tin nhập vào!\n" + e.getMessage());
-            alert.showAndWait();
+        } catch (NumberFormatException ex) {
+            showAlert("Lỗi", "Vui lòng nhập lương hợp lệ!", Alert.AlertType.ERROR);
+        } catch (IllegalArgumentException ex) {
+            showAlert("Lỗi", ex.getMessage(), Alert.AlertType.ERROR);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Lỗi", "Lỗi không xác định: " + ex.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     public void update(ActionEvent actionEvent) {
         try {
             String id = tfId.getText();
+            if (id == null || id.trim().isEmpty()) throw new IllegalArgumentException("Mã nhân viên không được để trống!");
             String lastName = tfLastName.getText();
+            if (lastName == null || lastName.trim().isEmpty()) throw new IllegalArgumentException("Họ không được để trống!");
             String firstName = tfName.getText();
+            if (firstName == null || firstName.trim().isEmpty()) throw new IllegalArgumentException("Tên không được để trống!");
             String email = tfEmail.getText();
             String phone = tfPhone.getText();
             String address = tfAddress.getText();
             String password = tfPassword.getText();
             String cccd = tfCCCD.getText();
             String role = cbRole.getValue();
+            if (role == null) throw new IllegalArgumentException("Vui lòng chọn vai trò!");
             LocalDate birthday = dpBirth.getValue();
+            if (birthday == null) throw new IllegalArgumentException("Vui lòng chọn ngày sinh!");
             String gender = btnMale.isSelected() ? "Nam" : "Nữ";
-            double luong = 1000; // Tạm thời lương mặc định
+            double luong = tfSalary.getText().isEmpty() ? 1000 : Double.parseDouble(tfSalary.getText());
+            if (luong < 0) throw new IllegalArgumentException("Lương không thể âm!");
+
             StaffModel staff = new StaffModel(id, lastName, firstName, role, luong, birthday, gender, cccd, address, email, phone, password);
-            boolean success = false;
-            String errorMsg = null;
             try {
-                success = com.example.DAO.StaffDAO.updateStaff(staff);
+                boolean success = com.example.DAO.StaffDAO.updateStaff(staff);
+                if (success) {
+                    showAlert("Thành công", "Cập nhật nhân viên thành công!", Alert.AlertType.INFORMATION);
+                    Stage stage = (Stage) btnUpdate.getScene().getWindow();
+                    stage.close();
+                    if (dataChangeListener != null) {
+                        dataChangeListener.onDataChanged(staff, "UPDATE");
+                    }
+                } else {
+                    showAlert("Thất bại", "Cập nhật nhân viên thất bại! Nhân viên không tồn tại.", Alert.AlertType.ERROR);
+                }
             } catch (Exception ex) {
                 Throwable cause = ex;
                 while (cause.getCause() != null) cause = cause.getCause();
                 if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
                     String msg = cause.getMessage();
                     if (msg.contains("Email")) {
-                        errorMsg = "Email đã tồn tại!";
+                        showAlert("Thất bại", "Email đã tồn tại!", Alert.AlertType.ERROR);
                     } else if (msg.contains("CCCD")) {
-                        errorMsg = "CCCD đã tồn tại!";
+                        showAlert("Thất bại", "CCCD đã tồn tại!", Alert.AlertType.ERROR);
                     } else {
-                        errorMsg = "Dữ liệu bị trùng lặp!";
+                        showAlert("Thất bại", "Dữ liệu bị trùng lặp!", Alert.AlertType.ERROR);
                     }
                 } else {
-                    errorMsg = cause.getMessage();
+                    showAlert("Thất bại", "Lỗi: " + cause.getMessage(), Alert.AlertType.ERROR);
                 }
             }
-            if (success) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thành công");
-                alert.setHeaderText(null);
-                alert.setContentText("Cập nhật nhân viên thành công!");
-                alert.showAndWait();
-
-                // Đóng cửa sổ và gọi callback
-                Stage stage = (Stage) btnUpdate.getScene().getWindow();
-                stage.close();
-                if (dataChangeListener != null) {
-                    dataChangeListener.onDataChanged();
-                }
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Thất bại");
-                alert.setHeaderText(null);
-                alert.setContentText(errorMsg != null ? errorMsg : "Cập nhật nhân viên thất bại! Vui lòng kiểm tra lại thông tin nhập vào.");
-                alert.showAndWait();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
-            alert.setHeaderText(null);
-            alert.setContentText("Vui lòng kiểm tra lại thông tin nhập vào!\n" + e.getMessage());
-            alert.showAndWait();
+        } catch (NumberFormatException ex) {
+            showAlert("Lỗi", "Vui lòng nhập lương hợp lệ!", Alert.AlertType.ERROR);
+        } catch (IllegalArgumentException ex) {
+            showAlert("Lỗi", ex.getMessage(), Alert.AlertType.ERROR);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Lỗi", "Lỗi không xác định: " + ex.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     public void delete(ActionEvent actionEvent) {
         try {
             String id = tfId.getText();
-            boolean success = false;
-            String errorMsg = null;
             try {
-                success = com.example.DAO.StaffDAO.deleteStaff(id);
+                boolean success = com.example.DAO.StaffDAO.deleteStaff(id);
+                if (success) {
+                    showAlert("Thành công", "Xóa nhân viên thành công!", Alert.AlertType.INFORMATION);
+                    Stage stage = (Stage) btnDelete.getScene().getWindow();
+                    stage.close();
+                    if (dataChangeListener != null) {
+                        dataChangeListener.onDataChanged(new StaffModel(id, "", "", "", 0, null, "", "", "", "", "", ""), "DELETE");
+                    }
+                } else {
+                    showAlert("Thất bại", "Xóa nhân viên thất bại! Nhân viên không tồn tại.", Alert.AlertType.ERROR);
+                }
             } catch (Exception ex) {
                 Throwable cause = ex;
                 while (cause.getCause() != null) cause = cause.getCause();
                 if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
                     String msg = cause.getMessage();
                     if (msg.contains("quidinh") || msg.contains("nguoicapnhat")) {
-                        errorMsg = "Không thể xóa nhân viên với mã " + id + " vì đang được tham chiếu trong bảng quy định (quidinh).\n" +
-                                "Vui lòng xóa hoặc cập nhật các bản ghi liên quan trong bảng quy định trước khi xóa nhân viên này.";
+                        showAlert("Thất bại", "Không thể xóa nhân viên với mã " + id + " vì đang được tham chiếu trong bảng quy định (quidinh).", Alert.AlertType.ERROR);
                     } else if (msg.contains("foreign key")) {
-                        errorMsg = "Không thể xóa nhân viên vì đang được sử dụng ở bảng khác!";
+                        showAlert("Thất bại", "Không thể xóa nhân viên vì đang được sử dụng ở bảng khác!", Alert.AlertType.ERROR);
                     } else {
-                        errorMsg = "Lỗi ràng buộc dữ liệu!";
+                        showAlert("Thất bại", "Lỗi ràng buộc dữ liệu!", Alert.AlertType.ERROR);
                     }
                 } else {
-                    errorMsg = cause.getMessage();
+                    showAlert("Thất bại", "Lỗi: " + cause.getMessage(), Alert.AlertType.ERROR);
                 }
             }
-            if (success) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thành công");
-                alert.setHeaderText(null);
-                alert.setContentText("Xóa nhân viên thành công!");
-                alert.showAndWait();
-
-                // Đóng cửa sổ và gọi callback
-                Stage stage = (Stage) btnDelete.getScene().getWindow();
-                stage.close();
-                if (dataChangeListener != null) {
-                    dataChangeListener.onDataChanged();
-                }
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Thất bại");
-                alert.setHeaderText(null);
-                alert.setContentText(errorMsg != null ? errorMsg : "Không thể xóa nhân viên với mã " + id + " vì đang được tham chiếu trong bảng quy định (quidinh).\n" +
-                        "Vui lòng xóa hoặc cập nhật các bản ghi liên quan trong bảng quy định trước khi xóa nhân viên này.");
-                alert.showAndWait();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
-            alert.setHeaderText(null);
-            alert.setContentText("Vui lòng kiểm tra lại!\n" + e.getMessage());
-            alert.showAndWait();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Lỗi", "Lỗi không xác định: " + ex.getMessage(), Alert.AlertType.ERROR);
         }
+    }
+
+    private void showAlert(String title, String content, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
