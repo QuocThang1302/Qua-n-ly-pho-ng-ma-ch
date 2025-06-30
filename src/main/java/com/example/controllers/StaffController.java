@@ -2,31 +2,22 @@ package com.example.controllers;
 
 import com.example.DAO.StaffDAO;
 import com.example.model.StaffModel;
-
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import javafx.beans.property.SimpleStringProperty;
-
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-
-import java.io.IOException;
-
-public class StaffController {
+public class StaffController implements StaffDataChangeListener {
     @FXML
     private TableView<StaffModel> tvStaff;
     @FXML
@@ -46,7 +37,7 @@ public class StaffController {
     @FXML
     private Label lblTotalStaffs;
     @FXML
-    Button btnAdd;
+    private Button btnAdd;
 
     @FXML
     public void initialize() {
@@ -71,16 +62,21 @@ public class StaffController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/staff_detail.fxml"));
                 Parent root = loader.load();
 
-                // Tạo stage mới (window mới)
+                // Lấy controller và truyền callback
+                StaffDetailController controller = loader.getController();
+                controller.setDataChangeListener(this); // Truyền callback
+
+                // Tạo stage mới
                 Stage dialogStage = new Stage();
                 dialogStage.setTitle("Chi tiết nhân viên");
-                dialogStage.initModality(Modality.APPLICATION_MODAL); // chặn tương tác với window chính
+                dialogStage.initModality(Modality.APPLICATION_MODAL);
                 dialogStage.setScene(new Scene(root));
                 dialogStage.showAndWait();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+
         loadStaffData();
     }
 
@@ -89,14 +85,15 @@ public class StaffController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/staff_detail.fxml"));
             Parent root = loader.load();
 
-            // Lấy controller để truyền dữ liệu
+            // Lấy controller và truyền dữ liệu + callback
             StaffDetailController controller = loader.getController();
             controller.setStaff(staffModel);
+            controller.setDataChangeListener(this); // Truyền callback
 
-            // Tạo stage mới (window mới)
+            // Tạo stage mới
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Chi tiết nhân viên");
-            dialogStage.initModality(Modality.APPLICATION_MODAL); // chặn tương tác với window chính
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.setScene(new Scene(root));
             dialogStage.showAndWait();
         } catch (IOException e) {
@@ -104,7 +101,12 @@ public class StaffController {
         }
     }
 
-    private void loadStaffData() {
+    @Override
+    public void onDataChanged() {
+        loadStaffData(); // Gọi lại loadStaffData khi dữ liệu thay đổi
+    }
+
+    public void loadStaffData() {
         ObservableList<StaffModel> staffList = FXCollections.observableArrayList(StaffDAO.getAll());
 
         // Tìm kiếm
@@ -140,6 +142,4 @@ public class StaffController {
         // Tổng số nhân viên
         lblTotalStaffs.setText("Tổng: " + staffList.size() + " nhân viên");
     }
-
-
 }

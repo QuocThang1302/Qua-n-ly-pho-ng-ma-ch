@@ -4,6 +4,7 @@ import com.example.model.StaffModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.time.LocalDate;
@@ -21,21 +22,28 @@ public class StaffDetailController {
     @FXML
     private ToggleButton btnFemale;
     @FXML
-    Button btnRegister, btnUpdate, btnDelete;
+    private Button btnRegister, btnUpdate, btnDelete;
+
+    private StaffDataChangeListener dataChangeListener; // Callback
+
+    // Setter để thiết lập callback
+    public void setDataChangeListener(StaffDataChangeListener listener) {
+        this.dataChangeListener = listener;
+    }
 
     @FXML
     public void initialize() {
-        // code của combo box
+        // Code của combo box
         cbRole.getItems().addAll("DOCTOR", "NURSE", "MANAGER", "ADMIN");
 
-        // code của toggle button
+        // Code của toggle button
         ToggleGroup genderGroup = new ToggleGroup();
         btnMale.setToggleGroup(genderGroup);
         btnFemale.setToggleGroup(genderGroup);
 
         btnMale.setSelected(true);
 
-        // code của date picker
+        // Code của date picker
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         dpBirth.setConverter(new StringConverter<LocalDate>() {
@@ -50,7 +58,7 @@ public class StaffDetailController {
             }
         });
 
-        // code của button
+        // Code của button
         btnRegister.setVisible(true);
         btnRegister.setManaged(true);
 
@@ -85,10 +93,11 @@ public class StaffDetailController {
             cbRole.setValue(staffModel.getRole());
 
             String gioitinh = staffModel.getGender();
-            if (gioitinh == "Nam")
+            if ("Nam".equals(gioitinh)) {
                 btnMale.setSelected(true);
-            else
+            } else {
                 btnFemale.setSelected(true);
+            }
 
             dpBirth.setValue(staffModel.getBirthday());
         }
@@ -107,7 +116,7 @@ public class StaffDetailController {
             String role = cbRole.getValue();
             LocalDate birthday = dpBirth.getValue();
             String gender = btnMale.isSelected() ? "Nam" : "Nữ";
-            double luong = 1000; // tạm thời lương mặc định là 0
+            double luong = 1000; // Tạm thời lương mặc định
             StaffModel staff = new StaffModel(id, lastName, firstName, role, luong, birthday, gender, cccd, address, email, phone, password);
             boolean success = false;
             String errorMsg = null;
@@ -137,6 +146,13 @@ public class StaffDetailController {
                 alert.setHeaderText(null);
                 alert.setContentText("Đăng ký nhân viên thành công!");
                 alert.showAndWait();
+
+                // Đóng cửa sổ và gọi callback
+                Stage stage = (Stage) btnRegister.getScene().getWindow();
+                stage.close();
+                if (dataChangeListener != null) {
+                    dataChangeListener.onDataChanged();
+                }
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Thất bại");
@@ -149,7 +165,7 @@ public class StaffDetailController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Lỗi");
             alert.setHeaderText(null);
-            alert.setContentText("Vui lòng kiểm tra lại thông tin nhập vào!\\n" + e.getMessage());
+            alert.setContentText("Vui lòng kiểm tra lại thông tin nhập vào!\n" + e.getMessage());
             alert.showAndWait();
         }
     }
@@ -167,7 +183,7 @@ public class StaffDetailController {
             String role = cbRole.getValue();
             LocalDate birthday = dpBirth.getValue();
             String gender = btnMale.isSelected() ? "Nam" : "Nữ";
-            double luong = 1000; // tạm thời lương mặc định là 0
+            double luong = 1000; // Tạm thời lương mặc định
             StaffModel staff = new StaffModel(id, lastName, firstName, role, luong, birthday, gender, cccd, address, email, phone, password);
             boolean success = false;
             String errorMsg = null;
@@ -195,6 +211,13 @@ public class StaffDetailController {
                 alert.setHeaderText(null);
                 alert.setContentText("Cập nhật nhân viên thành công!");
                 alert.showAndWait();
+
+                // Đóng cửa sổ và gọi callback
+                Stage stage = (Stage) btnUpdate.getScene().getWindow();
+                stage.close();
+                if (dataChangeListener != null) {
+                    dataChangeListener.onDataChanged();
+                }
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Thất bại");
@@ -226,7 +249,7 @@ public class StaffDetailController {
                     String msg = cause.getMessage();
                     if (msg.contains("quidinh") || msg.contains("nguoicapnhat")) {
                         errorMsg = "Không thể xóa nhân viên với mã " + id + " vì đang được tham chiếu trong bảng quy định (quidinh).\n" +
-                                   "Vui lòng xóa hoặc cập nhật các bản ghi liên quan trong bảng quy định trước khi xóa nhân viên này.";
+                                "Vui lòng xóa hoặc cập nhật các bản ghi liên quan trong bảng quy định trước khi xóa nhân viên này.";
                     } else if (msg.contains("foreign key")) {
                         errorMsg = "Không thể xóa nhân viên vì đang được sử dụng ở bảng khác!";
                     } else {
@@ -242,6 +265,13 @@ public class StaffDetailController {
                 alert.setHeaderText(null);
                 alert.setContentText("Xóa nhân viên thành công!");
                 alert.showAndWait();
+
+                // Đóng cửa sổ và gọi callback
+                Stage stage = (Stage) btnDelete.getScene().getWindow();
+                stage.close();
+                if (dataChangeListener != null) {
+                    dataChangeListener.onDataChanged();
+                }
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Thất bại");

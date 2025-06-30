@@ -1,14 +1,12 @@
 package com.example.controllers;
 
 import com.example.model.MedicineModel;
-import com.example.model.StaffModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.util.StringConverter;
+import javafx.stage.Stage;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 public class MedicineDetailController {
     @FXML
@@ -18,9 +16,16 @@ public class MedicineDetailController {
     @FXML
     private Button btnAdd, btnUpdate, btnDelete;
 
+    private MedicineDataChangeListener dataChangeListener; // Callback
+
+    // Setter để thiết lập callback
+    public void setDataChangeListener(MedicineDataChangeListener listener) {
+        this.dataChangeListener = listener;
+    }
+
     @FXML
     public void initialize() {
-        // code của button
+        // Code của button
         btnAdd.setVisible(true);
         btnAdd.setManaged(true);
 
@@ -30,19 +35,8 @@ public class MedicineDetailController {
         btnDelete.setVisible(false);
         btnDelete.setManaged(false);
 
-        // code của combo box
-        cbUnit.getItems().addAll( "viên",
-                "vỉ",
-                "gói",
-                "ống",
-                "chai",
-                "lọ",
-                "tuýp",
-                "ml",
-                "mg",
-                "g",
-                "mcg",
-                "IU");
+        // Code của combo box
+        cbUnit.getItems().addAll("viên", "vỉ", "gói", "ống", "chai", "lọ", "tuýp", "ml", "mg", "g", "mcg", "IU");
     }
 
     public void setMedicine(MedicineModel medicineModel) {
@@ -83,7 +77,7 @@ public class MedicineDetailController {
             } catch (Exception ex) {
                 Throwable cause = ex;
                 while (cause.getCause() != null) cause = cause.getCause();
-                if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+                if (cause instanceof SQLIntegrityConstraintViolationException) {
                     String msg = cause.getMessage();
                     if (msg.contains("PRIMARY") || msg.contains("MaThuoc")) {
                         errorMsg = "Mã thuốc đã tồn tại!";
@@ -100,6 +94,13 @@ public class MedicineDetailController {
                 alert.setHeaderText(null);
                 alert.setContentText("Thêm thuốc thành công!");
                 alert.showAndWait();
+
+                // Đóng cửa sổ và gọi callback
+                Stage stage = (Stage) btnAdd.getScene().getWindow();
+                stage.close();
+                if (dataChangeListener != null) {
+                    dataChangeListener.onDataChanged();
+                }
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Thất bại");
@@ -135,7 +136,7 @@ public class MedicineDetailController {
             } catch (Exception ex) {
                 Throwable cause = ex;
                 while (cause.getCause() != null) cause = cause.getCause();
-                if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+                if (cause instanceof SQLIntegrityConstraintViolationException) {
                     String msg = cause.getMessage();
                     if (msg.contains("MaThuoc")) {
                         errorMsg = "Mã thuốc bị trùng!";
@@ -152,6 +153,13 @@ public class MedicineDetailController {
                 alert.setHeaderText(null);
                 alert.setContentText("Cập nhật thuốc thành công!");
                 alert.showAndWait();
+
+                // Đóng cửa sổ và gọi callback
+                Stage stage = (Stage) btnUpdate.getScene().getWindow();
+                stage.close();
+                if (dataChangeListener != null) {
+                    dataChangeListener.onDataChanged();
+                }
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Thất bại");
@@ -179,11 +187,11 @@ public class MedicineDetailController {
             } catch (Exception ex) {
                 Throwable cause = ex;
                 while (cause.getCause() != null) cause = cause.getCause();
-                if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+                if (cause instanceof SQLIntegrityConstraintViolationException) {
                     String msg = cause.getMessage();
                     if (msg.contains("ctdonthuoc") || msg.contains("mathuoc")) {
                         errorMsg = "Không thể xóa thuốc với mã " + id + " vì đang được tham chiếu trong bảng chi tiết đơn thuốc (ctdonthuoc).\n" +
-                                   "Vui lòng xóa hoặc cập nhật các bản ghi liên quan trong bảng chi tiết đơn thuốc trước khi xóa thuốc này.";
+                                "Vui lòng xóa hoặc cập nhật các bản ghi liên quan trong bảng chi tiết đơn thuốc trước khi xóa thuốc này.";
                     } else if (msg.contains("foreign key")) {
                         errorMsg = "Không thể xóa thuốc vì đang được sử dụng ở bảng khác!";
                     } else {
@@ -199,6 +207,13 @@ public class MedicineDetailController {
                 alert.setHeaderText(null);
                 alert.setContentText("Xóa thuốc thành công!");
                 alert.showAndWait();
+
+                // Đóng cửa sổ và gọi callback
+                Stage stage = (Stage) btnDelete.getScene().getWindow();
+                stage.close();
+                if (dataChangeListener != null) {
+                    dataChangeListener.onDataChanged();
+                }
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Thất bại");
@@ -248,7 +263,7 @@ public class MedicineDetailController {
             } catch (Exception ex) {
                 Throwable cause = ex;
                 while (cause.getCause() != null) cause = cause.getCause();
-                if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+                if (cause instanceof SQLIntegrityConstraintViolationException) {
                     String msg = cause.getMessage();
                     if (msg.contains("PRIMARY") || msg.contains("MaThuoc")) {
                         errorMsg = "Mã thuốc đã tồn tại!";
@@ -265,6 +280,13 @@ public class MedicineDetailController {
                 alert.setHeaderText(null);
                 alert.setContentText(existing == null ? "Lưu phiếu thuốc (thêm mới) thành công!" : "Lưu phiếu thuốc (cập nhật) thành công!");
                 alert.showAndWait();
+
+                // Đóng cửa sổ và gọi callback
+                Stage stage = (Stage) btnAdd.getScene().getWindow();
+                stage.close();
+                if (dataChangeListener != null) {
+                    dataChangeListener.onDataChanged();
+                }
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Thất bại");
