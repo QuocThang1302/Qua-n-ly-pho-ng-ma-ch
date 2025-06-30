@@ -15,7 +15,8 @@ public class MedicineDAO {
         String sql = """
                 SELECT MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, DonVi, HuongDanSuDung
                 FROM Thuoc
-                """;
+                ORDER BY MaThuoc
+                """; // Thêm ORDER BY để đảm bảo thứ tự
 
         try (Connection conn = DatabaseConnector.connect();
              Statement stmt = conn.createStatement();
@@ -86,11 +87,11 @@ public class MedicineDAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Lỗi khi thêm thuốc: " + e.getMessage());
-            return false;
+            throw new RuntimeException(e); // Ném lại ngoại lệ để xử lý ở controller
         }
     }
 
-    public static void updateMedicine(MedicineModel medicine) {
+    public static boolean updateMedicine(MedicineModel medicine) {
         String sql = """
             UPDATE Thuoc
             SET TenThuoc = ?, CongDung = ?, SoLuong = ?, GiaTien = ?, DonVi = ?, HuongDanSuDung = ?
@@ -107,10 +108,11 @@ public class MedicineDAO {
             stmt.setString(5, medicine.getDonVi());
             stmt.setString(6, medicine.getHuongDanSuDung());
             stmt.setString(7, medicine.getMaThuoc());
-            stmt.executeUpdate();
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             System.err.println("Lỗi khi cập nhật thuốc: " + e.getMessage());
+            throw new RuntimeException(e); // Ném lại ngoại lệ
         }
     }
 
@@ -122,7 +124,7 @@ public class MedicineDAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Lỗi khi xoá thuốc: " + e.getMessage());
-            return false;
+            throw new RuntimeException(e); // Ném lại ngoại lệ
         }
     }
 
@@ -164,7 +166,8 @@ public class MedicineDAO {
         JOIN CTDonThuoc ct ON t.MaThuoc = ct.MaThuoc
         JOIN DonThuoc dt ON ct.MaDonThuoc = dt.MaDonThuoc
         WHERE EXTRACT(YEAR FROM dt.NgayLapDon) = ? AND EXTRACT(MONTH FROM dt.NgayLapDon) = ?
-    """;
+        ORDER BY t.MaThuoc
+        """; // Thêm ORDER BY để đảm bảo thứ tự
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

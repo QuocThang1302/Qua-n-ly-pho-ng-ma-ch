@@ -36,16 +36,16 @@ public class MedicineController implements MedicineDataChangeListener {
     @FXML
     private Button btnAdd;
 
+    private ObservableList<MedicineModel> medicineList;
+
     @FXML
     public void initialize() {
-        // Thiết lập độ rộng cột
         idCol.prefWidthProperty().bind(tvMedicine.widthProperty().multiply(0.15));
         nameCol.prefWidthProperty().bind(tvMedicine.widthProperty().multiply(0.2));
         useCol.prefWidthProperty().bind(tvMedicine.widthProperty().multiply(0.35));
         quantityCol.prefWidthProperty().bind(tvMedicine.widthProperty().multiply(0.1));
         costCol.prefWidthProperty().bind(tvMedicine.widthProperty().multiply(0.2));
 
-        // Xử lý sự kiện double-click trên TableView
         tvMedicine.setOnMouseClicked((event) -> {
             if (event.getClickCount() == 2) {
                 MedicineModel medicineModel = tvMedicine.getSelectionModel().getSelectedItem();
@@ -55,17 +55,12 @@ public class MedicineController implements MedicineDataChangeListener {
             }
         });
 
-        // Xử lý sự kiện nút Add
         btnAdd.setOnMouseClicked((event) -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medicine_detail.fxml"));
                 Parent root = loader.load();
-
-                // Lấy controller và truyền callback
                 MedicineDetailController controller = loader.getController();
-                controller.setDataChangeListener(this); // Truyền callback
-
-                // Tạo stage mới
+                controller.setDataChangeListener(this);
                 Stage dialogStage = new Stage();
                 dialogStage.setTitle("Thêm thuốc");
                 dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -73,7 +68,7 @@ public class MedicineController implements MedicineDataChangeListener {
                 dialogStage.showAndWait();
             } catch (IOException e) {
                 e.printStackTrace();
-                showAlert("Lỗi", "Không thể mở cửa sổ thêm thuốc: " + e.getMessage());
+                showAlert("Lỗi", "Không thể mở cửa sổ thêm thuốc: " + e.getMessage(), Alert.AlertType.ERROR);
             }
         });
 
@@ -84,13 +79,9 @@ public class MedicineController implements MedicineDataChangeListener {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medicine_detail.fxml"));
             Parent root = loader.load();
-
-            // Lấy controller và truyền dữ liệu + callback
             MedicineDetailController controller = loader.getController();
             controller.setMedicine(medicineModel);
-            controller.setDataChangeListener(this); // Truyền callback
-
-            // Tạo stage mới
+            controller.setDataChangeListener(this);
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Chi tiết thuốc");
             dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -98,44 +89,49 @@ public class MedicineController implements MedicineDataChangeListener {
             dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Lỗi", "Không thể mở cửa sổ chi tiết thuốc: " + e.getMessage());
+            showAlert("Lỗi", "Không thể mở cửa sổ chi tiết thuốc: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     @Override
-    public void onDataChanged() {
-        loadMedicineData(); // Làm mới dữ liệu khi được gọi từ callback
+    public void onDataChanged(MedicineModel updatedMedicine, String action) {
+        ObservableList<TableColumn<MedicineModel, ?>> sortOrder = FXCollections.observableArrayList(tvMedicine.getSortOrder());
+        int selectedIndex = tvMedicine.getSelectionModel().getSelectedIndex();
+
+        if ("INSERT".equals(action)) {
+            medicineList.add(updatedMedicine);
+        } else if ("UPDATE".equals(action)) {
+            for (int i = 0; i < medicineList.size(); i++) {
+                if (medicineList.get(i).getMaThuoc().equals(updatedMedicine.getMaThuoc())) {
+                    medicineList.set(i, updatedMedicine);
+                    break;
+                }
+            }
+        } else if ("DELETE".equals(action)) {
+            medicineList.removeIf(med -> med.getMaThuoc().equals(updatedMedicine.getMaThuoc()));
+        }
+
+        lblTotalMedicines.setText("Tổng số thuốc: " + medicineList.size());
+        tvMedicine.getSortOrder().setAll(sortOrder);
+        if (selectedIndex >= 0 && selectedIndex < tvMedicine.getItems().size()) {
+            tvMedicine.getSelectionModel().select(selectedIndex);
+            tvMedicine.scrollTo(selectedIndex);
+        }
     }
 
     public void loadMedicineData() {
         try {
-            ObservableList<MedicineModel> observableList = FXCollections.observableArrayList(MedicineDAO.getAllMedicines());
-
-            // Cột ID (mã thuốc)
+            medicineList = FXCollections.observableArrayList(MedicineDAO.getAllMedicines());
             idCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getMaThuoc()));
-
-            // Cột tên thuốc
             nameCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTenThuoc()));
-
-            // Cột công dụng
             useCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCongDung()));
-
-            // Cột số lượng
             quantityCol.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getSoLuong())));
-
-            // Cột giá tiền
             costCol.setCellValueFactory(data -> new SimpleStringProperty(String.format("%,.0f", data.getValue().getGiaTien())));
-
-            // Sắp xếp + binding vào TableView
-            FilteredList<MedicineModel> filteredList = new FilteredList<>(observableList, p -> true);
+            FilteredList<MedicineModel> filteredList = new FilteredList<>(medicineList, p -> true);
             SortedList<MedicineModel> sortedList = new SortedList<>(filteredList);
             sortedList.comparatorProperty().bind(tvMedicine.comparatorProperty());
             tvMedicine.setItems(sortedList);
-
-            // Hiển thị tổng số thuốc
-            lblTotalMedicines.setText("Tổng số thuốc: " + observableList.size());
-
-            // Tìm kiếm realtime
+            lblTotalMedicines.setText("Tổng số thuốc: " + medicineList.size());
             tfSearch.textProperty().addListener((obs, oldVal, newVal) -> {
                 filteredList.setPredicate(med -> {
                     if (newVal == null || newVal.isEmpty()) return true;
@@ -148,12 +144,12 @@ public class MedicineController implements MedicineDataChangeListener {
             });
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Lỗi", "Không thể tải dữ liệu thuốc: " + e.getMessage());
+            showAlert("Lỗi", "Không thể tải dữ liệu thuốc: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private void showAlert(String title, String content, Alert.AlertType type) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
