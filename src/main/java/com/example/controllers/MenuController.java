@@ -40,7 +40,7 @@ public class MenuController {
 
         btnMedicalReport.setOnMouseClicked(e ->{
             setMenuActive(btnMedicalReport);
-            NavigationHelper.setContent(contentArea,"/views/ListMedicalReport.fxml");
+            NavigationHelper.setContent(contentArea,"/views/appointment_list.fxml");
         });
         btnMedicine.setOnMouseClicked(e ->{
             setMenuActive(btnMedicine);

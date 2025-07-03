@@ -25,13 +25,28 @@
 }
 
 /* datepicker */
+.combo-box,
 .date-picker {
     -fx-background-color: transparent;
     -fx-text-fill: black;
     -fx-border-color: lightgray;
     -fx-border-width: 1;
-    -fx-border-radius: 6;
+    -fx-border-radius: 4;
     -fx-font-size: 13;
+}
+
+.combo-box:focused,
+.date-picker:focused {
+    -fx-border-color: #0078d7;
+}
+
+.combo-box .text-field,
+.date-picker .text-field {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-text-fill: black;
+    -fx-font-size: 13;
+    -fx-alignment: CENTER;
 }
 
 /* tableview */
