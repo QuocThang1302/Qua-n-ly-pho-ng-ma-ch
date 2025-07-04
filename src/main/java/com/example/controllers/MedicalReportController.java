@@ -23,6 +23,7 @@ import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import java.awt.Desktop;
+import com.itextpdf.html2pdf.HtmlConverter;
 
 public class MedicalReportController implements MedicineDataChangeListener {
 
@@ -174,43 +175,53 @@ public class MedicalReportController implements MedicineDataChangeListener {
             try {
                 String fileName = "PhieuKham_" + tfMaPhieuKham.getText() + ".pdf";
                 File pdfFile = new File(System.getProperty("user.home"), fileName);
-                PdfWriter writer = new PdfWriter(pdfFile.getAbsolutePath());
-                PdfDocument pdf = new PdfDocument(writer);
-                Document document = new Document(pdf);
-                String fontPath = "src/main/resources/assets/Times New Roman.ttf";
-                PdfFont font = PdfFontFactory.createFont(fontPath, PdfEncodings.IDENTITY_H);
-                document.setFont(font);
 
-                document.add(new Paragraph("PHIẾU KHÁM BỆNH").setFont(font).setBold().setFontSize(16));
-                document.add(new Paragraph("Mã phiếu khám: " + tfMaPhieuKham.getText()).setFont(font));
-                document.add(new Paragraph("Mã bệnh nhân: " + tfMaBenhNhan.getText()).setFont(font));
-                document.add(new Paragraph("Họ tên: " + tfHoTen.getText()).setFont(font));
-                document.add(new Paragraph("Ngày sinh: " + tfNgaySinh.getText()).setFont(font));
-                document.add(new Paragraph("Giới tính: " + tfGioiTinh.getText()).setFont(font));
-                document.add(new Paragraph("Số điện thoại: " + tfSoDienThoai.getText()).setFont(font));
-                document.add(new Paragraph("Bác sĩ: " + tfTenBacSi.getText()).setFont(font));
-                document.add(new Paragraph("Lý do khám: " + tfLyDoKham.getText()).setFont(font));
-                document.add(new Paragraph("Ngày lập: " + tfNgayLap.getText()).setFont(font));
-                document.add(new Paragraph("Chẩn đoán: " + txtChanDoan.getText()).setFont(font));
-                document.add(new Paragraph(" ").setFont(font));
-                document.add(new Paragraph("--- DANH SÁCH THUỐC ---").setFont(font));
-
-                Table table = new Table(new float[]{4, 2, 3});
-                table.addHeaderCell(new Cell().add(new Paragraph("Tên thuốc").setFont(font)));
-                table.addHeaderCell(new Cell().add(new Paragraph("Số lượng").setFont(font)));
-                table.addHeaderCell(new Cell().add(new Paragraph("Đơn giá").setFont(font)));
+                // 1. Tạo HTML động
+                StringBuilder html = new StringBuilder();
+                html.append("<html><head>");
+                html.append("<style>");
+                html.append("body { font-family: 'Times New Roman', serif; }\n");
+                html.append("h1 { text-align: center; font-size: 22px; }\n");
+                html.append("table { width: 100%; border-collapse: collapse; margin-top: 10px; }\n");
+                html.append("th, td { border: 1px solid #333; padding: 6px; text-align: center; }\n");
+                html.append("th { background: #eee; }\n");
+                html.append(".right { text-align: right; }\n");
+                html.append("</style>");
+                html.append("</head><body>");
+                html.append("<h1>PHIẾU KHÁM BỆNH</h1>");
+                html.append("<p><b>Mã phiếu khám:</b> ").append(tfMaPhieuKham.getText()).append("</p>");
+                html.append("<p><b>Mã bệnh nhân:</b> ").append(tfMaBenhNhan.getText()).append("</p>");
+                html.append("<p><b>Họ tên:</b> ").append(tfHoTen.getText()).append("</p>");
+                html.append("<p><b>Ngày sinh:</b> ").append(tfNgaySinh.getText()).append("</p>");
+                html.append("<p><b>Giới tính:</b> ").append(tfGioiTinh.getText()).append("</p>");
+                html.append("<p><b>Số điện thoại:</b> ").append(tfSoDienThoai.getText()).append("</p>");
+                html.append("<p><b>Bác sĩ:</b> ").append(tfTenBacSi.getText()).append("</p>");
+                html.append("<p><b>Lý do khám:</b> ").append(tfLyDoKham.getText()).append("</p>");
+                html.append("<p><b>Ngày lập:</b> ").append(tfNgayLap.getText()).append("</p>");
+                html.append("<p><b>Chẩn đoán:</b> ").append(txtChanDoan.getText()).append("</p>");
+                html.append("<h3 style='text-align:center;'>--- DANH SÁCH THUỐC ---</h3>");
+                html.append("<table>");
+                html.append("<tr><th>Tên thuốc</th><th>Số lượng</th><th>Đơn giá</th></tr>");
                 for (MedicineModel thuoc : danhSachThuoc) {
-                    table.addCell(new Cell().add(new Paragraph(thuoc.getTenThuoc()).setFont(font)));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(thuoc.getSoLuong())).setFont(font)));
-                    table.addCell(new Cell().add(new Paragraph(String.format("%.0f", thuoc.getGiaTien())).setFont(font)));
+                    html.append("<tr>");
+                    html.append("<td>").append(thuoc.getTenThuoc()).append("</td>");
+                    html.append("<td>").append(thuoc.getSoLuong()).append("</td>");
+                    html.append("<td>").append(String.format("%.0f", thuoc.getGiaTien())).append("</td>");
+                    html.append("</tr>");
                 }
-                document.add(table);
-                document.add(new Paragraph(" ").setFont(font));
-                document.add(new Paragraph("Tiền thuốc: " + tfTienThuoc.getText()).setFont(font));
-                document.add(new Paragraph("Tiền khám: " + tfTienKham.getText()).setFont(font));
-                document.add(new Paragraph("Tổng tiền: " + tfTongTien.getText()).setFont(font));
+                html.append("</table>");
+                html.append("<p class='right'><b>Tiền thuốc:</b> ").append(tfTienThuoc.getText()).append("</p>");
+                html.append("<p class='right'><b>Tiền khám:</b> ").append(tfTienKham.getText()).append("</p>");
+                html.append("<p class='right'><b>Tổng tiền:</b> ").append(tfTongTien.getText()).append("</p>");
+                html.append("<br><div style='text-align:right;'>");
+                html.append("Người lập phiếu: ____________________<br>");
+                html.append("Ngày ....... tháng ....... năm .......");
+                html.append("</div>");
+                html.append("</body></html>");
 
-                document.close();
+                // 2. Chuyển HTML sang PDF
+                com.itextpdf.html2pdf.HtmlConverter.convertToPdf(html.toString(), new java.io.FileOutputStream(pdfFile));
+
                 showAlert("Xuất PDF thành công", "Đã xuất phiếu khám ra file: " + pdfFile.getAbsolutePath(), Alert.AlertType.INFORMATION);
             } catch (Exception ex) {
                 ex.printStackTrace();
