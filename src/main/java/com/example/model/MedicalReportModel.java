@@ -17,6 +17,10 @@ public class MedicalReportModel {
     private LocalDateTime ngayLap;
     private String chanDoan;
     private BillModel hoaDon;
+    private String ketQuaKham;
+    private String dieuTri;
+    private Double tienKham;
+    private LocalDate ngayKham;
 
     public MedicalReportModel() {
     }
@@ -140,5 +144,37 @@ public class MedicalReportModel {
 
     public void setMaKhamBenh(String maKhamBenh) {
         this.maKhamBenh = maKhamBenh;
+    }
+
+    public String getKetQuaKham() {
+        return ketQuaKham;
+    }
+
+    public void setKetQuaKham(String ketQuaKham) {
+        this.ketQuaKham = ketQuaKham;
+    }
+
+    public String getDieuTri() {
+        return dieuTri;
+    }
+
+    public void setDieuTri(String dieuTri) {
+        this.dieuTri = dieuTri;
+    }
+
+    public Double getTienKham() {
+        return tienKham;
+    }
+
+    public void setTienKham(Double tienKham) {
+        this.tienKham = tienKham;
+    }
+
+    public LocalDate getNgayKham() {
+        return ngayKham;
+    }
+
+    public void setNgayKham(LocalDate ngayKham) {
+        this.ngayKham = ngayKham;
     }
 }

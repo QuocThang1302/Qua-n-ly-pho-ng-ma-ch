@@ -14,6 +14,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import com.example.DAO.MedicalReportDAO;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -40,6 +45,8 @@ public class AppointmentListController {
     @FXML
     private TableColumn<MedicalReportModel, String> costCol;
 
+    private ObservableList<MedicalReportModel> allAppointments = FXCollections.observableArrayList();
+
     @FXML
     public void initialize() {
         // Thiết lập độ rộng cột
@@ -49,6 +56,18 @@ public class AppointmentListController {
         treatCol.prefWidthProperty().bind(tvAppointment.widthProperty().multiply(0.18));
         costCol.prefWidthProperty().bind(tvAppointment.widthProperty().multiply(0.14));
         diagnoseCol.prefWidthProperty().bind(tvAppointment.widthProperty().multiply(0.18));
+
+        // Gán cell value factory cho các cột
+        nameCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getHoTen()));
+        reasonCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLyDoKham()));
+        resultCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKetQuaKham()));
+        diagnoseCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getChanDoan()));
+        treatCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDieuTri()));
+        costCol.setCellValueFactory(cellData -> {
+            Double tien = cellData.getValue().getTienKham();
+            if (tien == null) tien = 0.0;
+            return new SimpleStringProperty(String.format("%,.0f", tien));
+        });
 
         // Thiết lập datepicker
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -67,6 +86,21 @@ public class AppointmentListController {
         LocalDateTime dateTime = LocalDateTime.now();
         dpDate.setValue(dateTime.toLocalDate());
 
+        // Load dữ liệu lần đầu
+        loadAppointmentsByDate(dpDate.getValue());
+
+        // Khi đổi ngày thì load lại dữ liệu
+        dpDate.valueProperty().addListener((obs, oldDate, newDate) -> {
+            if (newDate != null) {
+                loadAppointmentsByDate(newDate);
+            }
+        });
+
+        // Lắng nghe thay đổi ô tìm kiếm
+        tfSearch.textProperty().addListener((obs, oldText, newText) -> {
+            filterAppointmentsByName(newText);
+        });
+
         tvAppointment.setOnMouseClicked((event) -> {
             if (event.getClickCount() == 2) {
                 MedicalReportModel medicalReportModel = tvAppointment.getSelectionModel().getSelectedItem();
@@ -75,6 +109,23 @@ public class AppointmentListController {
                 }
             }
         });
+    }
+
+    private void loadAppointmentsByDate(LocalDate date) {
+        allAppointments.setAll(MedicalReportDAO.getMedicalReportsByDate(date));
+        filterAppointmentsByName(tfSearch.getText());
+    }
+
+    private void filterAppointmentsByName(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            tvAppointment.setItems(allAppointments);
+        } else {
+            String lowerKeyword = keyword.toLowerCase();
+            ObservableList<MedicalReportModel> filtered = allAppointments.filtered(
+                report -> report.getHoTen() != null && report.getHoTen().toLowerCase().contains(lowerKeyword)
+            );
+            tvAppointment.setItems(filtered);
+        }
     }
 
     private void showMedicalReportPopUp(MedicalReportModel medicalReportModel) {
