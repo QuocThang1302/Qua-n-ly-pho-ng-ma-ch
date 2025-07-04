@@ -28,10 +28,6 @@ public class LoginController {
     @FXML
     private Button btnDangNhap;
     @FXML
-    private Hyperlink linkQuenMatKhau;
-    @FXML
-    private Hyperlink linkDangKy;
-    @FXML
     private Label lbltest;
 
     @FXML
@@ -63,17 +59,7 @@ public class LoginController {
             }
         });
 
-        // Sự kiện cho linkQuenMatKhau
-        linkQuenMatKhau.setOnAction(e -> {
-            System.out.println("Mở chức năng quên mật khẩu...");
-        });
-
-        // Sự kiện cho linkDangKy
-        linkDangKy.setOnAction(e -> {
-            System.out.println("Mở chức năng đăng ký...");
-        });
-
-//         Sự kiện cho btnDangNhap
+        // Sự kiện cho btnDangNhap
         btnDangNhap.setOnAction(e -> {
             // Lấy giá trị từ TextField và PasswordField
             String taiKhoan = txtTaiKhoan.getText();
@@ -125,20 +111,6 @@ public class LoginController {
                 delay.play();
             }
         });
-//        btnDangNhap.setOnAction(e ->{
-//                    try {
-//                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/menu.fxml"));
-//                    Parent root = loader.load();
-//                    Stage stage = (Stage) btnDangNhap.getScene().getWindow();
-//                    stage.setScene(new Scene(root));
-//                    stage.setTitle("Màn hình chính");
-//                    stage.show();
-//                } catch (Exception ex) {
-//                    ex.printStackTrace();
-//                    lbltest.setText("Lỗi khi chuyển màn hình: " + ex.getMessage());
-//                    lbltest.setVisible(true);
-//                }
-//        });
     }
 
     // Phương thức kiểm tra tài khoản và mật khẩu từ cơ sở dữ liệu

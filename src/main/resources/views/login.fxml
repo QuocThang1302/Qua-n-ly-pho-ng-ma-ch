@@ -4,53 +4,64 @@
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="800.0" style="-fx-background-color: #F7FCF5;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.LoginController">
-    <left>
-        <AnchorPane prefHeight="550.0" prefWidth="451.0" BorderPane.alignment="CENTER">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="800.0" style="-fx-background-color: linear-gradient(to bottom right, #e0f7fa, #a5d6a7);" stylesheets="/CSS/style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.LoginController">
+    <children>
+        <!-- Họa tiết y tế nền mờ -->
+        <ImageView fitHeight="120.0" fitWidth="120.0" layoutX="-20.0" layoutY="-20.0" opacity="0.15" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, #43cea2, 8, 0.1, 0, 2);">
+            <image>
+                <Image url="@/assets/pill-icon.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="90.0" fitWidth="90.0" layoutX="700.0" layoutY="-10.0" opacity="0.13" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@/assets/nurse-icon.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="100.0" fitWidth="100.0" layoutX="-30.0" layoutY="450.0" opacity="0.13" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@/assets/medical-report-icon.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="720.0" layoutY="480.0" opacity="0.12" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@/assets/plus-sign.png" />
+            </image>
+        </ImageView>
+    </children>
+    <center>
+        <VBox alignment="CENTER" spacing="0" BorderPane.alignment="CENTER">
             <children>
-                <PasswordField fx:id="txtMatKhau" layoutX="65.0" layoutY="264.0" prefHeight="37.0" prefWidth="327.0" promptText="Nhập mật khẩu" />
-                <TextField fx:id="txtMatKhauVisible" layoutX="65.0" layoutY="264.0" prefHeight="37.0" prefWidth="327.0" promptText="Nhập mật khẩu" visible="false" />
-                <TextField fx:id="txtTaiKhoan" layoutX="65.0" layoutY="184.0" prefHeight="37.0" prefWidth="328.0" promptText="Nhập tài khoản" />
-                <Label layoutX="65.0" layoutY="236.0" text="Mật khẩu">
-                    <font>
-                        <Font size="19.0" />
-                    </font></Label>
-                <Label layoutX="65.0" layoutY="156.0" text="Tài khoản">
-                    <font>
-                        <Font size="19.0" />
-                    </font></Label>
-                <Label layoutX="148.0" layoutY="77.0" text="Đăng nhập">
-                    <font>
-                        <Font size="33.0" />
-                    </font>
-                </Label>
-                <Button fx:id="btnDangNhap" layoutX="173.0" layoutY="369.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="111.0" text="Đăng nhập">
-                    <font>
-                        <Font size="16.0" />
-                    </font>
-                </Button>
-                <Hyperlink fx:id="linkQuenMatKhau" layoutX="292.0" layoutY="325.0" text="Quên mật khẩu ? " />
-                <Hyperlink fx:id="linkDangKy" layoutX="284.0" layoutY="430.0" text="Đăng ký" />
-                <Label layoutX="134.0" layoutY="432.0" text="Bạn chưa có tài khoản ?">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Label>
-                <Label fx:id="lbltest" layoutX="75.0" layoutY="301.0" prefHeight="20.0" prefWidth="307.0" text="Tài khoản hoặc mật khẩu bị sai. Vui lòng thử lại" textFill="RED">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Label>
-            <CheckBox fx:id="chkShowPassword" layoutX="68.0" layoutY="329.0" mnemonicParsing="false" text="Hiển thị mật khẩu" />
+                <AnchorPane prefHeight="520.0" prefWidth="420.0" style="-fx-background-color: white; -fx-background-radius: 32; -fx-effect: dropshadow(gaussian, #90caf9, 40, 0.4, 0, 8); -fx-padding: 32 32 32 32;">
+                    <children>
+                        <VBox alignment="CENTER" layoutX="123.0" layoutY="27.0" prefHeight="520.0" prefWidth="420.0" spacing="10">
+                            <children>
+                                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@/assets/logo.png" />
+                                    </image>
+                                </ImageView>
+                                <Label style="-fx-text-fill: #2E7D32; -fx-font-weight: bold; -fx-font-size: 32px;" text="Đăng nhập" />
+                                <Label style="-fx-font-size: 15px; -fx-text-fill: #607d8b; -fx-padding: 0 0 10 0;" text="Chào mừng bạn đến với hệ thống quản lý phòng mạch" />
+                                <TextField fx:id="txtTaiKhoan" prefHeight="25.0" prefWidth="381.0" promptText="Nhập tài khoản" styleClass="rounded-textfield" />
+                                <StackPane>
+                                    <PasswordField fx:id="txtMatKhau" prefHeight="25.0" prefWidth="410.0" promptText="Nhập mật khẩu" styleClass="rounded-textfield" />
+                                    <TextField fx:id="txtMatKhauVisible" prefHeight="25.0" prefWidth="410.0" promptText="Nhập mật khẩu" styleClass="rounded-textfield" visible="false" />
+                                </StackPane>
+                                <CheckBox fx:id="chkShowPassword" style="-fx-font-size: 13px; -fx-text-fill: #388E3C; -fx-padding: 0 0 0 4;" text="Hiển thị mật khẩu" />
+                                <Label fx:id="lbltest" style="-fx-background-color: #FFEBEE; -fx-background-radius: 8; -fx-padding: 4 8; -fx-font-size: 14px;" text="Tài khoản hoặc mật khẩu bị sai. Vui lòng thử lại" textFill="RED" />
+                                <Button fx:id="btnDangNhap" prefHeight="43.0" prefWidth="98.0" styleClass="button login-btn" text="Đăng nhập" />
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
             </children>
-        </AnchorPane>
-    </left>
+        </VBox>
+    </center>
     <right>
         <AnchorPane prefHeight="512.0" prefWidth="353.0" BorderPane.alignment="CENTER">
             <children>
-                <ImageView fitHeight="339.0" fitWidth="347.0" layoutX="5.0" layoutY="74.0" opacity="0.82" pickOnBounds="true" preserveRatio="true">
+                <ImageView fitHeight="331.0" fitWidth="310.0" layoutX="109.0" layoutY="112.0" opacity="0.90" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, #90CAF9, 30, 0.3, 0, 6);">
                     <image>
                         <Image url="@/assets/hospital2.png" />
                     </image>
@@ -60,4 +71,30 @@
                 </ImageView>
             </children></AnchorPane>
     </right>
+    <left>
+        <AnchorPane prefHeight="550.0" prefWidth="120.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="60.0" fitWidth="60.0" layoutX="20.0" layoutY="30.0" opacity="0.16" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/assets/chart-icon.png" />
+                    </image>
+                </ImageView>
+                <ImageView fitHeight="48.0" fitWidth="48.0" layoutX="40.0" layoutY="120.0" opacity="0.13" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/assets/loupe.png" />
+                    </image>
+                </ImageView>
+                <ImageView fitHeight="54.0" fitWidth="54.0" layoutX="10.0" layoutY="220.0" opacity="0.14" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/assets/pill-icon.png" />
+                    </image>
+                </ImageView>
+                <ImageView fitHeight="44.0" fitWidth="44.0" layoutX="50.0" layoutY="340.0" opacity="0.13" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/assets/dashboard-icon.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+    </left>
 </BorderPane>

@@ -1,17 +1,22 @@
 /* textfield search*/
 .rounded-textfield {
-    -fx-background-color: rgba(255, 255, 255, 0.85); /* Nền trắng trong suốt nhẹ */
+    -fx-background-color: rgba(255, 255, 255, 0.95);
     -fx-background-radius: 20;
     -fx-border-radius: 20;
-    -fx-border-color: #cccccc;
-    -fx-border-width: 1;
-    -fx-padding: 6 12;
-    -fx-font-size: 14px;
+    -fx-border-color: #b2dfdb;
+    -fx-border-width: 1.5;
+    -fx-padding: 8 16;
+    -fx-font-size: 15px;
+    -fx-effect: dropshadow(gaussian, #b2dfdb, 4, 0.1, 0, 1);
+    -fx-text-fill: #222;
+    -fx-prompt-text-fill: #90a4ae;
+    -fx-min-width: 220px;
 }
 
 .rounded-textfield:focused {
-    -fx-border-color: #0078d7; /* Màu viền khi focus */
-    -fx-background-color: rgba(255, 255, 255, 1.0); /* nền sáng hơn khi focus */
+    -fx-border-color: #43cea2;
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(gaussian, #43cea2, 8, 0.2, 0, 2);
 }
 
 /* textfield insert*/
@@ -134,4 +139,52 @@
 .button:hover {
     -fx-background-color: #A5D6A7;
     -fx-border-color: #66BB6A;
+}
+
+/* Login button gradient, hover */
+.login-btn {
+    -fx-background-color: linear-gradient(to right, #43cea2, #185a9d);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-padding: 8 0 8 0;
+    -fx-effect: dropshadow(gaussian, #43cea2, 8, 0.2, 0, 2);
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-border-width: 0;
+    -fx-min-width: 120px;
+    -fx-min-height: 36px;
+    -fx-max-width: 200px;
+    -fx-max-height: 40px;
+}
+.login-btn:hover {
+    -fx-background-color: linear-gradient(to right, #66ffb2, #4fc3f7);
+    -fx-effect: dropshadow(gaussian, #43cea2, 16, 0.3, 0, 4);
+}
+
+/* Panel shadow mạnh hơn */
+.login-panel {
+    -fx-background-radius: 32;
+    -fx-effect: dropshadow(gaussian, #90caf9, 40, 0.4, 0, 8);
+    -fx-padding: 32 32 32 32;
+}
+
+/* Slogan */
+.slogan {
+    -fx-font-size: 15px;
+    -fx-text-fill: #607d8b;
+    -fx-padding: 0 0 10 0;
+    -fx-font-style: italic;
+}
+
+/* Logo nhỏ căn giữa */
+.login-logo {
+    -fx-padding: 0 0 8 0;
+}
+
+/* Center VBox */
+.login-center {
+    -fx-alignment: center;
+    -fx-spacing: 10;
 }
