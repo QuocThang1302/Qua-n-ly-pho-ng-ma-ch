@@ -24,6 +24,9 @@ import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import java.awt.Desktop;
 import com.itextpdf.html2pdf.HtmlConverter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.printing.PDFPageable;
+import java.awt.print.PrinterJob;
 
 public class MedicalReportController implements MedicineDataChangeListener {
 
@@ -157,17 +160,36 @@ public class MedicalReportController implements MedicineDataChangeListener {
                 String fileName = "PhieuKham_" + tfMaPhieuKham.getText() + ".pdf";
                 File pdfFile = new File(System.getProperty("user.home"), fileName);
                 if (pdfFile.exists()) {
-                    if (Desktop.isDesktopSupported()) {
-                        Desktop.getDesktop().open(pdfFile);
-                    } else {
-                        showAlert("Lỗi in phiếu", "Không hỗ trợ mở file PDF trên hệ điều hành này.", Alert.AlertType.ERROR);
+                    try {
+                        PDDocument document = PDDocument.load(pdfFile);
+                        PrinterJob job = PrinterJob.getPrinterJob();
+                        job.setPageable(new PDFPageable(document));
+                        if (job.printDialog()) {
+                            job.print();
+                        }
+                        document.close();
+                    } catch (Exception ex) {
+                        // Nếu in lỗi, fallback mở file PDF bằng Edge hoặc mặc định
+                        try {
+                            String edgePath = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
+                            if (!new File(edgePath).exists()) {
+                                edgePath = "C:/Program Files/Microsoft/Edge/Application/msedge.exe";
+                            }
+                            if (new File(edgePath).exists()) {
+                                new ProcessBuilder(edgePath, pdfFile.getAbsolutePath()).start();
+                            } else {
+                                Desktop.getDesktop().open(pdfFile);
+                            }
+                        } catch (Exception e2) {
+                            showAlert("Lỗi in phiếu", "Không thể in hoặc mở file PDF: " + e2.getMessage(), Alert.AlertType.ERROR);
+                        }
                     }
                 } else {
                     showAlert("Lỗi in phiếu", "Chưa có file PDF phiếu khám. Hãy xuất PDF trước!", Alert.AlertType.ERROR);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                showAlert("Lỗi in phiếu", "Không thể mở file PDF: " + ex.getMessage(), Alert.AlertType.ERROR);
+                showAlert("Lỗi in phiếu", "Không thể in file PDF: " + ex.getMessage(), Alert.AlertType.ERROR);
             }
         });
 
