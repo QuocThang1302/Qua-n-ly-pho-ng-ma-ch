@@ -40,6 +40,29 @@ public class ScheduleEntry extends Entry<String> {
         );
     }
 
+    public String getMaLichTruc() {
+        return model.getMaLichTruc();
+    }
+
+    public String getMaNhanVien() {
+        return model.getMaBacSi();
+    }
+
+    public String getTenNguoiTruc() {
+        return model.getTenNguoiTruc();
+    }
+
+    public Role getVaiTro() {
+        return model.getVaiTro();
+    }
+
+    public java.time.LocalDate getNgay() {
+        return model.getNgay();
+    }
+
+    public String getCaTruc() {
+        return model.getCaTruc();
+    }
 
     // Optional: bạn có thể đặt lại giờ trực ở đây nếu muốn tuỳ chỉnh thêm
     public static final java.util.Map<String, java.time.LocalTime[]> SHIFTS = java.util.Map.of(
