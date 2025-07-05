@@ -21,6 +21,7 @@ import javafx.scene.Node;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -77,6 +78,14 @@ public class DashboardController {
 
         // Thiết lập listeners
         setupListeners();
+
+        //Thử thôi
+        FilterDate from = new FilterDate("Ngày", 1, 6, 2025);
+        FilterDate to = new FilterDate("Ngày", 3, 7, 2025);
+        List<Integer> counts = HenKhamBenhDAO.getPatientCountsBetween(from, to);
+        for (int i = 0; i < counts.size(); i++) {
+            System.out.println(counts.get(i));
+        }
     }
 
     private void updateTodayRevenueLabel() {
@@ -133,6 +142,12 @@ public class DashboardController {
         filterTypeChoice.getItems().addAll("Năm", "Tháng", "Ngày");
         filterTypeChoice.setValue("Ngày");
 
+        // ✅ Cố định kích thước cho tất cả ChoiceBox
+        setFixedChoiceBoxSize(filterTypeChoice, 100);
+        setFixedChoiceBoxSize(monthChoice, 80);
+        setFixedChoiceBoxSize(yearChoice, 80);
+        setFixedChoiceBoxSize(dayChoice, 80);
+
         // Dữ liệu tháng và năm
         for (int i = 1; i <= 12; i++) {
             monthChoice.getItems().add(String.valueOf(i));
@@ -175,6 +190,15 @@ public class DashboardController {
             updateRevenueChartAsync();
             updateSummaryCardAsync();
         });
+    }
+
+    private void setFixedChoiceBoxSize(ChoiceBox<String> choiceBox, double width) {
+        choiceBox.setPrefWidth(width);
+        choiceBox.setMinWidth(width);
+        choiceBox.setMaxWidth(width);
+
+        // Bonus: Căn giữa text trong ChoiceBox
+        choiceBox.setStyle("-fx-alignment: center;");
     }
 
     private void updateValidDays() {

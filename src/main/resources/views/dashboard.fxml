@@ -34,14 +34,14 @@
                 <VBox alignment="CENTER" spacing="10">
                     <Label text="👥" style="-fx-font-size: 36;" />
                     <Label text="Tổng bệnh nhân" style="-fx-font-size: 16; -fx-font-weight: bold;" />
-                    <Label fx:id="patientCountLabel" text="235" style="-fx-font-size: 28; -fx-text-fill: #2E7D32;" />
+                    <Label fx:id="patientCountLabel" text="Đang tải..." style="-fx-font-size: 28; -fx-text-fill: #2E7D32;" />
                 </VBox>
             </StackPane>
 
             <Label text="Biểu đồ số lượng bệnh nhân" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
             <StackPane fx:id="patientChartContainer"
                        style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;"
-                       prefHeight="250"
+                       prefHeight="500"
                        VBox.vgrow="ALWAYS"/>
         </VBox>
 
@@ -51,14 +51,14 @@
                 <VBox alignment="CENTER" spacing="10">
                     <Label text="💰" style="-fx-font-size: 36;" />
                     <Label text="Doanh thu hôm nay" style="-fx-font-size: 16; -fx-font-weight: bold;" />
-                    <Label fx:id="revenueLabel" text="4.200.000₫" style="-fx-font-size: 28; -fx-text-fill: #EF6C00;" />
+                    <Label fx:id="revenueLabel" text="Đang tải..." style="-fx-font-size: 28; -fx-text-fill: #EF6C00;" />
                 </VBox>
             </StackPane>
 
             <Label text="Biểu đồ doanh thu" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
             <StackPane fx:id="revenueChartContainer"
                        style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;"
-                       prefHeight="250"
+                       prefHeight="500"
                        VBox.vgrow="ALWAYS"/>
         </VBox>
     </HBox>
