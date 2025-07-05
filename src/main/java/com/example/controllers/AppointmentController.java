@@ -7,13 +7,18 @@ import com.calendarfx.view.CalendarView;
 import com.example.model.AppointmentEntry;
 import com.example.model.AppointmentModel;
 import com.example.model.UserContext;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -60,21 +65,33 @@ public class AppointmentController {
         });
 
         calendarView.setEntryDetailsPopOverContentCallback(param -> {
-            if (!(param.getEntry() instanceof AppointmentEntry entry)) {
-                return new VBox(new Label("Không thể hiển thị lịch hẹn."));
-            }
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/appointment_detail.fxml"));
-                VBox detailBox = loader.load();
-                AppointmentDetailController controller = loader.getController();
-                controller.setEntry(entry);
-                return detailBox;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return new VBox(new Label("Không thể tải giao diện chi tiết."));
-            }
+            if (!(param.getEntry() instanceof AppointmentEntry entry)) return null;
+
+            // Mở detail stage
+            Platform.runLater(() -> openAppointmentDetailWindow(entry));
+
+            return null;
         });
+
     }
+    private void openAppointmentDetailWindow(AppointmentEntry entry) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/appointment_detail.fxml"));
+            Parent root = loader.load();
+
+            AppointmentDetailController controller = loader.getController();
+            controller.setEntry(entry);
+
+            Stage stage = new Stage();
+            stage.setTitle("Chi tiết lịch hẹn");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void registerEntryChangeListeners(AppointmentEntry entry) {
         entry.titleProperty().addListener((obs, oldVal, newVal) -> updateEntry(entry));

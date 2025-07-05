@@ -144,6 +144,8 @@ public class MedicalReportController implements MedicineDataChangeListener {
                 } else {
                     showAlert("Thất bại", "Lưu phiếu khám hoặc hóa đơn thất bại!", Alert.AlertType.ERROR);
                 }
+                Stage stage = (Stage) btnLuuPhieu.getScene().getWindow();
+                stage.close();
             } catch (NumberFormatException ex) {
                 showAlert("Lỗi", "Vui lòng nhập tiền khám hợp lệ!", Alert.AlertType.ERROR);
             } catch (IllegalArgumentException ex) {

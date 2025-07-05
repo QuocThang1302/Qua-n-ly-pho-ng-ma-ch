@@ -3,8 +3,14 @@ package com.example.controllers;
 import com.example.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -15,7 +21,7 @@ import java.util.List;
 
 public class AppointmentDetailController {
 
-    @FXML private TextField txtHoTen, txtSoDienThoai, txtGioBatDau, txtGioKetThuc;
+    @FXML private TextField txtMaBenhNhan,txtHoTen, txtSoDienThoai, txtGioBatDau, txtGioKetThuc;
     @FXML private DatePicker dateNgaySinh, dateNgayKham;
     @FXML private ChoiceBox<String> cbGioiTinh;
     @FXML private TextArea txtLyDo;
@@ -79,21 +85,23 @@ public class AppointmentDetailController {
 
             // Load giao diện phiếu khám
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medical_report.fxml"));
-            ScrollPane view = loader.load();
-            view.setVvalue(0); // top
-            view.setHvalue(400); // left
-            MedicalReportController controller = loader.getController();
+            Parent view = loader.load();
 
+            MedicalReportController controller = loader.getController();
             controller.setData(report, bill);
 
-            // dialog giới hạn vừa màn hình
-            Dialog<Void> dialog = new Dialog<>();
-            dialog.setTitle("Phiếu khám bệnh");
-            view.setPrefViewportHeight(600);
-            dialog.getDialogPane().setContent(view);
-            dialog.getDialogPane().setPrefWidth(850);
-            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-            dialog.showAndWait();
+// Tạo một cửa sổ mới (Stage)
+            Stage stage = new Stage();
+            stage.setTitle("Phiếu khám bệnh");
+            stage.setScene(new Scene(view, 800, 600)); // Set kích thước cửa sổ
+
+            stage.setResizable(false); // Không cho resize
+            stage.initModality(Modality.APPLICATION_MODAL); // Chặn các cửa sổ khác cho đến khi đóng
+
+// Hiển thị cửa sổ và chờ đóng
+            stage.showAndWait();
+
+
 
         } catch (IOException e) {
             showAlert("Không thể mở phiếu khám: " + e.getMessage());
@@ -129,7 +137,8 @@ public class AppointmentDetailController {
             model.setLyDoKham(lyDo);
             model.setNgayKham(ngayKham);
             model.setNgayKetThuc(ngayKham); // luôn đồng bộ
-
+            Stage stage = (Stage) btnLuu.getScene().getWindow();
+            stage.close();
             System.out.println("✅ Đã lưu: " + model.getMaKhamBenh());
 
         } catch (DateTimeParseException ex) {
@@ -138,6 +147,35 @@ public class AppointmentDetailController {
             showAlert("Lỗi khi lưu thông tin: " + ex.getMessage());
         }
     }
+    @FXML
+    private void handleChonBenhNhanCu() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/PatientSelectionDialog.fxml"));
+            Parent root = loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setScene(new Scene(root));
+            dialogStage.setTitle("Chọn bệnh nhân");
+
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+
+            PatientSelectionDialogController controller = loader.getController();
+
+            dialogStage.showAndWait();
+
+            PatientModel selected = controller.getSelectedBenhNhan();
+            if (selected != null) {
+                txtMaBenhNhan.setText(selected.getMaBenhNhan());
+                txtHoTen.setText(selected.getHoTen());
+                txtSoDienThoai.setText(selected.getSoDienThoai());
+                dateNgaySinh.setValue(selected.getNgaySinh());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

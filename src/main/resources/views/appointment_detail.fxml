@@ -4,14 +4,23 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="16" style="-fx-background-color: white; -fx-border-color: #43a047; -fx-border-width: 2; -fx-background-radius: 6;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.example.controllers.AppointmentDetailController">
+<VBox spacing="16" style="-fx-background-color: white; -fx-border-color: #43a047; -fx-border-width: 2; -fx-background-radius: 6;"
+      xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
+      stylesheets="@../CSS/patient_detail_style.css"
+      fx:controller="com.example.controllers.AppointmentDetailController">
     <padding><Insets bottom="20" left="24" right="24" top="20" /></padding>
 
     <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="📝 Thông tin lịch khám" />
 
+
     <GridPane hgap="12" vgap="10">
-        <Label text="Họ tên:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        <TextField fx:id="txtHoTen" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Label text="Bệnh nhân:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <HBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <TextField fx:id="txtMaBenhNhan" promptText="Mã BN" prefWidth="80" editable="false"/>
+            <TextField fx:id="txtHoTen" promptText="Họ tên" HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnChonBenhNhanCu" text="🔍" onAction="#handleChonBenhNhanCu"/>
+        </HBox>
+
 
         <Label text="Ngày sinh:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
         <DatePicker fx:id="dateNgaySinh" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -52,6 +61,7 @@
     </GridPane>
 
     <HBox alignment="CENTER_RIGHT" spacing="12">
+        <padding><Insets bottom="10" /></padding>
         <Button fx:id="btnPhieuKhamBenh" text="📝 Phiếu khám" />
         <Button fx:id="btnLuu" text="💾 Lưu thông tin" />
     </HBox>
