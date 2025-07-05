@@ -82,8 +82,9 @@ public class ScheduleController {
     private void handleAddShift() {
         LocalDate date = datePicker.getValue();
         String shift = shiftChoice.getValue();
-        String name = nameField.getText().trim();
-        String roleText = roleField.getText().trim();
+        String name = nameField.getValue();
+        String roleText = roleField.getValue();
+
         String doctorId = "NV002";
 
 
@@ -127,8 +128,9 @@ public class ScheduleController {
         entry.setCalendar(roleCalendar);
 
         showStatus("Thêm lịch trực thành công.", false);
-        nameField.clear();
-        roleField.clear();
+        nameField.setValue(null);
+        roleField.setValue(null);
+
         calendarView.refreshData();
     }
 
