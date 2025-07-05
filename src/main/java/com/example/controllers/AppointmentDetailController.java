@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import com.example.DAO.HenKhamBenhDAO;
+import com.example.DAO.PatientDAO;
 import com.example.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,7 +37,15 @@ public class AppointmentDetailController {
         this.model = entry.getModel();
 
         // ✅ Đổ dữ liệu từ model ra UI
-        txtMaBenhNhan.setText(model.getMaBenhNhan() != null ? model.getMaBenhNhan() : "");
+        String maBenhNhan = model.getMaBenhNhan() != null ? model.getMaBenhNhan() : "";
+        
+        // ✅ Nếu mã bệnh nhân rỗng, tạo mã mới
+        if (maBenhNhan.isEmpty()) {
+            maBenhNhan = PatientDAO.generateNewMaBenhNhan();
+            model.setMaBenhNhan(maBenhNhan);
+        }
+        
+        txtMaBenhNhan.setText(maBenhNhan);
         txtHoTen.setText(model.getHoTen() != null ? model.getHoTen() : "");
         txtSoDienThoai.setText(model.getSoDienThoai() != null ? model.getSoDienThoai() : "");
         dateNgaySinh.setValue(model.getNgaySinh());
@@ -113,48 +122,118 @@ public class AppointmentDetailController {
 
     private void handleLuu() {
         try {
-            // Lấy thông tin từ giao diện
-            String hoTen = txtHoTen.getText() != null ? txtHoTen.getText().trim() : "";
-            String sdt = txtSoDienThoai.getText() != null ? txtSoDienThoai.getText().trim() : "";
+            // ✅ Lấy dữ liệu từ form
+            String maBenhNhan = txtMaBenhNhan.getText().trim();
+            String hoTen = txtHoTen.getText().trim();
+            String lyDoKham = txtLyDo.getText().trim();
+            String sdt = txtSoDienThoai.getText().trim();
             LocalDate ngaySinh = dateNgaySinh.getValue();
             String gioiTinh = cbGioiTinh.getValue() != null ? cbGioiTinh.getValue() : "Nam";
-            String lyDo = txtLyDo.getText() != null ? txtLyDo.getText().trim() : "";
             LocalDate ngayKham = dateNgayKham.getValue();
-
-            LocalTime gioBatDau = LocalTime.parse(txtGioBatDau.getText());
-            LocalTime gioKetThuc = LocalTime.parse(txtGioKetThuc.getText());
-
-            // Cập nhật entry (giờ và ngày giống nhau)
-            entry.changeStartDate(ngayKham);
-            entry.changeStartTime(gioBatDau);
-            entry.changeEndDate(ngayKham); // cùng ngày
-            entry.changeEndTime(gioKetThuc);
-            entry.setTitle(hoTen + " - " + lyDo);
-
-            // Cập nhật model
-            model.setHoTen(hoTen);
-            model.setSoDienThoai(sdt);
-            model.setNgaySinh(ngaySinh);
-            model.setGioiTinh(gioiTinh);
-            model.setLyDoKham(lyDo);
-            model.setNgayKham(ngayKham);
-            model.setNgayKetThuc(ngayKham); // luôn đồng bộ
             
-            // ✅ Lưu vào database
-            boolean success = HenKhamBenhDAO.update(model);
-            if (success) {
-                System.out.println("✅ Đã lưu thành công: " + model.getMaKhamBenh());
-            } else {
-                System.err.println("❌ Lỗi khi lưu vào database");
+            // ✅ Kiểm tra dữ liệu bắt buộc
+            if (hoTen.isEmpty()) {
+                showAlert("Vui lòng nhập họ tên bệnh nhân!");
+                return;
             }
             
-            Stage stage = (Stage) btnLuu.getScene().getWindow();
-            stage.close();
-
-        } catch (DateTimeParseException ex) {
-            showAlert("Định dạng giờ không hợp lệ. Vui lòng nhập HH:mm");
-        } catch (Exception ex) {
-            showAlert("Lỗi khi lưu thông tin: " + ex.getMessage());
+            if (lyDoKham.isEmpty()) {
+                showAlert("Vui lòng nhập lý do khám!");
+                return;
+            }
+            
+            // ✅ Xử lý MaBenhNhan
+            if (maBenhNhan.isEmpty()) {
+                // Tạo mã bệnh nhân mới nếu chưa có
+                maBenhNhan = PatientDAO.generateNewMaBenhNhan();
+                txtMaBenhNhan.setText(maBenhNhan);
+                System.out.println("🆕 Đã tạo mã bệnh nhân mới: " + maBenhNhan);
+            }
+            
+            // ✅ Xử lý MaKhamBenh
+            String maKhamBenh = model.getMaKhamBenh();
+            if (maKhamBenh == null || maKhamBenh.isEmpty()) {
+                // Tạo mã khám bệnh mới nếu chưa có
+                maKhamBenh = HenKhamBenhDAO.generateNewMaKhamBenh();
+                model.setMaKhamBenh(maKhamBenh);
+                System.out.println("🆕 Đã tạo mã khám bệnh mới: " + maKhamBenh);
+            }
+            
+            // ✅ Tách họ và tên
+            String[] nameParts = hoTen.split(" ", 2);
+            String ho = nameParts.length > 0 ? nameParts[0] : "";
+            String ten = nameParts.length > 1 ? nameParts[1] : "";
+            
+            // ✅ Cập nhật model bệnh nhân
+            PatientModel patientModel = new PatientModel();
+            patientModel.setMaBenhNhan(maBenhNhan);
+            patientModel.setHoTen(hoTen);
+            patientModel.setNgaySinh(ngaySinh != null ? ngaySinh : LocalDate.now());
+            patientModel.setSoDienThoai(sdt);
+            patientModel.setGioiTinh(gioiTinh);
+            
+            // ✅ Cập nhật model lịch hẹn
+            model.setMaBenhNhan(maBenhNhan);
+            model.setHoTen(hoTen);
+            model.setLyDoKham(lyDoKham);
+            model.setNgayKham(ngayKham != null ? ngayKham : LocalDate.now());
+            model.setNgayKetThuc(ngayKham != null ? ngayKham : LocalDate.now());
+            model.setMaBacSi("NV002"); // Mặc định
+            model.setTinhTrang("Chưa khám");
+            
+            // ✅ Lưu vào database BenhNhan
+            boolean patientSuccess = false;
+            if (PatientDAO.exists(maBenhNhan)) {
+                patientSuccess = PatientDAO.update(patientModel);
+                System.out.println("🔄 Đã cập nhật bệnh nhân: " + maBenhNhan);
+            } else {
+                patientSuccess = PatientDAO.insert(patientModel);
+                System.out.println("🆕 Đã thêm bệnh nhân mới: " + maBenhNhan);
+            }
+            
+            if (patientSuccess) {
+                System.out.println("✅ Đã lưu thông tin bệnh nhân: " + maBenhNhan);
+            } else {
+                System.err.println("❌ Lỗi khi lưu thông tin bệnh nhân");
+            }
+            
+            // ✅ Lưu vào database HenKhamBenh
+            System.out.println("🔍 Debug - Model data before save:");
+            System.out.println("  - MaKhamBenh: " + model.getMaKhamBenh());
+            System.out.println("  - MaBenhNhan: " + model.getMaBenhNhan());
+            System.out.println("  - HoTen: " + model.getHoTen());
+            System.out.println("  - LyDoKham: " + model.getLyDoKham());
+            System.out.println("  - NgayKham: " + model.getNgayKham());
+            System.out.println("  - MaBacSi: " + model.getMaBacSi());
+            System.out.println("  - TinhTrang: " + model.getTinhTrang());
+            
+            // ✅ Debug chi tiết
+            HenKhamBenhDAO.debugAppointmentSave(model);
+            
+            boolean appointmentSuccess = HenKhamBenhDAO.updateOrInsert(model);
+            if (appointmentSuccess) {
+                System.out.println("✅ Đã cập nhật/thêm lịch hẹn: " + model.getMaKhamBenh());
+            } else {
+                System.err.println("❌ Lỗi khi cập nhật/thêm lịch hẹn");
+            }
+            
+            // ✅ Hiển thị thông báo thành công
+            if (patientSuccess && appointmentSuccess) {
+                showSuccessAlert("Đã lưu thông tin bệnh nhân và lịch hẹn thành công!\n" +
+                    "Mã bệnh nhân: " + maBenhNhan + "\n" +
+                    "Mã khám bệnh: " + maKhamBenh);
+                
+                // ✅ Đóng dialog
+                Stage stage = (Stage) btnLuu.getScene().getWindow();
+                stage.close();
+            } else {
+                showAlert("Có lỗi xảy ra khi lưu dữ liệu!");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi trong handleLuu: " + e.getMessage());
+            e.printStackTrace();
+            showAlert("Có lỗi xảy ra: " + e.getMessage());
         }
     }
     @FXML
@@ -208,10 +287,36 @@ public class AppointmentDetailController {
         }
     }
 
+    @FXML
+    private void handleTaoBenhNhanMoi() {
+        // ✅ Tạo mã bệnh nhân mới
+        String newMaBenhNhan = PatientDAO.generateNewMaBenhNhan();
+        txtMaBenhNhan.setText(newMaBenhNhan);
+        
+        // ✅ Xóa thông tin cũ để nhập thông tin mới
+        txtHoTen.clear();
+        txtSoDienThoai.clear();
+        dateNgaySinh.setValue(LocalDate.now());
+        cbGioiTinh.setValue("Nam");
+        
+        // ✅ Focus vào ô họ tên để nhập
+        txtHoTen.requestFocus();
+        
+        System.out.println("✅ Đã tạo mã bệnh nhân mới: " + newMaBenhNhan);
+        showSuccessAlert("Đã tạo mã bệnh nhân mới: " + newMaBenhNhan + "\nVui lòng nhập thông tin bệnh nhân.");
+    }
 
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Lỗi");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showSuccessAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Thành công");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

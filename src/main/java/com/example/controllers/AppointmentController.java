@@ -38,9 +38,6 @@ public class AppointmentController {
         // ✅ Test database connection trước
         HenKhamBenhDAO.testDatabaseConnection();
         
-        // ✅ Tạo dữ liệu test cho ngày hiện tại nếu cần
-        HenKhamBenhDAO.createTestData();
-        
         calendarView = new CalendarView();
         calendarView.setShowAddCalendarButton(false);
         calendarView.setShowPrintButton(false);
@@ -66,7 +63,7 @@ public class AppointmentController {
         calendarView.setEntryFactory(param -> {
             String title = "Khám Mới";
             AppointmentModel model = new AppointmentModel();
-            model.setMaKhamBenh(UUID.randomUUID().toString());
+            model.setMaKhamBenh(HenKhamBenhDAO.generateNewMaKhamBenh());
             model.setMaBenhNhan(""); // Sẽ được cập nhật khi chọn bệnh nhân
             model.setHoTen(""); // Sẽ được cập nhật khi chọn bệnh nhân
             model.setLyDoKham(title);
@@ -85,6 +82,9 @@ public class AppointmentController {
                 boolean success = HenKhamBenhDAO.insert(model);
                 if (success) {
                     System.out.println("✅ Đã tạo lịch hẹn mới: " + model.getMaKhamBenh());
+                    
+                    // ✅ Refresh calendar để hiển thị entry mới
+                    Platform.runLater(this::refreshCalendarData);
                 } else {
                     System.err.println("❌ Lỗi khi tạo lịch hẹn mới");
                 }
@@ -118,12 +118,31 @@ public class AppointmentController {
             stage.setTitle("Chi tiết lịch hẹn");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            
+            // ✅ Refresh calendar sau khi đóng dialog
+            stage.setOnHidden(e -> refreshCalendarData());
+            
             stage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    // ✅ Method để refresh calendar data
+    private void refreshCalendarData() {
+        System.out.println("🔄 Đang refresh calendar data...");
+        
+        // Lấy calendar hiện tại
+        Calendar calendar = calendarView.getCalendarSources().get(0).getCalendars().get(0);
+        
+        // Xóa tất cả entries cũ
+        calendar.clear();
+        
+        // Load lại dữ liệu từ database
+        loadAppointmentsFromDatabase(calendar);
+        
+        System.out.println("✅ Đã refresh calendar data");
+    }
 
     private void registerEntryChangeListeners(AppointmentEntry entry) {
         entry.titleProperty().addListener((obs, oldVal, newVal) -> updateEntry(entry));
@@ -143,6 +162,9 @@ public class AppointmentController {
             boolean success = HenKhamBenhDAO.update(model);
             if (success) {
                 System.out.println("✅ Đã cập nhật DB cho: " + model.getMaKhamBenh() + " - " + model.getLyDoKham());
+                
+                // ✅ Refresh calendar để hiển thị thay đổi
+                Platform.runLater(this::refreshCalendarData);
             } else {
                 System.err.println("❌ Lỗi khi cập nhật DB cho: " + model.getMaKhamBenh());
             }
@@ -167,9 +189,19 @@ public class AppointmentController {
                 System.out.println("📅 Tạo entry: " + title + " - Ngày: " + model.getNgayKham());
                 
                 AppointmentEntry entry = new AppointmentEntry(title, model);
+                
+                // ✅ Sử dụng thời gian từ database nếu có, hoặc mặc định 9:00-9:30
+                LocalTime startTime = LocalTime.of(9, 0); // Mặc định 9:00
+                LocalTime endTime = LocalTime.of(9, 30);   // Mặc định 9:30
+                
+                // TODO: Có thể thêm trường GioBatDau và GioKetThuc vào database để lưu thời gian
+                // Nếu có trường này, sẽ sử dụng thời gian từ database
+                // startTime = model.getGioBatDau() != null ? model.getGioBatDau() : LocalTime.of(9, 0);
+                // endTime = model.getGioKetThuc() != null ? model.getGioKetThuc() : LocalTime.of(9, 30);
+                
                 entry.setInterval(
-                        model.getNgayKham().atTime(LocalTime.of(9, 0)),
-                        model.getNgayKham().atTime(LocalTime.of(9, 30))
+                        model.getNgayKham().atTime(startTime),
+                        model.getNgayKham().atTime(endTime)
                 );
                 registerEntryChangeListeners(entry);
                 calendar.addEntry(entry);
@@ -225,9 +257,19 @@ public class AppointmentController {
             String lyDo = model.getLyDoKham() != null ? model.getLyDoKham() : "Chưa có lý do";
             String title = hoTen + " - " + lyDo;
             AppointmentEntry entry = new AppointmentEntry(title, model);
+            
+            // ✅ Sử dụng thời gian từ database nếu có, hoặc mặc định 9:00-9:30
+            LocalTime startTime = LocalTime.of(9, 0); // Mặc định 9:00
+            LocalTime endTime = LocalTime.of(9, 30);   // Mặc định 9:30
+            
+            // TODO: Có thể thêm trường GioBatDau và GioKetThuc vào database để lưu thời gian
+            // Nếu có trường này, sẽ sử dụng thời gian từ database
+            // startTime = model.getGioBatDau() != null ? model.getGioBatDau() : LocalTime.of(9, 0);
+            // endTime = model.getGioKetThuc() != null ? model.getGioKetThuc() : LocalTime.of(9, 30);
+            
             entry.setInterval(
-                    model.getNgayKham().atTime(LocalTime.of(9, 0)),
-                    model.getNgayKham().atTime(LocalTime.of(9, 30))
+                    model.getNgayKham().atTime(startTime),
+                    model.getNgayKham().atTime(endTime)
             );
             registerEntryChangeListeners(entry);
             calendar.addEntry(entry);

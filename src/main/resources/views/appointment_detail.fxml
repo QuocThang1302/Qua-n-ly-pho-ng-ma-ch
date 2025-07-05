@@ -16,9 +16,10 @@
     <GridPane hgap="12" vgap="10">
         <Label text="Bệnh nhân:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
         <HBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
-            <TextField fx:id="txtMaBenhNhan" promptText="Mã BN" prefWidth="80" editable="false"/>
+            <TextField fx:id="txtMaBenhNhan" promptText="Mã BN" prefWidth="80" editable="true"/>
             <TextField fx:id="txtHoTen" promptText="Họ tên" HBox.hgrow="ALWAYS"/>
             <Button fx:id="btnChonBenhNhanCu" text="🔍" onAction="#handleChonBenhNhanCu"/>
+            <Button fx:id="btnTaoBenhNhanMoi" text="➕" onAction="#handleTaoBenhNhanMoi"/>
         </HBox>
 
 

@@ -17,6 +17,10 @@ public class PatientModel {
         this.gioiTinh = gioiTinh;
     }
 
+    public PatientModel() {
+        // Constructor mặc định
+    }
+
     public String getMaBenhNhan() {
         return maBenhNhan;
     }

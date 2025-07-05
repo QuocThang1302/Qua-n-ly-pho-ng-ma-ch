@@ -83,23 +83,30 @@ public class HenKhamBenhDAO {
     public static boolean update(AppointmentModel model) {
         String sql = """
             UPDATE HenKhamBenh
-            SET LyDoKham = ?, NgayKham = ?, NgayKetThuc = ?, MaBacSi = ?, TinhTrang = ?
+            SET MaBenhNhan = ?, LyDoKham = ?, NgayKham = ?, NgayKetThuc = ?, MaBacSi = ?, TinhTrang = ?
             WHERE MaKhamBenh = ?
         """;
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, model.getLyDoKham() != null ? model.getLyDoKham() : "");
-            stmt.setDate(2, Date.valueOf(model.getNgayKham()));
-            stmt.setDate(3, Date.valueOf(model.getNgayKetThuc()));
-            stmt.setString(4, model.getMaBacSi() != null ? model.getMaBacSi() : "");
-            stmt.setString(5, model.getTinhTrang() != null ? model.getTinhTrang() : "Chưa khám");
-            stmt.setString(6, model.getMaKhamBenh());
+            stmt.setString(1, model.getMaBenhNhan() != null ? model.getMaBenhNhan() : "");
+            stmt.setString(2, model.getLyDoKham() != null ? model.getLyDoKham() : "");
+            stmt.setDate(3, Date.valueOf(model.getNgayKham()));
+            stmt.setDate(4, Date.valueOf(model.getNgayKetThuc()));
+            stmt.setString(5, model.getMaBacSi() != null ? model.getMaBacSi() : "");
+            stmt.setString(6, model.getTinhTrang() != null ? model.getTinhTrang() : "Chưa khám");
+            stmt.setString(7, model.getMaKhamBenh());
 
-            return stmt.executeUpdate() > 0;
+            int result = stmt.executeUpdate();
+            System.out.println("🔍 Update result: " + result + " rows affected for MaKhamBenh: " + model.getMaKhamBenh());
+            return result > 0;
 
         } catch (SQLException e) {
+            System.err.println("❌ SQL Error in update: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("❌ General Error in update: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -361,39 +368,95 @@ public class HenKhamBenhDAO {
         }
     }
 
-    // ✅ 10. Tạo dữ liệu test cho ngày hiện tại
-    public static void createTestData() {
-        System.out.println("🧪 Tạo dữ liệu test cho ngày hiện tại...");
+
+
+    // ✅ 10. Kiểm tra lịch hẹn có tồn tại không
+    public static boolean exists(String maKhamBenh) {
+        String sql = "SELECT COUNT(*) FROM HenKhamBenh WHERE MaKhamBenh = ?";
         
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, maKhamBenh);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ SQL Error in exists check: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ✅ 11. Cập nhật hoặc thêm mới lịch hẹn
+    public static boolean updateOrInsert(AppointmentModel model) {
+        if (exists(model.getMaKhamBenh())) {
+            System.out.println("🔄 Lịch hẹn đã tồn tại, thực hiện cập nhật: " + model.getMaKhamBenh());
+            return update(model);
+        } else {
+            System.out.println("🆕 Lịch hẹn chưa tồn tại, thực hiện thêm mới: " + model.getMaKhamBenh());
+            return insert(model);
+        }
+    }
+
+    // ✅ 12. Tạo mã khám bệnh mới
+    public static String generateNewMaKhamBenh() {
+        String sql = "SELECT MAX(CAST(SUBSTRING(MaKhamBenh, 4) AS UNSIGNED)) FROM HenKhamBenh WHERE MaKhamBenh LIKE 'HKB%'";
+        
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                int maxNumber = rs.getInt(1);
+                return String.format("HKB%03d", maxNumber + 1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ SQL Error in generateNewMaKhamBenh: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "HKB001"; // Mặc định nếu không có dữ liệu
+    }
+
+    // ✅ 13. Test method để debug vấn đề lưu lịch hẹn
+    public static void debugAppointmentSave(AppointmentModel model) {
+        System.out.println("🔍 Debug Appointment Save:");
+        System.out.println("  - MaKhamBenh: '" + model.getMaKhamBenh() + "'");
+        System.out.println("  - MaBenhNhan: '" + model.getMaBenhNhan() + "'");
+        System.out.println("  - LyDoKham: '" + model.getLyDoKham() + "'");
+        System.out.println("  - NgayKham: " + model.getNgayKham());
+        System.out.println("  - NgayKetThuc: " + model.getNgayKetThuc());
+        System.out.println("  - MaBacSi: '" + model.getMaBacSi() + "'");
+        System.out.println("  - TinhTrang: '" + model.getTinhTrang() + "'");
+        
+        // Kiểm tra lịch hẹn có tồn tại không
+        boolean exists = exists(model.getMaKhamBenh());
+        System.out.println("  - Exists in DB: " + exists);
+        
+        // Kiểm tra kết nối database
         try (Connection conn = DatabaseConnector.connect()) {
-            // Tạo lịch hẹn test cho ngày hiện tại
-            String insertSql = """
-                INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, NgayKetThuc, MaBacSi, TinhTrang)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """;
+            System.out.println("  - Database connection: OK");
             
-            LocalDate today = LocalDate.now();
-            String testMaKham = "TEST_" + System.currentTimeMillis();
-            
-            try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
-                stmt.setString(1, testMaKham);
-                stmt.setString(2, "BN001"); // Sử dụng bệnh nhân có sẵn
-                stmt.setString(3, "Khám test cho ngày hiện tại");
-                stmt.setDate(4, Date.valueOf(today));
-                stmt.setDate(5, Date.valueOf(today));
-                stmt.setString(6, "NV002");
-                stmt.setString(7, "Chưa khám");
-                
-                int result = stmt.executeUpdate();
-                if (result > 0) {
-                    System.out.println("✅ Đã tạo lịch hẹn test: " + testMaKham + " cho ngày " + today);
-                } else {
-                    System.err.println("❌ Không thể tạo lịch hẹn test");
+            // Kiểm tra cấu trúc bảng
+            String checkTableSql = "DESCRIBE HenKhamBenh";
+            try (PreparedStatement stmt = conn.prepareStatement(checkTableSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                System.out.println("  - Table structure:");
+                while (rs.next()) {
+                    String field = rs.getString("Field");
+                    String type = rs.getString("Type");
+                    String nullFlag = rs.getString("Null");
+                    String key = rs.getString("Key");
+                    System.out.println("    * " + field + " (" + type + ") " + nullFlag + " " + key);
                 }
             }
             
         } catch (SQLException e) {
-            System.err.println("❌ Lỗi khi tạo dữ liệu test: " + e.getMessage());
+            System.err.println("  - Database connection: FAILED - " + e.getMessage());
             e.printStackTrace();
         }
     }
