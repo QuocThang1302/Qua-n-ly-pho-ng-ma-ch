@@ -1,9 +1,9 @@
-
 package com.example.controllers;
 
 import com.calendarfx.model.Calendar;
 import com.calendarfx.model.CalendarSource;
 import com.calendarfx.view.CalendarView;
+import com.example.DAO.HenKhamBenhDAO;
 import com.example.model.AppointmentEntry;
 import com.example.model.AppointmentModel;
 import com.example.model.UserContext;
@@ -35,6 +35,12 @@ public class AppointmentController {
     private CalendarView calendarView;
     @FXML
     public void initialize() {
+        // ✅ Test database connection trước
+        HenKhamBenhDAO.testDatabaseConnection();
+        
+        // ✅ Tạo dữ liệu test cho ngày hiện tại nếu cần
+        HenKhamBenhDAO.createTestData();
+        
         calendarView = new CalendarView();
         calendarView.setShowAddCalendarButton(false);
         calendarView.setShowPrintButton(false);
@@ -42,25 +48,50 @@ public class AppointmentController {
 
         Calendar calendar = new Calendar("Lịch Khám");
         calendar.setStyle(Calendar.Style.STYLE1);
-        // TODO : load  ✅ Load dữ liệu từ DB hàm ở cuối class
+        
+        // ✅ Load dữ liệu thực từ database
         loadAppointmentsFromDatabase(calendar);
 
         CalendarSource source = new CalendarSource("Phòng khám");
         source.getCalendars().add(calendar);
         calendarView.getCalendarSources().add(source);
         calendarContainer.getChildren().add(calendarView);
+        
+        // ✅ Đảm bảo calendar hiển thị ngày hiện tại
+        calendarView.setToday(LocalDate.now());
+        calendarView.setDate(LocalDate.now());
+        
+        System.out.println("🔄 Calendar đã được khởi tạo với ngày: " + LocalDate.now());
 
         calendarView.setEntryFactory(param -> {
             String title = "Khám Mới";
             AppointmentModel model = new AppointmentModel();
             model.setMaKhamBenh(UUID.randomUUID().toString());
+            model.setMaBenhNhan(""); // Sẽ được cập nhật khi chọn bệnh nhân
+            model.setHoTen(""); // Sẽ được cập nhật khi chọn bệnh nhân
             model.setLyDoKham(title);
             model.setNgayKham(param.getZonedDateTime().toLocalDate());
+            model.setNgayKetThuc(param.getZonedDateTime().toLocalDate());
             model.setTinhTrang("Chưa khám");
-
+            model.setMaBacSi("NV002"); // Mặc định bác sĩ
+            
+            // ✅ Tạo entry với title hiển thị họ tên bệnh nhân
             AppointmentEntry entry = new AppointmentEntry(title, model);
             entry.setInterval(param.getZonedDateTime());
             registerEntryChangeListeners(entry);
+            
+            // ✅ Lưu vào database
+            try {
+                boolean success = HenKhamBenhDAO.insert(model);
+                if (success) {
+                    System.out.println("✅ Đã tạo lịch hẹn mới: " + model.getMaKhamBenh());
+                } else {
+                    System.err.println("❌ Lỗi khi tạo lịch hẹn mới");
+                }
+            } catch (Exception e) {
+                System.err.println("❌ Lỗi khi lưu lịch hẹn mới: " + e.getMessage());
+            }
+            
             return entry;
         });
 
@@ -74,6 +105,7 @@ public class AppointmentController {
         });
 
     }
+
     private void openAppointmentDetailWindow(AppointmentEntry entry) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/appointment_detail.fxml"));
@@ -102,23 +134,62 @@ public class AppointmentController {
         AppointmentModel model = entry.getModel();
         if (model == null) return;
 
-        model.setLyDoKham(entry.getTitle());
+        String title = entry.getTitle() != null ? entry.getTitle() : "Khám Mới";
+        model.setLyDoKham(title);
         model.setNgayKham(entry.getStartDate());
-        //TODO cap nhat db
-        System.out.println("Cập nhật DB cho: " + model.getMaKhamBenh() + " - " + model.getLyDoKham());
+        
+        // ✅ Lưu thay đổi vào database
+        try {
+            boolean success = HenKhamBenhDAO.update(model);
+            if (success) {
+                System.out.println("✅ Đã cập nhật DB cho: " + model.getMaKhamBenh() + " - " + model.getLyDoKham());
+            } else {
+                System.err.println("❌ Lỗi khi cập nhật DB cho: " + model.getMaKhamBenh());
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi khi cập nhật DB: " + e.getMessage());
+        }
     }
+    
     private void loadAppointmentsFromDatabase(Calendar calendar) {
-        // ⚠️ Giả định đã có DAO như sau:
-        // List<AppointmentModel> danhSach = AppointmentDAO.getAllForToday();
-        // hoặc AppointmentDAO.getAll()
+        try {
+            // ✅ Lấy dữ liệu thực từ database
+            List<AppointmentModel> danhSach = HenKhamBenhDAO.getAllAppointments();
+            
+            System.out.println("✅ Đã tải " + danhSach.size() + " lịch hẹn từ database");
 
-        // TODO: thay dòng sau bằng dữ liệu thực từ DAO
-        // List<AppointmentModel> danhSach = AppointmentDAO.getAll();
-
-        System.out.println("Đang tải lịch hẹn từ DB...");
-
-        // Giả lập danh sách (để test nếu chưa có DAO)
-        // Xoá đoạn này khi dùng DAO thật
+            // Duyệt từng model để tạo Entry và thêm vào calendar
+            for (AppointmentModel model : danhSach) {
+                String hoTen = model.getHoTen() != null ? model.getHoTen() : "Chưa có tên";
+                String lyDo = model.getLyDoKham() != null ? model.getLyDoKham() : "Chưa có lý do";
+                String title = hoTen + " - " + lyDo;
+                
+                System.out.println("📅 Tạo entry: " + title + " - Ngày: " + model.getNgayKham());
+                
+                AppointmentEntry entry = new AppointmentEntry(title, model);
+                entry.setInterval(
+                        model.getNgayKham().atTime(LocalTime.of(9, 0)),
+                        model.getNgayKham().atTime(LocalTime.of(9, 30))
+                );
+                registerEntryChangeListeners(entry);
+                calendar.addEntry(entry);
+                
+                System.out.println("✅ Đã thêm lịch hẹn: " + title + " - " + model.getNgayKham());
+            }
+            
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi khi tải dữ liệu từ database: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Fallback: sử dụng dữ liệu mẫu nếu có lỗi
+            loadSampleData(calendar);
+        }
+    }
+    
+    private void loadSampleData(Calendar calendar) {
+        System.out.println("⚠️ Sử dụng dữ liệu mẫu do lỗi kết nối database");
+        
+        // Dữ liệu mẫu (fallback)
         List<AppointmentModel> danhSach = List.of(
                 new AppointmentModel(
                         "KB001",
@@ -148,17 +219,18 @@ public class AppointmentController {
                 )
         );
 
-
-
         // Duyệt từng model để tạo Entry và thêm vào calendar
         for (AppointmentModel model : danhSach) {
-            AppointmentEntry entry = new AppointmentEntry(model.getHoTen(), model);
+            String hoTen = model.getHoTen() != null ? model.getHoTen() : "Chưa có tên";
+            String lyDo = model.getLyDoKham() != null ? model.getLyDoKham() : "Chưa có lý do";
+            String title = hoTen + " - " + lyDo;
+            AppointmentEntry entry = new AppointmentEntry(title, model);
             entry.setInterval(
                     model.getNgayKham().atTime(LocalTime.of(9, 0)),
                     model.getNgayKham().atTime(LocalTime.of(9, 30))
             );
+            registerEntryChangeListeners(entry);
             calendar.addEntry(entry);
         }
     }
-
 }

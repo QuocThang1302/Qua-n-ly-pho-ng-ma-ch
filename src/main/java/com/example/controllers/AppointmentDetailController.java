@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.DAO.HenKhamBenhDAO;
 import com.example.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -34,14 +35,15 @@ public class AppointmentDetailController {
         this.entry = entry;
         this.model = entry.getModel();
 
-        // Đổ dữ liệu từ model ra UI
-        txtHoTen.setText(model.getHoTen());
-        txtSoDienThoai.setText(model.getSoDienThoai());
+        // ✅ Đổ dữ liệu từ model ra UI
+        txtMaBenhNhan.setText(model.getMaBenhNhan() != null ? model.getMaBenhNhan() : "");
+        txtHoTen.setText(model.getHoTen() != null ? model.getHoTen() : "");
+        txtSoDienThoai.setText(model.getSoDienThoai() != null ? model.getSoDienThoai() : "");
         dateNgaySinh.setValue(model.getNgaySinh());
         cbGioiTinh.getItems().setAll("Nam", "Nữ");
-        cbGioiTinh.setValue(model.getGioiTinh());
+        cbGioiTinh.setValue(model.getGioiTinh() != null ? model.getGioiTinh() : "Nam");
 
-        txtLyDo.setText(model.getLyDoKham());
+        txtLyDo.setText(model.getLyDoKham() != null ? model.getLyDoKham() : "");
 
         // Gán ngày khám chung
         dateNgayKham.setValue(entry.getStartDate());
@@ -112,11 +114,11 @@ public class AppointmentDetailController {
     private void handleLuu() {
         try {
             // Lấy thông tin từ giao diện
-            String hoTen = txtHoTen.getText();
-            String sdt = txtSoDienThoai.getText();
+            String hoTen = txtHoTen.getText() != null ? txtHoTen.getText().trim() : "";
+            String sdt = txtSoDienThoai.getText() != null ? txtSoDienThoai.getText().trim() : "";
             LocalDate ngaySinh = dateNgaySinh.getValue();
-            String gioiTinh = cbGioiTinh.getValue();
-            String lyDo = txtLyDo.getText();
+            String gioiTinh = cbGioiTinh.getValue() != null ? cbGioiTinh.getValue() : "Nam";
+            String lyDo = txtLyDo.getText() != null ? txtLyDo.getText().trim() : "";
             LocalDate ngayKham = dateNgayKham.getValue();
 
             LocalTime gioBatDau = LocalTime.parse(txtGioBatDau.getText());
@@ -137,9 +139,17 @@ public class AppointmentDetailController {
             model.setLyDoKham(lyDo);
             model.setNgayKham(ngayKham);
             model.setNgayKetThuc(ngayKham); // luôn đồng bộ
+            
+            // ✅ Lưu vào database
+            boolean success = HenKhamBenhDAO.update(model);
+            if (success) {
+                System.out.println("✅ Đã lưu thành công: " + model.getMaKhamBenh());
+            } else {
+                System.err.println("❌ Lỗi khi lưu vào database");
+            }
+            
             Stage stage = (Stage) btnLuu.getScene().getWindow();
             stage.close();
-            System.out.println("✅ Đã lưu: " + model.getMaKhamBenh());
 
         } catch (DateTimeParseException ex) {
             showAlert("Định dạng giờ không hợp lệ. Vui lòng nhập HH:mm");
@@ -165,10 +175,32 @@ public class AppointmentDetailController {
 
             PatientModel selected = controller.getSelectedBenhNhan();
             if (selected != null) {
-                txtMaBenhNhan.setText(selected.getMaBenhNhan());
-                txtHoTen.setText(selected.getHoTen());
-                txtSoDienThoai.setText(selected.getSoDienThoai());
+                // ✅ Cập nhật UI
+                txtMaBenhNhan.setText(selected.getMaBenhNhan() != null ? selected.getMaBenhNhan() : "");
+                txtHoTen.setText(selected.getHoTen() != null ? selected.getHoTen() : "");
+                txtSoDienThoai.setText(selected.getSoDienThoai() != null ? selected.getSoDienThoai() : "");
                 dateNgaySinh.setValue(selected.getNgaySinh());
+                cbGioiTinh.setValue(selected.getGioiTinh() != null ? selected.getGioiTinh() : "Nam");
+                
+                // ✅ Cập nhật model
+                model.setMaBenhNhan(selected.getMaBenhNhan() != null ? selected.getMaBenhNhan() : "");
+                model.setHoTen(selected.getHoTen() != null ? selected.getHoTen() : "");
+                model.setSoDienThoai(selected.getSoDienThoai() != null ? selected.getSoDienThoai() : "");
+                model.setNgaySinh(selected.getNgaySinh());
+                model.setGioiTinh(selected.getGioiTinh() != null ? selected.getGioiTinh() : "Nam");
+                
+                // ✅ Cập nhật entry title
+                String hoTen = selected.getHoTen() != null ? selected.getHoTen() : "Chưa có tên";
+                String lyDo = model.getLyDoKham() != null ? model.getLyDoKham() : "Chưa có lý do";
+                entry.setTitle(hoTen + " - " + lyDo);
+                
+                // ✅ Lưu vào database
+                boolean success = HenKhamBenhDAO.update(model);
+                if (success) {
+                    System.out.println("✅ Đã cập nhật bệnh nhân: " + selected.getMaBenhNhan());
+                } else {
+                    System.err.println("❌ Lỗi khi cập nhật bệnh nhân");
+                }
             }
 
         } catch (IOException e) {

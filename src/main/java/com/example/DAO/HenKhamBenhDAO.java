@@ -18,7 +18,7 @@ public class HenKhamBenhDAO {
         String sql = """
             SELECT h.MaKhamBenh, h.MaBenhNhan, h.LyDoKham, h.NgayKham, h.NgayKetThuc,
                    h.MaBacSi, h.TinhTrang,
-                   b.HoTen, b.NgaySinh, b.SoDienThoai, b.GioiTinh
+                   CONCAT(b.Ho, ' ', b.Ten) as HoTen, b.NgaySinh, b.SDT as SoDienThoai, b.GioiTinh
             FROM HenKhamBenh h
             JOIN BenhNhan b ON h.MaBenhNhan = b.MaBenhNhan
             WHERE h.MaKhamBenh = ?
@@ -64,12 +64,12 @@ public class HenKhamBenhDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, model.getMaKhamBenh());
-            stmt.setString(2, model.getMaBenhNhan());
-            stmt.setString(3, model.getLyDoKham());
+            stmt.setString(2, model.getMaBenhNhan() != null ? model.getMaBenhNhan() : "");
+            stmt.setString(3, model.getLyDoKham() != null ? model.getLyDoKham() : "");
             stmt.setDate(4, Date.valueOf(model.getNgayKham()));
             stmt.setDate(5, Date.valueOf(model.getNgayKetThuc()));
-            stmt.setString(6, model.getMaBacSi());
-            stmt.setString(7, model.getTinhTrang());
+            stmt.setString(6, model.getMaBacSi() != null ? model.getMaBacSi() : "");
+            stmt.setString(7, model.getTinhTrang() != null ? model.getTinhTrang() : "Chưa khám");
 
             return stmt.executeUpdate() > 0;
 
@@ -90,11 +90,11 @@ public class HenKhamBenhDAO {
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, model.getLyDoKham());
+            stmt.setString(1, model.getLyDoKham() != null ? model.getLyDoKham() : "");
             stmt.setDate(2, Date.valueOf(model.getNgayKham()));
             stmt.setDate(3, Date.valueOf(model.getNgayKetThuc()));
-            stmt.setString(4, model.getMaBacSi());
-            stmt.setString(5, model.getTinhTrang());
+            stmt.setString(4, model.getMaBacSi() != null ? model.getMaBacSi() : "");
+            stmt.setString(5, model.getTinhTrang() != null ? model.getTinhTrang() : "Chưa khám");
             stmt.setString(6, model.getMaKhamBenh());
 
             return stmt.executeUpdate() > 0;
@@ -194,5 +194,207 @@ public class HenKhamBenhDAO {
         }
 
         return counts;
+    }
+
+    // ✅ 7. Lấy tất cả lịch hẹn với thông tin bệnh nhân
+    public static List<AppointmentModel> getAllAppointments() {
+        String sql = """
+            SELECT h.MaKhamBenh, h.MaBenhNhan, h.LyDoKham, h.NgayKham, h.NgayKetThuc,
+                   h.MaBacSi, h.TinhTrang,
+                   COALESCE(CONCAT(b.Ho, ' ', b.Ten), 'Chưa có tên') as HoTen, 
+                   b.NgaySinh, 
+                   COALESCE(b.SDT, '') as SoDienThoai, 
+                   COALESCE(b.GioiTinh, 'Nam') as GioiTinh
+            FROM HenKhamBenh h
+            LEFT JOIN BenhNhan b ON h.MaBenhNhan = b.MaBenhNhan
+            ORDER BY h.NgayKham, h.MaKhamBenh
+        """;
+
+        List<AppointmentModel> appointments = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                AppointmentModel model = new AppointmentModel();
+                model.setMaKhamBenh(rs.getString("MaKhamBenh"));
+                model.setMaBenhNhan(rs.getString("MaBenhNhan"));
+                model.setLyDoKham(rs.getString("LyDoKham"));
+                model.setNgayKham(rs.getDate("NgayKham").toLocalDate());
+                model.setNgayKetThuc(rs.getDate("NgayKetThuc").toLocalDate());
+                model.setMaBacSi(rs.getString("MaBacSi"));
+                model.setTinhTrang(rs.getString("TinhTrang"));
+
+                model.setHoTen(rs.getString("HoTen"));
+                
+                // Xử lý trường hợp NgaySinh có thể null
+                java.sql.Date ngaySinh = rs.getDate("NgaySinh");
+                if (ngaySinh != null) {
+                    model.setNgaySinh(ngaySinh.toLocalDate());
+                } else {
+                    model.setNgaySinh(LocalDate.now()); // Giá trị mặc định
+                }
+                
+                model.setSoDienThoai(rs.getString("SoDienThoai"));
+                model.setGioiTinh(rs.getString("GioiTinh"));
+                
+                appointments.add(model);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return appointments;
+    }
+
+    // ✅ 8. Lấy lịch hẹn theo khoảng thời gian
+    public static List<AppointmentModel> getAppointmentsByDateRange(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+            SELECT h.MaKhamBenh, h.MaBenhNhan, h.LyDoKham, h.NgayKham, h.NgayKetThuc,
+                   h.MaBacSi, h.TinhTrang,
+                   COALESCE(CONCAT(b.Ho, ' ', b.Ten), 'Chưa có tên') as HoTen, 
+                   b.NgaySinh, 
+                   COALESCE(b.SDT, '') as SoDienThoai, 
+                   COALESCE(b.GioiTinh, 'Nam') as GioiTinh
+            FROM HenKhamBenh h
+            LEFT JOIN BenhNhan b ON h.MaBenhNhan = b.MaBenhNhan
+            WHERE h.NgayKham BETWEEN ? AND ?
+            ORDER BY h.NgayKham, h.MaKhamBenh
+        """;
+
+        List<AppointmentModel> appointments = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDate(1, Date.valueOf(startDate));
+            stmt.setDate(2, Date.valueOf(endDate));
+            
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                AppointmentModel model = new AppointmentModel();
+                model.setMaKhamBenh(rs.getString("MaKhamBenh"));
+                model.setMaBenhNhan(rs.getString("MaBenhNhan"));
+                model.setLyDoKham(rs.getString("LyDoKham"));
+                model.setNgayKham(rs.getDate("NgayKham").toLocalDate());
+                model.setNgayKetThuc(rs.getDate("NgayKetThuc").toLocalDate());
+                model.setMaBacSi(rs.getString("MaBacSi"));
+                model.setTinhTrang(rs.getString("TinhTrang"));
+
+                model.setHoTen(rs.getString("HoTen"));
+                
+                // Xử lý trường hợp NgaySinh có thể null
+                java.sql.Date ngaySinh = rs.getDate("NgaySinh");
+                if (ngaySinh != null) {
+                    model.setNgaySinh(ngaySinh.toLocalDate());
+                } else {
+                    model.setNgaySinh(LocalDate.now()); // Giá trị mặc định
+                }
+                
+                model.setSoDienThoai(rs.getString("SoDienThoai"));
+                model.setGioiTinh(rs.getString("GioiTinh"));
+                
+                appointments.add(model);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return appointments;
+    }
+
+    // ✅ 9. Test method để kiểm tra database
+    public static void testDatabaseConnection() {
+        System.out.println("🔍 Kiểm tra kết nối database...");
+        
+        try (Connection conn = DatabaseConnector.connect()) {
+            System.out.println("✅ Kết nối database thành công");
+            
+            // Kiểm tra số lượng lịch hẹn
+            String countSql = "SELECT COUNT(*) as total FROM HenKhamBenh";
+            try (PreparedStatement stmt = conn.prepareStatement(countSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int total = rs.getInt("total");
+                    System.out.println("📊 Tổng số lịch hẹn trong database: " + total);
+                }
+            }
+            
+            // Kiểm tra số lượng bệnh nhân
+            String patientSql = "SELECT COUNT(*) as total FROM BenhNhan";
+            try (PreparedStatement stmt = conn.prepareStatement(patientSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int total = rs.getInt("total");
+                    System.out.println("👥 Tổng số bệnh nhân trong database: " + total);
+                }
+            }
+            
+            // Kiểm tra dữ liệu mẫu
+            String sampleSql = """
+                SELECT h.MaKhamBenh, h.MaBenhNhan, h.LyDoKham, h.NgayKham,
+                       CONCAT(b.Ho, ' ', b.Ten) as HoTen
+                FROM HenKhamBenh h
+                LEFT JOIN BenhNhan b ON h.MaBenhNhan = b.MaBenhNhan
+                LIMIT 5
+                """;
+            try (PreparedStatement stmt = conn.prepareStatement(sampleSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                System.out.println("📋 Dữ liệu mẫu từ database:");
+                while (rs.next()) {
+                    String maKham = rs.getString("MaKhamBenh");
+                    String maBenhNhan = rs.getString("MaBenhNhan");
+                    String lyDo = rs.getString("LyDoKham");
+                    String ngayKham = rs.getDate("NgayKham").toString();
+                    String hoTen = rs.getString("HoTen");
+                    System.out.println("  - " + maKham + " | " + maBenhNhan + " | " + hoTen + " | " + lyDo + " | " + ngayKham);
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi kết nối database: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ✅ 10. Tạo dữ liệu test cho ngày hiện tại
+    public static void createTestData() {
+        System.out.println("🧪 Tạo dữ liệu test cho ngày hiện tại...");
+        
+        try (Connection conn = DatabaseConnector.connect()) {
+            // Tạo lịch hẹn test cho ngày hiện tại
+            String insertSql = """
+                INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, NgayKetThuc, MaBacSi, TinhTrang)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """;
+            
+            LocalDate today = LocalDate.now();
+            String testMaKham = "TEST_" + System.currentTimeMillis();
+            
+            try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
+                stmt.setString(1, testMaKham);
+                stmt.setString(2, "BN001"); // Sử dụng bệnh nhân có sẵn
+                stmt.setString(3, "Khám test cho ngày hiện tại");
+                stmt.setDate(4, Date.valueOf(today));
+                stmt.setDate(5, Date.valueOf(today));
+                stmt.setString(6, "NV002");
+                stmt.setString(7, "Chưa khám");
+                
+                int result = stmt.executeUpdate();
+                if (result > 0) {
+                    System.out.println("✅ Đã tạo lịch hẹn test: " + testMaKham + " cho ngày " + today);
+                } else {
+                    System.err.println("❌ Không thể tạo lịch hẹn test");
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi khi tạo dữ liệu test: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
