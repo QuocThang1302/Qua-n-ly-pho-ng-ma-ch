@@ -22,7 +22,7 @@
 
     <HBox spacing="10">
         <Label text="Vai trò:"/>
-        <ComboBox fx:id="roleField" editable="true" promptText="Nhập vai trò"/>
+        <ComboBox fx:id="roleField" editable="false" promptText="Chọn vai trò"/>
         <Button text="Thêm lịch trực" onAction="#handleAddShift"/>
     </HBox>
 

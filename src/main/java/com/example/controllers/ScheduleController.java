@@ -68,6 +68,11 @@ public class ScheduleController {
         // Cài đặt lựa chọn ca trực
         shiftChoice.getItems().addAll(ScheduleEntry.SHIFTS.keySet());
         shiftChoice.getSelectionModel().selectFirst();
+        //Load Role
+        roleField.getItems().add(""); // Cho phép bỏ trống
+        for (Role role : Role.values()) {
+            roleField.getItems().add(role.toVietnamese());
+        }
 
         // Tải dữ liệu mẫu
         loadSampleEntries();
