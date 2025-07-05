@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import java.time.format.DateTimeFormatter;
 
-public class PatientController {
+public class PatientController implements PatientDataChangeListener {
     @FXML
     private TableView<PatientModel> tvPatient;
     @FXML
@@ -82,13 +82,13 @@ public class PatientController {
             // Tạo stage mới (window mới)
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Chi tiết bệnh nhân");
-            dialogStage.initModality(Modality.APPLICATION_MODAL); // chặn tương tác với window chính
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.setScene(new Scene(root));
 
-            // Truyền callback để refresh table khi có thay đổi
-            controller.setOnDataChanged(() -> {
-                refreshData(); // Gọi method refresh của PatientController
-            });
+            // SET DIALOG STAGE CHO CONTROLLER
+            controller.setDialogStage(dialogStage);
+            controller.setDataChangeListener(this);
+
             dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
@@ -115,6 +115,32 @@ public class PatientController {
         genderCol.setCellValueFactory(cellData ->
                 new javafx.beans.property.SimpleStringProperty(cellData.getValue().getGioiTinh()));
     }
+
+    @Override
+    public void onDataChanged(PatientModel updatedPatient, String action) {
+        ObservableList<TableColumn<PatientModel, ?>> sortOrder = FXCollections.observableArrayList(tvPatient.getSortOrder());
+        int selectedIndex = tvPatient.getSelectionModel().getSelectedIndex();
+        if ("INSERT".equals(action)) {
+            patientList.add(updatedPatient);
+        } else if ("UPDATE".equals(action)) {
+            for (int i = 0; i < patientList.size(); i++) {
+                if (patientList.get(i).getMaBenhNhan().equals(updatedPatient.getMaBenhNhan())) {
+                    patientList.set(i, updatedPatient);
+                    break;
+                }
+            }
+        } else if ("DELETE".equals(action)) {
+            patientList.removeIf(p -> p.getMaBenhNhan().equals(updatedPatient.getMaBenhNhan()));
+        }
+
+        updatePatientCount();
+        tvPatient.getSortOrder().setAll(sortOrder);
+        if (selectedIndex >= 0 && selectedIndex < tvPatient.getItems().size()) {
+            tvPatient.getSelectionModel().select(selectedIndex);
+            tvPatient.scrollTo(selectedIndex);
+        }
+    }
+
 
     private void loadPatientData() {
         try {

@@ -5,6 +5,11 @@ import com.example.utils.DatabaseConnector;
 import com.example.model.FilterDate;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HenKhamBenhDAO {
 
@@ -155,5 +160,39 @@ public class HenKhamBenhDAO {
         }
 
         return 0;
+    }
+
+    // ✅ 6. Đếm số lượng bệnh nhân khác nhau
+    public static List<Integer> getPatientCountsBetween(FilterDate from, FilterDate to) {
+        List<Integer> counts = new ArrayList<>();
+
+        LocalDate start = from.getLocalDate();
+        LocalDate end = to.getLocalDate();
+
+        if (start == null || end == null) {
+            throw new IllegalArgumentException("FilterDate phải ở chế độ 'Ngày'");
+        }
+
+        long daysBetween = ChronoUnit.DAYS.between(start, end);
+
+        if (daysBetween <= 31) {
+            // Đếm theo ngày
+            for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+                FilterDate filter = new FilterDate("Ngày", date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+                int count = countDistinctPatientsByDate(filter); // Không cần truyền connection
+                counts.add(count);
+            }
+        } else {
+            // Đếm theo tháng
+            YearMonth startMonth = YearMonth.from(start);
+            YearMonth endMonth = YearMonth.from(end);
+            for (YearMonth ym = startMonth; !ym.isAfter(endMonth); ym = ym.plusMonths(1)) {
+                FilterDate filter = new FilterDate("Tháng", 1, ym.getMonthValue(), ym.getYear());
+                int count = countDistinctPatientsByDate(filter);
+                counts.add(count);
+            }
+        }
+
+        return counts;
     }
 }

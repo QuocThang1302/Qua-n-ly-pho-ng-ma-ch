@@ -23,7 +23,6 @@ import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import java.awt.Desktop;
-import com.itextpdf.html2pdf.HtmlConverter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 import java.awt.print.PrinterJob;

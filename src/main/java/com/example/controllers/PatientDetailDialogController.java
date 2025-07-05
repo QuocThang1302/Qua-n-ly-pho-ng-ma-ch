@@ -54,11 +54,21 @@ public class PatientDetailDialogController {
     private TableColumn<MedicalReportModel, String> reasonCol;
     @FXML
     private TableColumn<MedicalReportModel, String> doctorCol;
+    private PatientDataChangeListener dataChangeListener;
     private PatientModel currentPatient;
     private Stage dialogStage;
     private Runnable onDataChanged;
     private ObservableList<MedicalReportModel> MedicalReportList;
     private SortedList<MedicalReportModel> MedicalReportData;
+
+    public void setDataChangeListener(PatientDataChangeListener listener) {
+        this.dataChangeListener = listener;
+    }
+
+    public void setDialogStage(Stage dialogStage) {
+        this.dialogStage = dialogStage;
+    }
+
     @FXML
     public void initialize() {
         // code của toggle button
@@ -225,9 +235,12 @@ public class PatientDetailDialogController {
                 // Hiển thị thông báo thành công
                 showAlert(Alert.AlertType.INFORMATION, "Thành công",
                         "Cập nhật thông tin bệnh nhân thành công!");
-                if (onDataChanged != null) {
-                    onDataChanged.run();
+
+                // THÔNG BÁO CHO PatientController ĐỂ REFRESH DỮ LIỆU
+                if (dataChangeListener != null) {
+                    dataChangeListener.onDataChanged(currentPatient, "UPDATE");
                 }
+
                 // Đóng dialog
                 if (dialogStage != null) {
                     dialogStage.close();

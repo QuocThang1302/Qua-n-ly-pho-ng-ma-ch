@@ -6,7 +6,10 @@ import com.example.model.FilterDate;
 import com.example.model.MedicineModel;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -221,6 +224,77 @@ public class BillDAO {
         return 0.0;
 
     }
+
+    //Lọc từ ngày đến ngày
+    public static double getTotalRevenue(Connection conn, FilterDate filterDate) {
+        String sql = "";
+        try {
+            PreparedStatement stmt = null;
+
+            switch (filterDate.getMode()) {
+                case "Năm" -> {
+                    sql = "SELECT SUM(GiaTien) AS TongTien FROM HoaDon WHERE EXTRACT(YEAR FROM NgayLapHoaDon) = ?";
+                    stmt = conn.prepareStatement(sql);
+                    stmt.setInt(1, filterDate.getYear().getValue());
+                }
+                case "Tháng" -> {
+                    sql = "SELECT SUM(GiaTien) AS TongTien FROM HoaDon WHERE EXTRACT(MONTH FROM NgayLapHoaDon) = ? AND EXTRACT(YEAR FROM NgayLapHoaDon) = ?";
+                    stmt = conn.prepareStatement(sql);
+                    stmt.setInt(1, filterDate.getYearMonth().getMonthValue());
+                    stmt.setInt(2, filterDate.getYearMonth().getYear());
+                }
+                case "Ngày" -> {
+                    sql = "SELECT SUM(GiaTien) AS TongTien FROM HoaDon WHERE DATE(NgayLapHoaDon) = ?";
+                    stmt = conn.prepareStatement(sql);
+                    stmt.setDate(1, Date.valueOf(filterDate.getLocalDate()));
+                }
+            }
+
+            if (stmt != null) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) return rs.getDouble("TongTien");
+                }
+                stmt.close(); // đóng sớm cho chắc
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi tính tổng doanh thu (conn): " + e.getMessage());
+        }
+        return 0.0;
+    }
+
+    public static List<Double> getTotalRevenueBetween(FilterDate from, FilterDate to) {
+        List<Double> revenueList = new ArrayList<>();
+
+        LocalDate start = from.getLocalDate();
+        LocalDate end = to.getLocalDate();
+
+        if (start == null || end == null) {
+            throw new IllegalArgumentException("FilterDate phải ở chế độ 'Ngày'");
+        }
+
+        try (Connection conn = DatabaseConnector.connect()) {
+            long daysBetween = ChronoUnit.DAYS.between(start, end);
+
+            if (daysBetween <= 31) {
+                for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+                    FilterDate filter = new FilterDate("Ngày", date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+                    revenueList.add(getTotalRevenue(conn, filter));
+                }
+            } else {
+                YearMonth startMonth = YearMonth.from(start);
+                YearMonth endMonth = YearMonth.from(end);
+                for (YearMonth ym = startMonth; !ym.isAfter(endMonth); ym = ym.plusMonths(1)) {
+                    FilterDate filter = new FilterDate("Tháng", 1, ym.getMonthValue(), ym.getYear());
+                    revenueList.add(getTotalRevenue(conn, filter));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi truy xuất danh sách doanh thu: " + e.getMessage());
+        }
+
+        return revenueList;
+    }
+
 
 
 }
