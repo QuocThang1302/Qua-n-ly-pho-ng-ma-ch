@@ -16,6 +16,7 @@ public class DutyShiftDAO {
         List<DutyShiftModel> list = new ArrayList<>();
         String sql = """
         SELECT 
+            lt.MaLichTruc,
             lt.MaBacSi,
             nv.Ho || ' ' || nv.Ten AS TenNguoiTruc,
             r.TenRole,
@@ -31,6 +32,7 @@ public class DutyShiftDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
+                String maLichTruc = rs.getString("MaLichTruc");
                 String maBacSi = rs.getString("MaBacSi");
                 String tenNguoiTruc = rs.getString("TenNguoiTruc");
                 String tenRole = rs.getString("TenRole");
@@ -38,7 +40,7 @@ public class DutyShiftDAO {
                 String caTruc = rs.getString("CaTruc");
 
                 Role role = Role.fromVietnamese(tenRole);
-                DutyShiftModel dutyShift = new DutyShiftModel(maBacSi, tenNguoiTruc, role, ngayTruc, caTruc);
+                DutyShiftModel dutyShift = new DutyShiftModel(maLichTruc, maBacSi, tenNguoiTruc, role, ngayTruc, caTruc);
                 list.add(dutyShift);
             }
 
@@ -48,6 +50,7 @@ public class DutyShiftDAO {
 
         return list;
     }
+
 
 
     // ✅ Thêm mới 1 lịch trực

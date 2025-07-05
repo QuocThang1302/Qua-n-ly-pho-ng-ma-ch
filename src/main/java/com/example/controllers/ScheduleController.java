@@ -7,12 +7,16 @@ import com.calendarfx.view.DayViewBase;
 import com.calendarfx.view.WeekView;
 import com.calendarfx.view.page.WeekPage;
 import com.example.DAO.DutyShiftDAO;
+import com.example.DAO.StaffDAO; // Thêm import cho StaffDAO
 import com.example.model.DutyShiftModel;
+import com.example.model.StaffModel; // Thêm import cho StaffModel
 import com.example.model.Role;
 import com.example.model.ScheduleEntry;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import java.util.UUID;
 import java.time.LocalDate;
@@ -21,18 +25,21 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.calendarfx.model.Entry;
 
 public class ScheduleController {
 
     @FXML private DatePicker datePicker;
     @FXML private ChoiceBox<String> shiftChoice;
-    @FXML private  ComboBox<String> codeField;
+    @FXML private ComboBox<String> codeField;
     @FXML private ComboBox<String> nameField;
     @FXML private ComboBox<String> roleField;
     @FXML private Label statusLabel;
     @FXML private StackPane calendarPane;
 
     private List<DutyShiftModel> allStaff;
+    private boolean isUserSelectingRole = false;
+    private List<StaffModel> allStaffList; // Danh sách tất cả nhân viên
     private CalendarView calendarView;
     private CalendarSource calendarSource;
     private final Map<Role, Calendar> roleCalendars = new HashMap<>();
@@ -41,6 +48,21 @@ public class ScheduleController {
     public void initialize() {
         // Tạo nguồn lịch chung
         calendarSource = new CalendarSource("Nguồn lịch");
+        nameField.setOnShowing(event -> {
+            // Lưu lại giá trị hiện tại khi mở dropdown
+            nameField.setUserData(nameField.getValue());
+        });
+
+        nameField.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            // Nếu người dùng tự chọn, rollback về giá trị cũ
+            if (nameField.isShowing()) {
+                nameField.setValue((String) nameField.getUserData());
+            }
+        });
+
+        codeField.setEditable(false);
+        nameField.setEditable(false);
+        roleField.setEditable(false);
 
         // Khởi tạo CalendarView
         calendarView = new CalendarView();
@@ -52,6 +74,40 @@ public class ScheduleController {
         calendarView.setEntryFactory(param -> null);
         calendarView.setEntryDetailsPopOverContentCallback(param -> null);
         calendarPane.getChildren().add(calendarView);
+
+        // Bắt sự kiện phím DELETE để xóa lịch trực
+        calendarView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DELETE) {
+                System.out.println("Delete key pressed - selections: " + calendarView.getSelections().size());
+
+                var selections = calendarView.getSelections();
+                if (!selections.isEmpty()) {
+                    Entry<?> selectedEntry = selections.iterator().next();
+
+                    if (selectedEntry instanceof ScheduleEntry) {
+                        ScheduleEntry entry = (ScheduleEntry) selectedEntry;
+
+                        boolean confirmed = confirmDelete(entry.getTitle());
+                        if (!confirmed) return;
+
+                        // Xóa trong CSDL
+                        boolean deleted = DutyShiftDAO.deleteDutyShift(entry.getMaLichTruc());
+                        if (deleted) {
+                            entry.getCalendar().removeEntry(entry);
+                            showStatus("Xóa lịch trực thành công.", false);
+                        } else {
+                            showStatus("Xóa lịch trực thất bại.", true);
+                        }
+
+                        // Consume event để prevent default behavior
+                        event.consume();
+                    }
+                } else {
+                    showStatus("Vui lòng chọn một lịch trực để xóa.", true);
+                }
+            }
+        });
+
 
         // Cấu hình WeekView
         WeekPage weekPage = calendarView.getWeekPage();
@@ -68,9 +124,21 @@ public class ScheduleController {
         // Cài đặt lựa chọn ca trực
         shiftChoice.getItems().addAll(ScheduleEntry.SHIFTS.keySet());
         shiftChoice.getSelectionModel().selectFirst();
+
+        // Load dữ liệu nhân viên
+        loadStaffData();
+
+        // Cài đặt listener cho codeField
+        setupCodeFieldListener();
+        setupRoleFieldListener();
+
         //Load Role
         roleField.getItems().add(""); // Cho phép bỏ trống
         for (Role role : Role.values()) {
+            if(role == Role.ADMIN)
+            {
+                continue;
+            }
             roleField.getItems().add(role.toVietnamese());
         }
 
@@ -78,17 +146,172 @@ public class ScheduleController {
         loadSampleEntries();
     }
 
+    private void loadStaffData() {
+        try {
+            allStaffList = StaffDAO.getAll(); // Gọi phương thức getAll() từ StaffDAO
+
+            // Xóa dữ liệu cũ
+            codeField.getItems().clear();
+            nameField.getItems().clear();
+
+            // Thêm mã nhân viên vào codeField
+            for (StaffModel staff : allStaffList) {
+                Role role = convertStringToRole(staff.getRole());
+                if (role == Role.ADMIN) continue;
+
+                codeField.getItems().add(staff.getId());
+                // Tên đầy đủ = họ + tên
+                String fullName = staff.getLastname() + " " + staff.getFirstname();
+                nameField.getItems().add(fullName);
+            }
+
+        } catch (Exception e) {
+            showStatus("Lỗi khi tải dữ liệu nhân viên: " + e.getMessage(), true);
+        }
+    }
+
+    private boolean confirmDelete(String title) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Xác nhận xóa");
+        alert.setHeaderText("Bạn có chắc muốn xóa lịch trực này?");
+        alert.setContentText(title);
+
+        ButtonType result = alert.showAndWait().orElse(ButtonType.CANCEL);
+        return result == ButtonType.OK;
+    }
+
+
+    private void setupCodeFieldListener() {
+        codeField.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.isEmpty()) {
+                // Tìm nhân viên theo mã
+                StaffModel selectedStaff = findStaffByCode(newValue);
+                if (selectedStaff != null) {
+                    // Cập nhật nameField - tên đầy đủ
+                    String fullName = selectedStaff.getLastname() + " " + selectedStaff.getFirstname();
+                    nameField.setValue(fullName);
+
+                    // Cập nhật roleField
+                    try {
+                        // Chuyển đổi role từ String sang Role enum
+                        Role role = convertStringToRole(selectedStaff.getRole());
+                        if (role != null) {
+                            roleField.setValue(role.toVietnamese());
+                        } else {
+                            roleField.setValue("");
+                        }
+                    } catch (Exception e) {
+                        // Nếu không có vai trò hoặc lỗi, để trống
+                        roleField.setValue("");
+                    }
+                }
+            }
+        });
+    }
+
+
+    private StaffModel findStaffByCode(String maNhanVien) {
+        if (allStaffList == null) return null;
+
+        return allStaffList.stream()
+                .filter(staff -> staff.getId().equals(maNhanVien))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Role convertStringToRole(String roleString) {
+        if (roleString == null || roleString.isEmpty()) return null;
+
+        try {
+            // Giả sử role trong database được lưu bằng tiếng Việt
+            return Role.fromVietnamese(roleString);
+        } catch (IllegalArgumentException e) {
+            // Nếu không match, thử convert từ English
+            try {
+                return Role.valueOf(roleString.toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                return null;
+            }
+        }
+    }
+
+    private void setupRoleFieldListener() {
+        roleField.setOnShowing(event -> isUserSelectingRole = true);
+
+        roleField.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (!isUserSelectingRole) return;
+
+            Platform.runLater(() -> {
+                // Reset flag trước, tránh lặp
+                isUserSelectingRole = false;
+
+                if (newValue != null && !newValue.equals(oldValue)) {
+                    // Đóng dropdown trước khi thay đổi
+                    roleField.hide();
+
+                    // Xóa dữ liệu cũ
+                    codeField.getItems().setAll();
+                    nameField.getItems().setAll();
+                    codeField.getSelectionModel().clearSelection();
+                    nameField.getSelectionModel().clearSelection();
+                    codeField.setValue(null);
+                    nameField.setValue(null);
+
+                    if (newValue.isEmpty()) {
+                        loadAllStaffToFields();
+                    } else {
+                        filterStaffByRole(newValue);
+                    }
+                }
+            });
+        });
+    }
+
+
+    private void loadAllStaffToFields() {
+        if (allStaffList == null) return;
+
+        for (StaffModel staff : allStaffList) {
+            Role role = convertStringToRole(staff.getRole());
+            if (role == Role.ADMIN) continue;
+            codeField.getItems().add(staff.getId());
+            String fullName = staff.getLastname() + " " + staff.getFirstname();
+            nameField.getItems().add(fullName);
+        }
+    }
+
+    private void filterStaffByRole(String selectedRoleVietnamese) {
+        if (allStaffList == null) return;
+
+        try {
+            // Chuyển đổi vai trò từ tiếng Việt sang enum
+            Role selectedRole = Role.fromVietnamese(selectedRoleVietnamese);
+
+            // Lọc nhân viên theo vai trò
+            for (StaffModel staff : allStaffList) {
+                Role staffRole = convertStringToRole(staff.getRole());
+
+                // Chỉ thêm nhân viên có vai trò trùng khớp
+                if (staffRole != null && staffRole.equals(selectedRole)) {
+                    codeField.getItems().add(staff.getId());
+                    String fullName = staff.getLastname() + " " + staff.getFirstname();
+                    nameField.getItems().add(fullName);
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            showStatus("Vai trò không hợp lệ: " + selectedRoleVietnamese, true);
+        }
+    }
+
     @FXML
     private void handleAddShift() {
         LocalDate date = datePicker.getValue();
         String shift = shiftChoice.getValue();
+        String code = codeField.getValue();
         String name = nameField.getValue();
         String roleText = roleField.getValue();
 
-        String doctorId = "NV002";
-
-
-        if (date == null || name.isEmpty() || roleText.isEmpty()) {
+        if (date == null || code == null || code.isEmpty() || name.isEmpty() || roleText.isEmpty()) {
             showStatus("Vui lòng nhập đầy đủ thông tin.", true);
             return;
         }
@@ -101,8 +324,9 @@ public class ScheduleController {
             return;
         }
 
-        DutyShiftModel duty = new DutyShiftModel(doctorId, name, role, date, shift);
+        // Sử dụng mã nhân viên đã chọn thay vì hardcode
         String maLichTruc = UUID.randomUUID().toString().substring(0, 20);
+        DutyShiftModel duty = new DutyShiftModel(maLichTruc, code, name, role, date, shift);
 
         String congViec = roleText;
         String trangThai = "Sẵn sàng";
@@ -121,13 +345,15 @@ public class ScheduleController {
             return c;
         });
 
-
         // Tạo entry và đồng bộ từ model
         ScheduleEntry entry = new ScheduleEntry(name, duty);
         entry.syncFromModel();
         entry.setCalendar(roleCalendar);
 
         showStatus("Thêm lịch trực thành công.", false);
+
+        // Reset form
+        codeField.setValue(null);
         nameField.setValue(null);
         roleField.setValue(null);
 
@@ -145,11 +371,6 @@ public class ScheduleController {
         for (DutyShiftModel duty : shiftList) {
             addSampleEntry(duty);
         }
-        LocalDate today = LocalDate.now();
-        addSampleEntry(new DutyShiftModel("BS001", "Nguyen Van A", Role.DOCTOR, today, "Sáng"));
-        addSampleEntry(new DutyShiftModel("BS002", "Tran Thi B", Role.DOCTOR, today, "Sáng"));
-        addSampleEntry(new DutyShiftModel("YT001", "Le Van C", Role.NURSE, today, "Chiều"));
-        addSampleEntry(new DutyShiftModel("YT002", "Pham Thi D", Role.NURSE, today.plusDays(1), "Tối"));
     }
 
     private void addSampleEntry(DutyShiftModel duty) {

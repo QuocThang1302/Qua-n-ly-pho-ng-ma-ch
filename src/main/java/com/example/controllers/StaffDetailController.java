@@ -24,6 +24,7 @@ public class StaffDetailController {
     private Button btnRegister, btnUpdate, btnDelete;
 
     private StaffDataChangeListener dataChangeListener;
+    private boolean isEditMode = false; // Track if we're in edit mode
 
     public void setDataChangeListener(StaffDataChangeListener listener) {
         this.dataChangeListener = listener;
@@ -51,6 +52,17 @@ public class StaffDetailController {
             }
         });
 
+        // Lock the tfId field so users cannot edit it
+        tfId.setEditable(false);
+        tfId.setStyle("-fx-background-color: #f0f0f0;");
+
+        // Add listener to ComboBox to auto-generate ID when role changes
+        cbRole.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !isEditMode) {
+                generateStaffId(newValue);
+            }
+        });
+
         btnRegister.setVisible(true);
         btnRegister.setManaged(true);
         btnUpdate.setVisible(false);
@@ -59,8 +71,55 @@ public class StaffDetailController {
         btnDelete.setManaged(false);
     }
 
+    private void generateStaffId(String role) {
+        try {
+            String prefix = getRolePrefix(role);
+            int nextNumber = getNextIdNumber(prefix);
+            String newId = prefix + String.format("%03d", nextNumber);
+
+            // Debug logging
+            System.out.println("Role: " + role);
+            System.out.println("Prefix: " + prefix);
+            System.out.println("Next Number: " + nextNumber);
+            System.out.println("Generated ID: " + newId);
+
+            tfId.setText(newId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Lỗi", "Không thể tạo mã nhân viên tự động: " + ex.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private String getRolePrefix(String role) {
+        switch (role) {
+            case "DOCTOR":
+                return "BS";
+            case "NURSE":
+                return "YT";
+            case "MANAGER":
+                return "QL";
+            case "ADMIN":
+                return "AD";
+            default:
+                return "NV"; // Default prefix
+        }
+    }
+
+    private int getNextIdNumber(String prefix) {
+        try {
+            // This method should call your DAO to get the maximum ID number for the given prefix
+            // You'll need to implement this method in your StaffDAO
+            return com.example.DAO.StaffDAO.getNextIdNumber(prefix);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return 1; // Default to 1 if there's an error
+        }
+    }
+
     public void setStaff(StaffModel staffModel) {
         if (staffModel != null) {
+            isEditMode = true; // Set edit mode flag
+
             btnRegister.setVisible(false);
             btnRegister.setManaged(false);
             btnUpdate.setVisible(true);
@@ -88,6 +147,10 @@ public class StaffDetailController {
                 btnFemale.setSelected(true);
                 btnMale.setSelected(false);
             }
+        } else {
+            isEditMode = false; // Reset edit mode flag for new staff
+            // Clear the ID field when creating new staff
+            tfId.setText("");
         }
     }
 
@@ -132,6 +195,10 @@ public class StaffDetailController {
                     String msg = cause.getMessage();
                     if (msg.contains("PRIMARY") || msg.contains("MaNhanVien")) {
                         showAlert("Thất bại", "Mã nhân viên đã tồn tại!", Alert.AlertType.ERROR);
+                        // Regenerate ID if there's a conflict
+                        if (cbRole.getValue() != null) {
+                            generateStaffId(cbRole.getValue());
+                        }
                     } else if (msg.contains("Email")) {
                         showAlert("Thất bại", "Email đã tồn tại!", Alert.AlertType.ERROR);
                     } else if (msg.contains("CCCD")) {
