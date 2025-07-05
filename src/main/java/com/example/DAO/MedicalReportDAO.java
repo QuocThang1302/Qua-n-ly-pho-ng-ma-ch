@@ -2,7 +2,7 @@ package com.example.DAO;
 
 
 import com.example.model.BillModel;
-import com.example.model.DatabaseConnector;
+import com.example.utils.DatabaseConnector;
 import com.example.model.MedicalReportModel;
 
 import java.sql.*;

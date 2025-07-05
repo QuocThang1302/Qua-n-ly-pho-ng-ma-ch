@@ -26,11 +26,13 @@ public class ScheduleController {
 
     @FXML private DatePicker datePicker;
     @FXML private ChoiceBox<String> shiftChoice;
-    @FXML private TextField nameField;
-    @FXML private TextField roleField;
+    @FXML private  ComboBox<String> codeField;
+    @FXML private ComboBox<String> nameField;
+    @FXML private ComboBox<String> roleField;
     @FXML private Label statusLabel;
     @FXML private StackPane calendarPane;
 
+    private List<DutyShiftModel> allStaff;
     private CalendarView calendarView;
     private CalendarSource calendarSource;
     private final Map<Role, Calendar> roleCalendars = new HashMap<>();

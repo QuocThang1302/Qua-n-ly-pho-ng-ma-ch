@@ -1,6 +1,6 @@
 package com.example.DAO;
 
-import com.example.model.DatabaseConnector;
+import com.example.utils.DatabaseConnector;
 import com.example.model.DutyShiftModel;
 import com.example.model.Role;
 
@@ -8,7 +8,6 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class DutyShiftDAO {
 

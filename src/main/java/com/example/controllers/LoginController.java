@@ -1,6 +1,6 @@
 package com.example.controllers;
 
-import com.example.model.DatabaseConnector;
+import com.example.utils.DatabaseConnector;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

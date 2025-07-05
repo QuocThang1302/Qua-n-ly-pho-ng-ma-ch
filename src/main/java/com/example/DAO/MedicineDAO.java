@@ -1,6 +1,6 @@
 package com.example.DAO;
 
-import com.example.model.DatabaseConnector;
+import com.example.utils.DatabaseConnector;
 import com.example.model.MedicineModel;
 
 import java.sql.*;

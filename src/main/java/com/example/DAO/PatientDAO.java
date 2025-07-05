@@ -1,11 +1,10 @@
 package com.example.DAO;
 
 import com.example.model.PatientModel;
-import com.example.model.DatabaseConnector;
+import com.example.utils.DatabaseConnector;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.*;
-import java.time.LocalDate;
 
 public class PatientDAO {
     // CREATE

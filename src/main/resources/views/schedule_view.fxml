@@ -5,6 +5,7 @@
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.controllers.ScheduleController" spacing="10">
+    <padding><Insets right="10" left="10" bottom="10" top="10" /></padding>
     <HBox spacing="10">
         <Label text="Ngày:"/>
         <DatePicker fx:id="datePicker"/>
@@ -13,10 +14,15 @@
     </HBox>
 
     <HBox spacing="10">
+        <Label text="Mã NV:"/>
+        <ComboBox fx:id="codeField" editable="true" promptText="Nhập mã nhân viên"/>
         <Label text="Tên:"/>
-        <TextField fx:id="nameField"/>
+        <ComboBox fx:id="nameField" editable="true" promptText="Nhập tên nhân viên"/>
+    </HBox>
+
+    <HBox spacing="10">
         <Label text="Vai trò:"/>
-        <TextField fx:id="roleField"/>
+        <ComboBox fx:id="roleField" editable="true" promptText="Nhập vai trò"/>
         <Button text="Thêm lịch trực" onAction="#handleAddShift"/>
     </HBox>
 

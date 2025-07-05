@@ -1,13 +1,10 @@
 package com.example.DAO;
 
 import com.example.model.AppointmentModel;
-import com.example.model.DatabaseConnector;
+import com.example.utils.DatabaseConnector;
 import com.example.model.FilterDate;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class HenKhamBenhDAO {
 

@@ -1,5 +1,5 @@
 package com.example;
-import com.example.model.DatabaseConnector;
+import com.example.utils.DatabaseConnector;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

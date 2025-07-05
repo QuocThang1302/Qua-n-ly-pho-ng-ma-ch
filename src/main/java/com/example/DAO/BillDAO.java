@@ -1,12 +1,11 @@
 package com.example.DAO;
 
 import com.example.model.BillModel;
-import com.example.model.DatabaseConnector;
+import com.example.utils.DatabaseConnector;
 import com.example.model.FilterDate;
 import com.example.model.MedicineModel;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
