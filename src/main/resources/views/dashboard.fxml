@@ -17,11 +17,10 @@
 
     <!-- Bộ lọc -->
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <ChoiceBox fx:id="filterTypeChoice" />
-        <ChoiceBox fx:id="dayChoice" />
-        <ChoiceBox fx:id="monthChoice" />
-        <ChoiceBox fx:id="yearChoice" />
-        <Label fx:id="resultLabel" />
+        <DatePicker fx:id="dpFrom" styleClass="date-picker" editable="false"
+                    GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <DatePicker fx:id="dpTo" styleClass="date-picker" editable="false"
+                    GridPane.rowIndex="1" GridPane.columnIndex="1"/>
         <Button text="Lọc" onAction="#handleFilter" />
     </HBox>
 
@@ -50,7 +49,7 @@
             <StackPane style="-fx-background-color: #FFF3E0; -fx-background-radius: 10;" prefHeight="150">
                 <VBox alignment="CENTER" spacing="10">
                     <Label text="💰" style="-fx-font-size: 36;" />
-                    <Label text="Doanh thu hôm nay" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                    <Label text="Doanh thu" style="-fx-font-size: 16; -fx-font-weight: bold;" />
                     <Label fx:id="revenueLabel" text="4.200.000₫" style="-fx-font-size: 28; -fx-text-fill: #EF6C00;" />
                 </VBox>
             </StackPane>

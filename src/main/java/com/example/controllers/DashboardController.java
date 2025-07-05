@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.chart.BarChart;
@@ -18,8 +19,10 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.paint.Color;
 import javafx.scene.Node;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -27,15 +30,9 @@ import java.util.concurrent.Executors;
 
 public class DashboardController {
     @FXML
-    private ChoiceBox<String> filterTypeChoice;
+    private DatePicker dateFrom;
     @FXML
-    private ChoiceBox<String> dayChoice;
-    @FXML
-    private ChoiceBox<String> monthChoice;
-    @FXML
-    private ChoiceBox<String> yearChoice;
-    @FXML
-    private Label resultLabel;
+    private DatePicker dateTo;
     @FXML
     private Label patientCountLabel;
     @FXML
@@ -61,8 +58,8 @@ public class DashboardController {
 
     @FXML
     private void initialize() {
-        // Khởi tạo các ChoiceBox
-        initializeChoiceBoxes();
+        // Khởi tạo các dp
+        initializeDatePicker();
 
         // Thiết lập biểu đồ
         setupBarChart();
@@ -128,21 +125,15 @@ public class DashboardController {
     }
 
 
-    private void initializeChoiceBoxes() {
-        // Loại lọc
-        filterTypeChoice.getItems().addAll("Năm", "Tháng", "Ngày");
-        filterTypeChoice.setValue("Ngày");
+    private void initializeDatePicker() {
+        LocalDate today = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(today);
 
-        // Dữ liệu tháng và năm
-        for (int i = 1; i <= 12; i++) {
-            monthChoice.getItems().add(String.valueOf(i));
-        }
-        yearChoice.getItems().addAll("2023", "2024", "2025");
+        LocalDate firstDayOfMonth = currentMonth.atDay(1);
+        LocalDate lastDayOfMonth = currentMonth.atEndOfMonth();
 
-        // Thiết lập mặc định
-        monthChoice.setValue("1");
-        yearChoice.setValue("2024");
-
+        dateFrom.setValue(firstDayOfMonth);
+        dateTo.setValue(lastDayOfMonth);
         // Cập nhật ngày theo tháng/năm
         updateValidDays();
     }
