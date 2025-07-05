@@ -1,64 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.controllers.DashboardController"
-      spacing="20"
-      fillWidth="true"
-      VBox.vgrow="ALWAYS">
+<VBox fillWidth="true" spacing="20" stylesheets="@../CSS/patient_detail_style.css" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.DashboardController">
 
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
     <!-- Bộ lọc -->
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <DatePicker fx:id="dpFrom" styleClass="date-picker" editable="false"
-                    GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-        <DatePicker fx:id="dpTo" styleClass="date-picker" editable="false"
-                    GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-        <Button text="Lọc" onAction="#handleFilter" />
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <DatePicker fx:id="dpFrom" editable="false" />
+        <DatePicker fx:id="dpTo" editable="false" />
+        <Button onAction="#handleFilter" text="Lọc" />
+    </HBox>
+
+    <!-- Cấu hình hệ thống -->
+    <HBox alignment="BOTTOM_LEFT" spacing="10">
+        <VBox spacing="5">
+            <Label text="Bệnh nhân tối đa/ngày" />
+            <TextField fx:id="txtMaxPatients" prefWidth="120" promptText="VD: 50" />
+        </VBox>
+
+        <VBox spacing="5">
+            <Label text="Giá tiền khám" />
+            <TextField fx:id="txtExamFee" prefWidth="120" promptText="VD: 120000" />
+        </VBox>
+        <Button onAction="#handleUpdateConfig" prefWidth="80.0" text="Cập nhật">
+
+        </Button>
+        <padding><Insets /></padding>
     </HBox>
 
     <!-- Hai cột: Bệnh nhân & Doanh thu -->
-    <HBox spacing="20" >
+    <HBox spacing="20">
 
         <!-- Cột 1: Bệnh nhân -->
-        <VBox spacing="10" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-            <StackPane style="-fx-background-color: #F1F8E9; -fx-background-radius: 10;" prefHeight="150">
-                <VBox alignment="CENTER" spacing="10">
-                    <Label text="👥" style="-fx-font-size: 36;" />
-                    <Label text="Tổng bệnh nhân" style="-fx-font-size: 16; -fx-font-weight: bold;" />
-                    <Label fx:id="patientCountLabel" text="235" style="-fx-font-size: 28; -fx-text-fill: #2E7D32;" />
+        <VBox spacing="10" HBox.hgrow="ALWAYS">
+            <StackPane prefHeight="100" style="-fx-background-color: #F1F8E9; -fx-background-radius: 10;">
+                <VBox alignment="CENTER" spacing="5">
+                    <Label style="-fx-font-size: 28;" text="👥" />
+                    <Label style="-fx-font-size: 14; -fx-font-weight: bold;" text="Tổng bệnh nhân" />
+                    <Label fx:id="patientCountLabel" style="-fx-font-size: 22; -fx-text-fill: #2E7D32;" text="235" />
                 </VBox>
             </StackPane>
 
-            <Label text="Biểu đồ số lượng bệnh nhân" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-            <StackPane fx:id="patientChartContainer"
-                       style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;"
-                       prefHeight="250"
-                       VBox.vgrow="ALWAYS"/>
+            <Label style="-fx-font-weight: bold; -fx-font-size: 13px;" text="Biểu đồ số lượng bệnh nhân" />
+            <StackPane fx:id="patientChartContainer" prefHeight="200" style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;" VBox.vgrow="ALWAYS" />
         </VBox>
 
         <!-- Cột 2: Doanh thu -->
-        <VBox spacing="10" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-            <StackPane style="-fx-background-color: #FFF3E0; -fx-background-radius: 10;" prefHeight="150">
-                <VBox alignment="CENTER" spacing="10">
-                    <Label text="💰" style="-fx-font-size: 36;" />
-                    <Label text="Doanh thu" style="-fx-font-size: 16; -fx-font-weight: bold;" />
-                    <Label fx:id="revenueLabel" text="4.200.000₫" style="-fx-font-size: 28; -fx-text-fill: #EF6C00;" />
+        <VBox spacing="10" HBox.hgrow="ALWAYS">
+            <StackPane prefHeight="100" style="-fx-background-color: #FFF3E0; -fx-background-radius: 10;">
+                <VBox alignment="CENTER" spacing="5">
+                    <Label style="-fx-font-size: 28;" text="💰" />
+                    <Label style="-fx-font-size: 14; -fx-font-weight: bold;" text="Doanh thu" />
+                    <Label fx:id="revenueLabel" style="-fx-font-size: 22; -fx-text-fill: #EF6C00;" text="4.200.000₫" />
                 </VBox>
             </StackPane>
 
-            <Label text="Biểu đồ doanh thu" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-            <StackPane fx:id="revenueChartContainer"
-                       style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;"
-                       prefHeight="250"
-                       VBox.vgrow="ALWAYS"/>
+            <Label style="-fx-font-weight: bold; -fx-font-size: 13px;" text="Biểu đồ doanh thu" />
+            <StackPane fx:id="revenueChartContainer" prefHeight="200" style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;" VBox.vgrow="ALWAYS" />
         </VBox>
     </HBox>
 </VBox>

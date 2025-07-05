@@ -1,32 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.controllers.ScheduleController" spacing="10">
-    <padding><Insets right="10" left="10" bottom="10" top="10" /></padding>
-    <HBox spacing="10">
-        <Label text="Ngày:"/>
-        <DatePicker fx:id="datePicker"/>
-        <Label text="Ca:"/>
-        <ChoiceBox fx:id="shiftChoice"/>
+<VBox spacing="15" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
+      stylesheets="@../CSS/patient_detail_style.css"
+      fx:controller="com.example.controllers.ScheduleController">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10" />
+    </padding>
+
+    <!-- Ngày và Ca trực -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Ngày:" >
+            <padding>
+                <Insets left="40"/>
+            </padding>
+        </Label>
+        <DatePicker fx:id="datePicker" prefHeight="26.0" prefWidth="220.0" />
+        <Label text="Ca:" >
+            <padding>
+                <Insets left="20"/>
+            </padding>
+        </Label>
+        <ChoiceBox fx:id="shiftChoice" />
     </HBox>
 
-    <HBox spacing="10">
-        <Label text="Mã NV:"/>
-        <ComboBox fx:id="codeField" editable="true" promptText="Nhập mã nhân viên"/>
-        <Label text="Tên:"/>
-        <ComboBox fx:id="nameField" editable="true" promptText="Nhập tên nhân viên"/>
-    </HBox>
+    <!-- Thông tin nhân viên -->
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" minWidth="80" />
+            <ColumnConstraints hgrow="ALWAYS" />
+            <ColumnConstraints halignment="RIGHT" minWidth="80" />
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
 
-    <HBox spacing="10">
-        <Label text="Vai trò:"/>
-        <ComboBox fx:id="roleField" editable="false" promptText="Chọn vai trò"/>
-        <Button text="Thêm lịch trực" onAction="#handleAddShift"/>
-    </HBox>
+        <rowConstraints>
+            <RowConstraints minHeight="30" />
+            <RowConstraints minHeight="30" />
+        </rowConstraints>
 
-    <Label fx:id="statusLabel" style="-fx-text-fill: red;"/>
+        <!-- Hàng 1: Mã nhân viên + Tên -->
+        <Label text="Mã NV:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <ComboBox fx:id="codeField" editable="true" promptText="Nhập mã nhân viên" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-    <StackPane fx:id="calendarPane" VBox.vgrow="ALWAYS"/>
+        <Label text="Tên:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+        <ComboBox fx:id="nameField" editable="true" promptText="Nhập tên nhân viên" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+
+        <!-- Hàng 2: Vai trò + nút thêm -->
+        <Label text="Vai trò:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <ComboBox fx:id="roleField" editable="false" promptText="Chọn vai trò" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Button maxWidth="150" onAction="#handleAddShift" text="Thêm lịch trực" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+    </GridPane>
+
+    <!-- Thông báo -->
+    <Label fx:id="statusLabel" style="-fx-text-fill: red;" />
+
+    <!-- Lịch trực -->
+    <StackPane fx:id="calendarPane" VBox.vgrow="ALWAYS" />
 </VBox>

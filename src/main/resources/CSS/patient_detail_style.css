@@ -183,3 +183,42 @@
     -fx-background-color: transparent;
     -fx-padding: 0;
 }
+/* ChoiceBox */
+.choice-box {
+    -fx-background-color: transparent;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-font-size: 13px;
+    -fx-text-fill: black;
+}
+
+.choice-box:focused {
+    -fx-border-color: #0078d7;
+}
+
+/* Phần hiển thị text */
+.choice-box .label {
+    -fx-text-fill: black;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER;
+}
+
+/* Các mục trong menu xổ xuống */
+.choice-box .context-menu {
+    -fx-background-color: white;
+    -fx-border-color: lightgray;
+    -fx-border-radius: 4;
+    -fx-padding: 2 0 2 0;
+}
+
+.choice-box .menu-item {
+    -fx-padding: 5 15;
+    -fx-font-size: 13px;
+    -fx-text-fill: black;
+}
+
+.choice-box .menu-item:focused {
+    -fx-background-color: #E3F2FD;
+    -fx-text-fill: black;
+}
