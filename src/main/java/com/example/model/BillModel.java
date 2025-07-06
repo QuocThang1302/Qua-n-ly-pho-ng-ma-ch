@@ -3,6 +3,7 @@ package com.example.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 
 public class BillModel {
     private String maHoaDon;
@@ -15,6 +16,7 @@ public class BillModel {
     private String maPhieuKham;
 
     public BillModel() {
+        this.danhSachThuoc = new ArrayList<>();
     }
 
     public BillModel(String maHoaDon, double tongTien, double tienKham, String trangThai, String maDonThuoc,
@@ -25,7 +27,7 @@ public class BillModel {
         this.trangThai = trangThai;
         this.maDonThuoc = maDonThuoc;
         this.ngayLapDon = ngayLapDon;
-        this.danhSachThuoc = danhSachThuoc;
+        this.danhSachThuoc = danhSachThuoc != null ? danhSachThuoc : new ArrayList<>();
         this.maPhieuKham = maPhieuKham;
     }
 
@@ -76,7 +78,7 @@ public class BillModel {
     }
 
     public void setDanhSachThuoc(List<MedicineModel> danhSachThuoc) {
-        this.danhSachThuoc = danhSachThuoc;
+        this.danhSachThuoc = danhSachThuoc != null ? danhSachThuoc : new ArrayList<>();
     }
 
     public double getTienKham() {
