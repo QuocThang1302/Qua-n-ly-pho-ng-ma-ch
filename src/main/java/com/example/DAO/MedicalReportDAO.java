@@ -4,6 +4,7 @@ package com.example.DAO;
 import com.example.model.BillModel;
 import com.example.utils.DatabaseConnector;
 import com.example.model.MedicalReportModel;
+import com.example.model.MedicineModel;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -429,5 +430,155 @@ public class MedicalReportDAO {
             System.err.println("Lỗi khi kiểm tra mã phiếu khám: " + e.getMessage());
         }
         return null;
+    }
+
+    // Phương thức mới: Lấy đầy đủ thông tin phiếu khám bệnh bao gồm hóa đơn và đơn thuốc
+    public static MedicalReportModel getCompleteMedicalReportByMaKhamBenh(String maKhamBenh) {
+        String sql = """
+                SELECT 
+                    h.MaKhamBenh,
+                    p.MaPhieuKham,
+                    h.MaBenhNhan,
+                    h.MaBacSi,
+                    CONCAT(bn.Ho, ' ', bn.Ten) as HoTenBenhNhan,
+                    CONCAT(nv.Ho, ' ', nv.Ten) as TenBacSi,
+                    bn.NgaySinh,
+                    bn.SDT as SoDienThoai,
+                    bn.GioiTinh,
+                    h.LyDoKham,
+                    p.NgayKham,
+                    p.NgayLapPhieu,
+                    p.ChanDoan,
+                    p.KetQuaKham,
+                    p.DieuTri,
+                    p.TienKham,
+                    hd.MaHoaDon,
+                    hd.TenHoaDon,
+                    hd.NgayLapHoaDon,
+                    hd.GiaTien as TongTienHoaDon,
+                    hd.TrangThai,
+                    dt.MaDonThuoc,
+                    dt.NgayLapDon
+                FROM HenKhamBenh h
+                INNER JOIN PhieuKhamBenh p ON h.MaBenhNhan = p.MaBenhNhan AND h.NgayKham = p.NgayKham
+                INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
+                INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
+                LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
+                LEFT JOIN DonThuoc dt ON p.MaPhieuKham = dt.MaPhieuKham
+                WHERE h.MaKhamBenh = ?
+            """;
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, maKhamBenh);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    MedicalReportModel report = new MedicalReportModel();
+                    
+                    // Thông tin cơ bản
+                    report.setMaKhamBenh(rs.getString("MaKhamBenh"));
+                    report.setMaPhieuKham(rs.getString("MaPhieuKham"));
+                    report.setMaBenhNhan(rs.getString("MaBenhNhan"));
+                    report.setMaBacSi(rs.getString("MaBacSi"));
+                    report.setHoTen(rs.getString("HoTenBenhNhan"));
+                    report.setTenBacSi(rs.getString("TenBacSi"));
+                    report.setLyDoKham(rs.getString("LyDoKham"));
+                    report.setChanDoan(rs.getString("ChanDoan"));
+                    report.setKetQuaKham(rs.getString("KetQuaKham"));
+                    report.setDieuTri(rs.getString("DieuTri"));
+                    report.setTienKham(rs.getDouble("TienKham"));
+
+                    // Thông tin bệnh nhân
+                    Date ngaySinh = rs.getDate("NgaySinh");
+                    if (ngaySinh != null) {
+                        report.setNgaySinh(ngaySinh.toLocalDate());
+                    }
+                    report.setSoDienThoai(rs.getString("SoDienThoai"));
+                    report.setGioiTinh(rs.getString("GioiTinh"));
+
+                    // Thông tin ngày
+                    Timestamp ngayKham = rs.getTimestamp("NgayKham");
+                    if (ngayKham != null) {
+                        report.setNgayKham(ngayKham.toLocalDateTime());
+                    }
+                    
+                    // Ngày lập phiếu - sử dụng trường ngayLap trong MedicalReportModel
+                    Timestamp ngayLapPhieu = rs.getTimestamp("NgayLapPhieu");
+                    if (ngayLapPhieu != null) {
+                        report.setNgayLap(ngayLapPhieu.toLocalDateTime());
+                    }
+
+                    // Tạo BillModel nếu có hóa đơn
+                    String maHoaDon = rs.getString("MaHoaDon");
+                    if (maHoaDon != null && !maHoaDon.isEmpty()) {
+                        BillModel bill = new BillModel();
+                        bill.setMaHoaDon(maHoaDon);
+                        bill.setMaPhieuKham(rs.getString("MaPhieuKham"));
+                        bill.setMaDonThuoc(rs.getString("MaDonThuoc"));
+                        bill.setTienKham(rs.getDouble("TienKham"));
+                        bill.setTongTien(rs.getDouble("TongTienHoaDon"));
+                        bill.setTrangThai(rs.getString("TrangThai"));
+                        
+                        Timestamp ngayLapHoaDon = rs.getTimestamp("NgayLapHoaDon");
+                        if (ngayLapHoaDon != null) {
+                            bill.setNgayLapDon(ngayLapHoaDon.toLocalDateTime());
+                        }
+
+                        // Lấy danh sách thuốc từ đơn thuốc
+                        String maDonThuoc = rs.getString("MaDonThuoc");
+                        if (maDonThuoc != null && !maDonThuoc.isEmpty()) {
+                            List<MedicineModel> danhSachThuoc = getMedicinesByDonThuoc(maDonThuoc);
+                            bill.setDanhSachThuoc(danhSachThuoc);
+                        }
+
+                        report.setHoaDon(bill);
+                    }
+
+                    return report;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy phiếu khám bệnh đầy đủ: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    // Phương thức hỗ trợ: Lấy danh sách thuốc theo mã đơn thuốc
+    private static List<MedicineModel> getMedicinesByDonThuoc(String maDonThuoc) {
+        List<MedicineModel> medicines = new ArrayList<>();
+        String sql = """
+                SELECT t.MaThuoc, t.TenThuoc, t.CongDung, ct.SoLuong, 
+                       ct.GiaTien, ct.HuongDanSuDung, t.DonVi
+                FROM CTDonThuoc ct 
+                JOIN Thuoc t ON ct.MaThuoc = t.MaThuoc 
+                WHERE ct.MaDonThuoc = ?
+            """;
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, maDonThuoc);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    MedicineModel medicine = new MedicineModel();
+                    medicine.setMaThuoc(rs.getString("MaThuoc"));
+                    medicine.setTenThuoc(rs.getString("TenThuoc"));
+                    medicine.setCongDung(rs.getString("CongDung"));
+                    medicine.setSoLuong(rs.getInt("SoLuong"));
+                    medicine.setGiaTien(rs.getDouble("GiaTien"));
+                    medicine.setHuongDanSuDung(rs.getString("HuongDanSuDung"));
+                    medicine.setDonVi(rs.getString("DonVi"));
+                    
+                    medicines.add(medicine);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy danh sách thuốc: " + e.getMessage());
+        }
+        return medicines;
     }
 }
