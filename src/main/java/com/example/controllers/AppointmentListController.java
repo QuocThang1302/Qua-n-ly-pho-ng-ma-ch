@@ -135,18 +135,16 @@ public class AppointmentListController {
 
             // Lấy controller để truyền dữ liệu
             MedicalReportController controller = loader.getController();
-            
             // Sử dụng phương thức mới để load dữ liệu từ database
             controller.loadMedicalReportByMaKhamBenh(medicalReportModel.getMaKhamBenh());
 
             // Tạo stage mới (window mới)
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Phiếu khám bệnh");
-            dialogStage.setScene(new Scene(root, 800, 600)); // Set kích thước cửa sổ
+            dialogStage.setScene(new Scene(root, 800, 600)); // Chỉ gọi 1 lần
 
             dialogStage.setResizable(false); // Không cho resize
             dialogStage.initModality(Modality.APPLICATION_MODAL); // chặn tương tác với window chính
-            dialogStage.setScene(new Scene(root));
             dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
