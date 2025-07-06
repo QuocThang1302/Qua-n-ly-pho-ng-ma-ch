@@ -149,7 +149,18 @@ public class HenKhamBenhDAO {
         return false;
     }
 
-
+    // Xóa lịch hẹn theo mã
+    public static boolean delete(String maKhamBenh) {
+        String sql = "DELETE FROM HenKhamBenh WHERE MaKhamBenh = ?";
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maKhamBenh);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     // ✅ 5. Đếm số lượng bệnh nhân khác nhau theo ngày/tháng/năm
     public static int countDistinctPatientsByDate(FilterDate filter) {

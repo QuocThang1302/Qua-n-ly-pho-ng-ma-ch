@@ -54,42 +54,45 @@ public class AppointmentController {
         calendarView.getCalendarSources().add(source);
         calendarContainer.getChildren().add(calendarView);
 
+        // Thêm context menu chuột phải để xóa lịch hẹn
+        calendarView.setEntryContextMenuCallback(param -> {
+            if (!(param.getEntry() instanceof AppointmentEntry entry)) return null;
+            javafx.scene.control.ContextMenu menu = new javafx.scene.control.ContextMenu();
+            javafx.scene.control.MenuItem deleteItem = new javafx.scene.control.MenuItem("Xóa lịch hẹn");
+            deleteItem.setOnAction(e -> {
+                // Xác nhận xóa
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION, "Bạn có chắc muốn xóa lịch hẹn này?", javafx.scene.control.ButtonType.YES, javafx.scene.control.ButtonType.NO);
+                alert.setTitle("Xác nhận xóa");
+                alert.setHeaderText(null);
+                alert.showAndWait().ifPresent(type -> {
+                    if (type == javafx.scene.control.ButtonType.YES) {
+                        AppointmentModel model = entry.getModel();
+                        if (model != null && model.getMaKhamBenh() != null) {
+                            boolean success = com.example.DAO.HenKhamBenhDAO.delete(model.getMaKhamBenh());
+                            if (success) {
+                                calendar.removeEntry(entry);
+                                refreshCalendar();
+                            } else {
+                                javafx.scene.control.Alert err = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR, "Không thể xóa lịch hẹn khỏi database!");
+                                err.showAndWait();
+                            }
+                        }
+                    }
+                });
+            });
+            menu.getItems().add(deleteItem);
+            return menu;
+        });
+
         // ✅ XỬ LÝ DOUBLE-CLICK ĐơN GIẢN
         calendarView.setEntryFactory(param -> {
-            // Khi double click tạo Entry mới, ta chặn lại ở đây
+            // Khi double click tạo Entry mới, chỉ mở form chi tiết, không tạo entry mới trên calendar
             AppointmentModel model = new AppointmentModel();
             AppointmentEntry entry = new AppointmentEntry("", model);
-
-            // Gán ngày giờ vào model nếu cần:
             model.setNgayKham(param.getZonedDateTime().toLocalDate());
-
-            // Gọi form chi tiết để người dùng nhập
             Platform.runLater(() -> openAppointmentDetailWindow(entry));
-
-            // Trả null để không thêm "New Entry" vào giao diện
             return null;
         });
-        Role role = UserContext.getInstance().getRole();
-        if(role.equals(Role.NURSE)){
-            calendarView.setEntryFactory(param -> {
-                String title = "Khám Mới";
-                AppointmentModel model = new AppointmentModel();
-                //TODO sua logic lay ma kham benh moi
-                model.setMaKhamBenh(UUID.randomUUID().toString());
-                model.setLyDoKham(title);
-                model.setNgayKham(param.getZonedDateTime().toLocalDate());
-
-
-                AppointmentEntry entry = new AppointmentEntry(title, model);
-                entry.setInterval(param.getZonedDateTime());
-                registerEntryChangeListeners(entry);
-                return entry;
-
-        });
-        }
-        else {
-            calendarView.setEntryFactory(createEntryParameter -> null);
-        }
 
         calendarView.setEntryDetailsPopOverContentCallback(param -> {
             if (!(param.getEntry() instanceof AppointmentEntry entry)) return null;
