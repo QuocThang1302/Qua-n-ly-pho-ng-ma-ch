@@ -1,7 +1,11 @@
 package com.example.DAO;
 
+import com.example.model.FilterDate;
 import com.example.model.PatientModel;
 import com.example.utils.DatabaseConnector;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.*;
@@ -9,6 +13,15 @@ import java.sql.*;
 public class PatientDAO {
     // CREATE
     public static boolean insert(PatientModel patient) {
+        BigDecimal maxValue = QuiDinhDAO.getGiaTri("MAX_PATIENT_PER_DAY");
+        int maxPatientsPerDay = (maxValue != null) ? maxValue.intValue() : 50;
+        // Đếm số bệnh nhân đã có lịch hẹn trong ngày hôm nay
+        FilterDate filter = FilterDate.fromLocalDate(LocalDate.now()); // mode: "Ngày"
+        int currentCount = HenKhamBenhDAO.countDistinctPatientsByDate(filter);
+        if (currentCount >= maxPatientsPerDay) {
+            System.err.println("Đã đạt số lượng bệnh nhân tối đa trong ngày.");
+            return false;
+        }
         String sql = "INSERT INTO BenhNhan (MaBenhNhan, Ho, Ten, NgaySinh, SDT, GioiTinh) VALUES (?, ?, ?, ?, ?, ?)";
         String[] nameParts = patient.getHoTen().split(" ", 2);
         String ho = nameParts.length > 1 ? nameParts[0] : "";
@@ -101,7 +114,7 @@ public class PatientDAO {
     // READ ALL
     public static List<PatientModel> getAll() {
         List<PatientModel> list = new ArrayList<>();
-        String sql = "SELECT * FROM BenhNhan";
+        String sql = "SELECT * FROM BenhNhan ORDER BY MaBenhNhan";
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql);

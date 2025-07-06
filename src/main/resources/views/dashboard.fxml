@@ -48,7 +48,7 @@
             </StackPane>
 
             <Label style="-fx-font-weight: bold; -fx-font-size: 13px;" text="Biểu đồ số lượng bệnh nhân" />
-            <StackPane fx:id="patientChartContainer" prefHeight="200" style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;" VBox.vgrow="ALWAYS" />
+            <StackPane fx:id="patientChartContainer" prefHeight="400" style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;" VBox.vgrow="ALWAYS" />
         </VBox>
 
         <!-- Cột 2: Doanh thu -->
@@ -62,7 +62,7 @@
             </StackPane>
 
             <Label style="-fx-font-weight: bold; -fx-font-size: 13px;" text="Biểu đồ doanh thu" />
-            <StackPane fx:id="revenueChartContainer" prefHeight="200" style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;" VBox.vgrow="ALWAYS" />
+            <StackPane fx:id="revenueChartContainer" prefHeight="400" style="-fx-background-color: #FAFAFA; -fx-border-color: #E0E0E0; -fx-border-radius: 8;" VBox.vgrow="ALWAYS" />
         </VBox>
     </HBox>
 </VBox>

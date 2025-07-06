@@ -50,12 +50,21 @@ public class MedicalReportController implements MedicineDataChangeListener {
         tfMaPhieuKham.setText(report.getMaPhieuKham());
         tfMaBenhNhan.setText(report.getMaBenhNhan());
         tfHoTen.setText(report.getHoTen());
-        tfNgaySinh.setText(report.getNgaySinh().format(fmt));
+        if (report.getNgaySinh() != null) {
+            tfNgaySinh.setText(report.getNgaySinh().format(fmt));
+        } else {
+            tfNgaySinh.setText("");
+        }
+
         tfGioiTinh.setText(report.getGioiTinh());
         tfSoDienThoai.setText(report.getSoDienThoai());
         tfTenBacSi.setText(report.getTenBacSi());
         tfLyDoKham.setText(report.getLyDoKham());
-        tfNgayLap.setText(report.getNgayLap().format(fmt));
+        if (report.getNgayLap() != null) {
+            tfNgayLap.setText(report.getNgayLap().format(fmt));
+        } else {
+            tfNgayLap.setText("");
+        }
         txtChanDoan.setText(report.getChanDoan());
 
         if (bill != null) {
@@ -66,6 +75,7 @@ public class MedicalReportController implements MedicineDataChangeListener {
             tfTongTien.setText(String.format("%.0f", bill.getTongTien()));
             if (bill.getDanhSachThuoc() != null) {
                 danhSachThuoc.setAll(bill.getDanhSachThuoc());
+                System.out.println(bill.getDanhSachThuoc().size());
             }
         }
 
@@ -118,7 +128,7 @@ public class MedicalReportController implements MedicineDataChangeListener {
                 try {
                     MedicalReportModel existing = com.example.DAO.MedicalReportDAO.getByMaPhieuKham(tfMaPhieuKham.getText());
                     if (existing == null) {
-                        reportSuccess = com.example.DAO.MedicalReportDAO.insertPhieuKhamBenh(report, now, now, "", "", tienKham);
+                        reportSuccess = com.example.DAO.MedicalReportDAO.insertPhieuKhamBenh(report, now, now, "", "");
                     } else {
                         reportSuccess = com.example.DAO.MedicalReportDAO.updatePhieuKhamBenh(report, now, now, "", "", tienKham);
                         isUpdate = true;

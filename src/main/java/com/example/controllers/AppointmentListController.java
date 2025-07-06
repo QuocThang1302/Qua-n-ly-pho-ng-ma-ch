@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.DAO.QuiDinhDAO;
 import com.example.model.AppointmentModel;
 import com.example.model.MedicalReportModel;
 import com.example.model.StaffModel;
@@ -21,6 +22,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -64,8 +66,9 @@ public class AppointmentListController {
         diagnoseCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getChanDoan()));
         treatCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDieuTri()));
         costCol.setCellValueFactory(cellData -> {
-            Double tien = cellData.getValue().getTienKham();
-            if (tien == null) tien = 0.0;
+            BigDecimal tien = QuiDinhDAO.getGiaTri("DEFAULT_TIEN_KHAM");
+
+            if (tien == null) tien = BigDecimal.ZERO;
             return new SimpleStringProperty(String.format("%,.0f", tien));
         });
 

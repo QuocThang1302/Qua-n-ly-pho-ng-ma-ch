@@ -14,9 +14,10 @@ import java.util.List;
 public class MedicalReportDAO {
 
     // INSERT - Thêm PhieuKhamBenh
-    public static boolean insertPhieuKhamBenh(MedicalReportModel medicalReport, LocalDateTime ngayKham, LocalDateTime ngayLapPhieu, String dieuTri, String ketQuaKham, double tienKham) {
+    public static boolean insertPhieuKhamBenh(MedicalReportModel medicalReport, LocalDateTime ngayKham, LocalDateTime ngayLapPhieu, String dieuTri, String ketQuaKham) {
         String insertPhieuKham = "INSERT INTO PhieuKhamBenh (MaPhieuKham, MaBenhNhan, NgayKham, NgayLapPhieu, ChanDoan, KetQuaKham, DieuTri, TienKham, MaBacSi) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        double tienKham = QuiDinhDAO.getGiaTri("DEFAULT_TIEN_KHAM").doubleValue();
 
         try (Connection conn = DatabaseConnector.connect()) {
             conn.setAutoCommit(false);

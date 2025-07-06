@@ -3,12 +3,15 @@ package com.example.controllers;
 import com.example.DAO.HenKhamBenhDAO;
 import com.example.DAO.BillDAO;
 import com.example.DAO.PatientDAO;
+import com.example.DAO.QuiDinhDAO;
 import com.example.model.FilterDate;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.AreaChart;
@@ -17,10 +20,11 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.Node;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -39,14 +43,14 @@ public class DashboardController {
     private StackPane revenueChartContainer;
     @FXML
     private Label revenueLabel;
+    @FXML
+    private TextField txtMaxPatients;
+    @FXML
+    private TextField txtExamFee;
 
     // Charts
     private BarChart<String, Number> patientBarChart;
     private AreaChart<String, Number> revenueAreaChart;
-
-    // Cache để lưu trữ dữ liệu
-    private Map<String, Integer> patientDataCache = new HashMap<>();
-    private Map<String, Double> revenueDataCache = new HashMap<>();
 
     // ExecutorService để xử lý tác vụ nền
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -65,10 +69,66 @@ public class DashboardController {
         setupRevenueChart();
 
         // Cập nhật dữ liệu ban đầu
-        updateTotalPatientLabel();
-        updateTodayRevenueLabel();
         updateChartsForDateRange();
     }
+
+    /**
+     * Thêm method handleUpdateConfig để khắc phục lỗi FXML
+     */
+    @FXML
+    private void handleUpdateConfig() {
+        System.out.println("Update config button clicked");
+
+        boolean hasUpdate = false;
+        StringBuilder message = new StringBuilder();
+
+        // Cập nhật MAX_PATIENT_PER_DAY nếu txtMaxPatients không rỗng
+        String maxPatientsText = txtMaxPatients.getText().trim();
+        if (!maxPatientsText.isEmpty()) {
+            try {
+                int maxPatients = Integer.parseInt(maxPatientsText);
+                boolean success = QuiDinhDAO.updateGiaTri("MAX_PATIENT_PER_DAY", BigDecimal.valueOf(maxPatients));
+                if (success) {
+                    message.append("✔ Cập nhật số bệnh nhân tối đa thành công.\n");
+                    hasUpdate = true;
+                } else {
+                    message.append("❌ Cập nhật số bệnh nhân tối đa thất bại.\n");
+                }
+            } catch (NumberFormatException e) {
+                message.append("⚠ Giá trị số bệnh nhân phải là số nguyên.\n");
+            }
+        }
+
+        // Cập nhật DEFAULT_TIEN_KHAM nếu txtExamFee không rỗng
+        String examFeeText = txtExamFee.getText().trim();
+        if (!examFeeText.isEmpty()) {
+            try {
+                double examFee = Double.parseDouble(examFeeText);
+                boolean success = QuiDinhDAO.updateGiaTri("DEFAULT_TIEN_KHAM", BigDecimal.valueOf(examFee));
+                if (success) {
+                    message.append("✔ Cập nhật tiền khám mặc định thành công.\n");
+                    hasUpdate = true;
+                } else {
+                    message.append("❌ Cập nhật tiền khám mặc định thất bại.\n");
+                }
+            } catch (NumberFormatException e) {
+                message.append("⚠ Giá trị tiền khám phải là số thực.\n");
+            }
+        }
+
+        if (!hasUpdate && message.length() == 0) {
+            message.append("⚠ Vui lòng nhập ít nhất một giá trị để cập nhật.");
+        }
+
+        // Hiển thị thông báo cho người dùng
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Kết quả cập nhật");
+        alert.setHeaderText(null);
+        alert.setContentText(message.toString());
+        alert.showAndWait();
+    }
+
+
 
     /**
      * Khởi tạo DatePicker với giá trị mặc định (tháng hiện tại)
@@ -133,69 +193,6 @@ public class DashboardController {
         revenueChartContainer.getChildren().add(revenueAreaChart);
     }
 
-    /**
-     * Cập nhật tổng số bệnh nhân
-     */
-    private void updateTotalPatientLabel() {
-        Task<Integer> task = new Task<Integer>() {
-            @Override
-            protected Integer call() throws Exception {
-                return PatientDAO.getPatientCount();
-            }
-        };
-
-        task.setOnSucceeded(e -> {
-            int count = task.getValue();
-            Platform.runLater(() -> {
-                patientCountLabel.setText(String.valueOf(count));
-            });
-        });
-
-        task.setOnFailed(e -> {
-            Platform.runLater(() -> {
-                patientCountLabel.setText("N/A");
-            });
-            System.err.println("Lỗi khi lấy tổng bệnh nhân: " + task.getException().getMessage());
-        });
-
-        executorService.submit(task);
-    }
-
-    /**
-     * Cập nhật doanh thu hôm nay
-     */
-    private void updateTodayRevenueLabel() {
-        Task<Double> task = new Task<Double>() {
-            @Override
-            protected Double call() throws Exception {
-                LocalDate today = LocalDate.now();
-                FilterDate filterDate = new FilterDate("Ngày", today.getDayOfMonth(),
-                        today.getMonthValue(), today.getYear());
-                return BillDAO.getTotalRevenue(filterDate);
-            }
-        };
-
-        task.setOnSucceeded(e -> {
-            double revenue = task.getValue();
-            Platform.runLater(() -> {
-                String formatted = String.format("%,.0f₫", revenue);
-                revenueLabel.setText(formatted);
-            });
-        });
-
-        task.setOnFailed(e -> {
-            Platform.runLater(() -> {
-                revenueLabel.setText("N/A");
-            });
-            System.err.println("Lỗi lấy doanh thu hôm nay: " + task.getException().getMessage());
-        });
-
-        executorService.submit(task);
-    }
-
-    /**
-     * Xử lý sự kiện lọc khi nhấn nút "Lọc"
-     */
     @FXML
     private void handleFilter() {
         LocalDate fromDate = dpFrom.getValue();
@@ -241,36 +238,48 @@ public class DashboardController {
         currentPatientChartTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
+                // Tạo FilterDate cho khoảng thời gian
+                FilterDate fromFilter = new FilterDate("Ngày", fromDate.getDayOfMonth(),
+                        fromDate.getMonthValue(), fromDate.getYear());
+                FilterDate toFilter = new FilterDate("Ngày", toDate.getDayOfMonth(),
+                        toDate.getMonthValue(), toDate.getYear());
+
+                // Sử dụng hàm có sẵn để lấy dữ liệu
+                List<Integer> patientCounts = HenKhamBenhDAO.getPatientCountsBetween(fromFilter, toFilter);
+
+                if (isCancelled()) return null;
+
                 XYChart.Series<String, Number> series = new XYChart.Series<>();
                 series.setName("Bệnh nhân");
 
-                LocalDate currentDate = fromDate;
-                while (!currentDate.isAfter(toDate)) {
-                    if (isCancelled()) return null;
-
-                    FilterDate fd = new FilterDate("Ngày", currentDate.getDayOfMonth(),
-                            currentDate.getMonthValue(), currentDate.getYear());
-                    String cacheKey = generateCacheKey(fd);
-
-                    int count;
-                    if (patientDataCache.containsKey(cacheKey)) {
-                        count = patientDataCache.get(cacheKey);
-                    } else {
-                        count = HenKhamBenhDAO.countDistinctPatientsByDate(fd);
-                        patientDataCache.put(cacheKey, count);
+                // Tạo labels cho biểu đồ
+                long daysBetween = ChronoUnit.DAYS.between(fromDate, toDate);
+                if (daysBetween <= 31) {
+                    // Hiển thị theo ngày
+                    LocalDate currentDate = fromDate;
+                    for (int i = 0; i < patientCounts.size(); i++) {
+                        String dateLabel = currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
+                        series.getData().add(new XYChart.Data<>(dateLabel, patientCounts.get(i)));
+                        currentDate = currentDate.plusDays(1);
                     }
-
-                    String dateLabel = currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
-                    series.getData().add(new XYChart.Data<>(dateLabel, count));
-
-                    currentDate = currentDate.plusDays(1);
+                } else {
+                    // Hiển thị theo tháng
+                    YearMonth startMonth = YearMonth.from(fromDate);
+                    YearMonth currentMonth = startMonth;
+                    for (int i = 0; i < patientCounts.size(); i++) {
+                        String monthLabel = "T" + currentMonth.getMonthValue() + "/" + currentMonth.getYear();
+                        series.getData().add(new XYChart.Data<>(monthLabel, patientCounts.get(i)));
+                        currentMonth = currentMonth.plusMonths(1);
+                    }
                 }
+                int totalPatients = patientCounts.stream().mapToInt(Integer::intValue).sum();
 
                 // Cập nhật biểu đồ trên UI thread
                 Platform.runLater(() -> {
                     patientBarChart.getData().clear();
                     patientBarChart.getData().add(series);
                     patientBarChart.setTitle("Bệnh nhân từ " + fromDate + " đến " + toDate);
+                    patientCountLabel.setText(String.valueOf(totalPatients));
 
                     // Áp dụng style sau khi render
                     Platform.runLater(() -> stylePatientChart());
@@ -300,36 +309,50 @@ public class DashboardController {
         currentRevenueChartTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
+                // Tạo FilterDate cho khoảng thời gian
+                FilterDate fromFilter = new FilterDate("Ngày", fromDate.getDayOfMonth(),
+                        fromDate.getMonthValue(), fromDate.getYear());
+                FilterDate toFilter = new FilterDate("Ngày", toDate.getDayOfMonth(),
+                        toDate.getMonthValue(), toDate.getYear());
+
+                // Sử dụng hàm có sẵn để lấy dữ liệu
+                List<Double> revenueList = BillDAO.getTotalRevenueBetween(fromFilter, toFilter);
+
+                if (isCancelled()) return null;
+
                 XYChart.Series<String, Number> series = new XYChart.Series<>();
                 series.setName("Doanh thu");
 
-                LocalDate currentDate = fromDate;
-                while (!currentDate.isAfter(toDate)) {
-                    if (isCancelled()) return null;
-
-                    FilterDate fd = new FilterDate("Ngày", currentDate.getDayOfMonth(),
-                            currentDate.getMonthValue(), currentDate.getYear());
-                    String cacheKey = generateRevenueCacheKey(fd);
-
-                    double revenue;
-                    if (revenueDataCache.containsKey(cacheKey)) {
-                        revenue = revenueDataCache.get(cacheKey);
-                    } else {
-                        revenue = BillDAO.getTotalRevenue(fd);
-                        revenueDataCache.put(cacheKey, revenue);
+                // Tạo labels cho biểu đồ
+                long daysBetween = ChronoUnit.DAYS.between(fromDate, toDate);
+                if (daysBetween <= 31) {
+                    // Hiển thị theo ngày
+                    LocalDate currentDate = fromDate;
+                    for (int i = 0; i < revenueList.size(); i++) {
+                        String dateLabel = currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
+                        series.getData().add(new XYChart.Data<>(dateLabel, revenueList.get(i)));
+                        currentDate = currentDate.plusDays(1);
                     }
-
-                    String dateLabel = currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
-                    series.getData().add(new XYChart.Data<>(dateLabel, revenue));
-
-                    currentDate = currentDate.plusDays(1);
+                } else {
+                    // Hiển thị theo tháng
+                    YearMonth startMonth = YearMonth.from(fromDate);
+                    YearMonth currentMonth = startMonth;
+                    for (int i = 0; i < revenueList.size(); i++) {
+                        String monthLabel = "T" + currentMonth.getMonthValue() + "/" + currentMonth.getYear();
+                        series.getData().add(new XYChart.Data<>(monthLabel, revenueList.get(i)));
+                        currentMonth = currentMonth.plusMonths(1);
+                    }
                 }
+
+                double totalRevenue = revenueList.stream().mapToDouble(Double::doubleValue).sum();
+                String formatted = String.format("%,.0f₫", totalRevenue);
 
                 // Cập nhật biểu đồ trên UI thread
                 Platform.runLater(() -> {
                     revenueAreaChart.getData().clear();
                     revenueAreaChart.getData().add(series);
                     revenueAreaChart.setTitle("Doanh thu từ " + fromDate + " đến " + toDate);
+                    revenueLabel.setText(formatted);
 
                     // Áp dụng style sau khi render
                     Platform.runLater(() -> styleRevenueChart());
@@ -354,10 +377,24 @@ public class DashboardController {
         patientBarChart.applyCss();
         patientBarChart.layout();
 
+        int dataSize = 0;
+        if (!patientBarChart.getData().isEmpty()) {
+            dataSize = patientBarChart.getData().get(0).getData().size();
+        }
+
         for (Node node : patientBarChart.lookupAll(".chart-bar")) {
-            node.setStyle("-fx-bar-fill: #4CAF50;" +
-                    "-fx-background-radius: 3px;" +
-                    "-fx-border-radius: 3px;");
+            String style = """
+        -fx-bar-fill: #4CAF50;
+        -fx-background-radius: 3px;
+        -fx-border-radius: 3px;
+        """;
+
+            // Chỉ scale nếu ít hơn 10 cột
+            if (dataSize < 8) {
+                style += "-fx-scale-x: 0.3;";
+            }
+
+            node.setStyle(style);
         }
     }
 
@@ -376,20 +413,6 @@ public class DashboardController {
             node.setStyle("-fx-stroke: #2196F3;" +
                     "-fx-stroke-width: 2px;");
         }
-    }
-
-    /**
-     * Tạo cache key cho dữ liệu bệnh nhân
-     */
-    private String generateCacheKey(FilterDate fd) {
-        return "patient_" + fd.getMode() + "_" + fd.getLocalDate() + "_" + fd.getYearMonth() + "_" + fd.getYear();
-    }
-
-    /**
-     * Tạo cache key cho dữ liệu doanh thu
-     */
-    private String generateRevenueCacheKey(FilterDate fd) {
-        return "revenue_" + fd.getMode() + "_" + fd.getLocalDate() + "_" + fd.getYearMonth() + "_" + fd.getYear();
     }
 
     /**
