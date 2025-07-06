@@ -8,15 +8,14 @@ import com.calendarfx.view.WeekView;
 import com.calendarfx.view.page.WeekPage;
 import com.example.DAO.DutyShiftDAO;
 import com.example.DAO.StaffDAO; // Thêm import cho StaffDAO
-import com.example.model.DutyShiftModel;
-import com.example.model.StaffModel; // Thêm import cho StaffModel
-import com.example.model.Role;
-import com.example.model.ScheduleEntry;
+import com.example.model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import java.util.UUID;
 import java.time.LocalDate;
@@ -29,6 +28,8 @@ import com.calendarfx.model.Entry;
 
 public class ScheduleController {
 
+    public HBox ShiftDayAddBox;
+    public GridPane StaffInfo;
     @FXML private DatePicker datePicker;
     @FXML private ChoiceBox<String> shiftChoice;
     @FXML private ComboBox<String> codeField;
@@ -46,6 +47,7 @@ public class ScheduleController {
 
     @FXML
     public void initialize() {
+        handlePermission();
         // Tạo nguồn lịch chung
         calendarSource = new CalendarSource("Nguồn lịch");
         nameField.setOnShowing(event -> {
@@ -393,5 +395,28 @@ public class ScheduleController {
             case MANAGER -> Calendar.Style.STYLE3;
             case ADMIN -> Calendar.Style.STYLE4;
         };
+    }
+    private void handlePermission(){
+        Role role = UserContext.getInstance().getRole();
+        switch (role) {
+            case ADMIN -> {
+
+            }
+            case DOCTOR -> {
+                StaffInfo.setVisible(false);
+                StaffInfo.setManaged(false);
+                ShiftDayAddBox.setVisible(false);
+                ShiftDayAddBox.setManaged(false);
+            }
+            case NURSE -> {
+                StaffInfo.setVisible(false);
+                StaffInfo.setManaged(false);
+                ShiftDayAddBox.setVisible(false);
+                ShiftDayAddBox.setManaged(false);
+            }
+            case MANAGER -> {
+
+            }
+        }
     }
 }

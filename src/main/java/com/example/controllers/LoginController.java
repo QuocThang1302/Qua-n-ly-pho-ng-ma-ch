@@ -1,5 +1,7 @@
 package com.example.controllers;
 
+import com.example.model.Role;
+import com.example.model.UserContext;
 import com.example.utils.DatabaseConnector;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -122,7 +124,17 @@ public class LoginController {
             stmt.setString(2, matKhau);
             ResultSet rs = stmt.executeQuery();
 
-            return rs.next(); // true nếu tìm thấy bản ghi
+            if (rs.next()) {
+                // Lấy vai trò từ CSDL
+                String vaiTroStr = rs.getString("RoleID");
+                Role role = Role.valueOf(vaiTroStr.toUpperCase());
+
+                // Lưu vào context
+                UserContext.getInstance().setUser(taiKhoan, role);
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             lbltest.setText("Lỗi kết nối CSDL: " + e.getMessage());
@@ -130,4 +142,5 @@ public class LoginController {
             return false;
         }
     }
+
 }

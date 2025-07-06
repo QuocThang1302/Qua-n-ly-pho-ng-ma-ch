@@ -25,7 +25,7 @@ public class AppointmentDetailController {
     @FXML private DatePicker dateNgaySinh, dateNgayKham;
     @FXML private ChoiceBox<String> cbGioiTinh;
     @FXML private TextArea txtLyDo;
-    @FXML private Button btnLuu,btnPhieuKhamBenh;
+    @FXML private Button btnLuu,btnPhieuKhamBenh,btnChonBenhNhanCu;
 
     private AppointmentEntry entry;
     private AppointmentModel model;
@@ -50,6 +50,7 @@ public class AppointmentDetailController {
 
         btnPhieuKhamBenh.setOnAction(e-> handlePhieuKham());
         btnLuu.setOnAction(e -> handleLuu());
+        handlePermission();
     }
 
     private void handlePhieuKham() {
@@ -175,8 +176,43 @@ public class AppointmentDetailController {
             e.printStackTrace();
         }
     }
+    private void handlePermission(){
+        Role role = UserContext.getInstance().getRole();
+        switch (role) {
+            case ADMIN -> {
 
+            }
+            case DOCTOR -> {
+                btnChonBenhNhanCu.setVisible(false);
+                txtMaBenhNhan.setEditable(false);
+                txtHoTen.setEditable(false);
+                txtSoDienThoai.setEditable(false);
+                txtGioBatDau.setEditable(false);
+                txtGioKetThuc.setEditable(false);
+                txtLyDo.setEditable(false);
+                btnLuu.setVisible(false);
+                cbGioiTinh.setDisable(true);
+                dateNgaySinh.setEditable(false);
+                dateNgayKham.setEditable(false);
+            }
+            case NURSE -> {
 
+            }
+            case MANAGER -> {
+                btnChonBenhNhanCu.setVisible(false);
+                txtMaBenhNhan.setEditable(false);
+                txtHoTen.setEditable(false);
+                txtSoDienThoai.setEditable(false);
+                txtGioBatDau.setEditable(false);
+                txtGioKetThuc.setEditable(false);
+                txtLyDo.setEditable(false);
+                btnLuu.setVisible(false);
+                cbGioiTinh.setDisable(true);
+                dateNgaySinh.setEditable(false);
+                dateNgayKham.setEditable(false);
+            }
+        }
+    }
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Lỗi");

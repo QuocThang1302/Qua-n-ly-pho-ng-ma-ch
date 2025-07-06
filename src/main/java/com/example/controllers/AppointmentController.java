@@ -6,6 +6,7 @@ import com.calendarfx.model.CalendarSource;
 import com.calendarfx.view.CalendarView;
 import com.example.model.AppointmentEntry;
 import com.example.model.AppointmentModel;
+import com.example.model.Role;
 import com.example.model.UserContext;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -50,19 +51,27 @@ public class AppointmentController {
         calendarView.getCalendarSources().add(source);
         calendarContainer.getChildren().add(calendarView);
 
-        calendarView.setEntryFactory(param -> {
-            String title = "Khám Mới";
-            AppointmentModel model = new AppointmentModel();
-            model.setMaKhamBenh(UUID.randomUUID().toString());
-            model.setLyDoKham(title);
-            model.setNgayKham(param.getZonedDateTime().toLocalDate());
-            model.setTinhTrang("Chưa khám");
+        Role role = UserContext.getInstance().getRole();
+        if(role.equals(Role.NURSE)){
+            calendarView.setEntryFactory(param -> {
+                String title = "Khám Mới";
+                AppointmentModel model = new AppointmentModel();
+                //TODO sua logic lay ma kham benh moi
+                model.setMaKhamBenh(UUID.randomUUID().toString());
+                model.setLyDoKham(title);
+                model.setNgayKham(param.getZonedDateTime().toLocalDate());
+                model.setTinhTrang("Chưa khám");
 
-            AppointmentEntry entry = new AppointmentEntry(title, model);
-            entry.setInterval(param.getZonedDateTime());
-            registerEntryChangeListeners(entry);
-            return entry;
+                AppointmentEntry entry = new AppointmentEntry(title, model);
+                entry.setInterval(param.getZonedDateTime());
+                registerEntryChangeListeners(entry);
+                return entry;
+
         });
+        }
+        else {
+            calendarView.setEntryFactory(createEntryParameter -> null);
+        }
 
         calendarView.setEntryDetailsPopOverContentCallback(param -> {
             if (!(param.getEntry() instanceof AppointmentEntry entry)) return null;
