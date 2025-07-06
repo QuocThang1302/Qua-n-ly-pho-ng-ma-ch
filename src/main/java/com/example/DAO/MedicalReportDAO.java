@@ -55,28 +55,31 @@ public class MedicalReportDAO {
     public static List<MedicalReportModel> getAllMedicalReports() {
         List<MedicalReportModel> reports = new ArrayList<>();
         String sql = """
-                SELECT 
-                    h.MaKhamBenh,
-                    p.MaPhieuKham,
-                    h.MaBenhNhan,
-                    h.MaBacSi,
-                    CONCAT(bn.Ho, ' ', bn.Ten) as HoTenBenhNhan,
-                    CONCAT(nv.Ho, ' ', nv.Ten) as TenBacSi,
-                    bn.NgaySinh,
-                    bn.SDT as SoDienThoai,
-                    bn.GioiTinh,
-                    h.LyDoKham,
-                    p.NgayLapPhieu,
-                    p.ChanDoan,
-                    hd.MaHoaDon
-                FROM HenKhamBenh h
-                INNER JOIN PhieuKhamBenh p ON h.MaBenhNhan = p.MaBenhNhan
-                INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
-                INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
-                LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
-                WHERE nv.RoleID = 'DOCTOR' OR nv.RoleID = 'BS'
-                ORDER BY p.NgayLapPhieu DESC
-            """;
+    SELECT 
+        h.MaKhamBenh,
+        p.MaPhieuKham,
+        h.MaBenhNhan,
+        h.MaBacSi,
+        CONCAT(bn.Ho, ' ', bn.Ten) AS HoTenBenhNhan,
+        CONCAT(nv.Ho, ' ', nv.Ten) AS TenBacSi,
+        bn.NgaySinh,
+        bn.SDT AS SoDienThoai,
+        bn.GioiTinh,
+        h.LyDoKham,
+        p.NgayLapPhieu,
+        p.ChanDoan,
+        hd.MaHoaDon
+    FROM HenKhamBenh h
+    INNER JOIN PhieuKhamBenh p 
+        ON h.MaBenhNhan = p.MaBenhNhan 
+        AND h.NgayKham = p.NgayKham
+    INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
+    INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
+    LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
+    WHERE nv.RoleID = 'DOCTOR' OR nv.RoleID = 'BS'
+    ORDER BY p.NgayLapPhieu DESC
+""";
+
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -126,28 +129,32 @@ public class MedicalReportDAO {
     // READ - Lấy medical report theo ID
     public static MedicalReportModel getMedicalReportById(String maKhamBenh) {
         String sql = """
-                SELECT 
-                    h.MaKhamBenh,
-                    p.MaPhieuKham,
-                    h.MaBenhNhan,
-                    h.MaBacSi,
-                    CONCAT(bn.Ho, ' ', bn.Ten) as HoTenBenhNhan,
-                    CONCAT(nv.Ho, ' ', nv.Ten) as TenBacSi,
-                    bn.NgaySinh,
-                    bn.SDT as SoDienThoai,
-                    bn.GioiTinh,
-                    h.LyDoKham,
-                    p.NgayLapPhieu,
-                    p.ChanDoan,
-                    hd.MaHoaDon
-                FROM HenKhamBenh h
-                INNER JOIN PhieuKhamBenh p ON h.MaBenhNhan = p.MaBenhNhan
-                INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
-                INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
-                LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
-                WHERE h.MaKhamBenh = ? AND nv.RoleID = 'DOCTOR' 
-                ORDER BY p.NgayLapPhieu DESC
-            """;
+    SELECT 
+        h.MaKhamBenh,
+        p.MaPhieuKham,
+        h.MaBenhNhan,
+        h.MaBacSi,
+        CONCAT(bn.Ho, ' ', bn.Ten) AS HoTenBenhNhan,
+        CONCAT(nv.Ho, ' ', nv.Ten) AS TenBacSi,
+        bn.NgaySinh,
+        bn.SDT AS SoDienThoai,
+        bn.GioiTinh,
+        h.LyDoKham,
+        p.NgayLapPhieu,
+        p.ChanDoan,
+        hd.MaHoaDon
+    FROM HenKhamBenh h
+    INNER JOIN PhieuKhamBenh p 
+        ON h.MaBenhNhan = p.MaBenhNhan 
+        AND h.NgayKham = p.NgayKham
+    INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
+    INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
+    LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
+    WHERE h.MaKhamBenh = ? AND nv.RoleID = 'DOCTOR'
+    ORDER BY p.NgayLapPhieu DESC
+""";
+
+
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -200,28 +207,31 @@ public class MedicalReportDAO {
         List<MedicalReportModel> reports = new ArrayList<>();
 
         String sql = """
-        SELECT 
-            h.MaKhamBenh,
-            p.MaPhieuKham,
-            h.MaBenhNhan,
-            h.MaBacSi,
-            CONCAT(bn.Ho, ' ', bn.Ten) as HoTenBenhNhan,
-            CONCAT(nv.Ho, ' ', nv.Ten) as TenBacSi,
-            bn.NgaySinh,
-            bn.SDT as SoDienThoai,
-            bn.GioiTinh,
-            h.LyDoKham,
-            p.NgayLapPhieu,
-            p.ChanDoan,
-            hd.MaHoaDon
-        FROM HenKhamBenh h
-        INNER JOIN PhieuKhamBenh p ON h.MaBenhNhan = p.MaBenhNhan
-        INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
-        INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
-        LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
-        WHERE h.MaBenhNhan = ? AND nv.RoleID = 'DOCTOR'
-        ORDER BY p.NgayLapPhieu DESC
-    """;
+    SELECT 
+        h.MaKhamBenh,
+        p.MaPhieuKham,
+        h.MaBenhNhan,
+        h.MaBacSi,
+        CONCAT(bn.Ho, ' ', bn.Ten) AS HoTenBenhNhan,
+        CONCAT(nv.Ho, ' ', nv.Ten) AS TenBacSi,
+        bn.NgaySinh,
+        bn.SDT AS SoDienThoai,
+        bn.GioiTinh,
+        h.LyDoKham,
+        p.NgayLapPhieu,
+        p.ChanDoan,
+        hd.MaHoaDon
+    FROM HenKhamBenh h
+    INNER JOIN PhieuKhamBenh p 
+        ON h.MaBenhNhan = p.MaBenhNhan 
+        AND h.NgayKham = p.NgayKham
+    INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
+    INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
+    LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
+    WHERE h.MaBenhNhan = ? AND nv.RoleID = 'DOCTOR'
+    ORDER BY p.NgayLapPhieu DESC
+""";
+
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -274,32 +284,35 @@ public class MedicalReportDAO {
         List<MedicalReportModel> reports = new ArrayList<>();
 
         String sql = """
-        SELECT 
-            h.MaKhamBenh,
-            p.MaPhieuKham,
-            h.MaBenhNhan,
-            h.MaBacSi,
-            CONCAT(bn.Ho, ' ', bn.Ten) as HoTenBenhNhan,
-            CONCAT(nv.Ho, ' ', nv.Ten) as TenBacSi,
-            bn.NgaySinh,
-            bn.SDT as SoDienThoai,
-            bn.GioiTinh,
-            h.LyDoKham,
-            p.KetQuaKham,
-            p.ChanDoan,
-            p.DieuTri,
-            p.TienKham,
-            p.NgayKham,
-            hd.MaHoaDon
-        FROM HenKhamBenh h
-        INNER JOIN PhieuKhamBenh p ON h.MaBenhNhan = p.MaBenhNhan
-        INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
-        INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
-        LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
-        WHERE p.NgayKham = ? AND nv.RoleID = 'DOCTOR'
-        ORDER BY p.NgayKham DESC
-        LIMIT 40
-    """;
+    SELECT 
+        h.MaKhamBenh,
+        p.MaPhieuKham,
+        h.MaBenhNhan,
+        h.MaBacSi,
+        CONCAT(bn.Ho, ' ', bn.Ten) AS HoTenBenhNhan,
+        CONCAT(nv.Ho, ' ', nv.Ten) AS TenBacSi,
+        bn.NgaySinh,
+        bn.SDT AS SoDienThoai,
+        bn.GioiTinh,
+        h.LyDoKham,
+        p.KetQuaKham,
+        p.ChanDoan,
+        p.DieuTri,
+        p.TienKham,
+        p.NgayKham,
+        hd.MaHoaDon
+    FROM HenKhamBenh h
+    INNER JOIN PhieuKhamBenh p 
+        ON h.MaBenhNhan = p.MaBenhNhan 
+        AND h.NgayKham = p.NgayKham
+    INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
+    INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
+    LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
+    WHERE p.NgayKham = ? AND nv.RoleID = 'DOCTOR'
+    ORDER BY p.NgayKham DESC
+    LIMIT 40
+""";
+
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

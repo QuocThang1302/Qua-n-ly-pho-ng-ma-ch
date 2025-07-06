@@ -83,8 +83,7 @@ public class AppointmentDetailController {
         LocalDate ngayKham = dateNgayKham.getValue();
         String gioBatDauStr = txtGioBatDau.getText().trim();
         String gioKetThucStr = txtGioKetThuc.getText().trim();
-        String maBacSi = "BS001"; // thay bằng mã bác sĩ thực tế
-        String tinhTrang = "Chưa khám";
+        String maBacSi = UserContext.getInstance().getUserId();
 
         if (hoTen.isEmpty() || soDienThoai.isEmpty() || ngaySinh == null || gioiTinh == null
                 || ngayKham == null || maBenhNhan.isEmpty() || gioBatDauStr.isEmpty() || gioKetThucStr.isEmpty()) {
@@ -119,7 +118,6 @@ public class AppointmentDetailController {
         model.setGioBatDau(gioBatDau);
         model.setGioKetThuc(gioKetThuc);
         model.setMaBacSi(maBacSi);
-        model.setTinhTrang(tinhTrang);
 
         // Gọi DAO để lưu lịch hẹn
         boolean success = HenKhamBenhDAO.insert(model);
@@ -197,7 +195,6 @@ public class AppointmentDetailController {
             model.setNgayKham(ngayKham);
             model.setGioBatDau(gioBatDau);
             model.setGioKetThuc(gioKetThuc);
-            model.setTinhTrang("Chưa khám"); // hoặc cập nhật theo checkbox/trạng thái
             model.setMaBacSi("BS001"); // hoặc lấy từ combobox nếu có
 
             // Cập nhật vào database
@@ -240,6 +237,7 @@ public class AppointmentDetailController {
                 txtHoTen.setText(selected.getHoTen());
                 txtSoDienThoai.setText(selected.getSoDienThoai());
                 dateNgaySinh.setValue(selected.getNgaySinh());
+                cbGioiTinh.setValue(selected.getGioiTinh());
             }
 
         } catch (IOException e) {

@@ -16,7 +16,7 @@ public class HenKhamBenhDAO {
     public static AppointmentModel getAppointmentWithPatient(String maKhamBenh) {
         String sql = """
         SELECT h.MaKhamBenh, h.MaBenhNhan, h.LyDoKham, h.NgayKham, h.GioBatDau, h.GioKetThuc,
-               h.MaBacSi, h.TinhTrang,
+               h.MaBacSi,
                b.HoTen, b.NgaySinh, b.SDT, b.GioiTinh
         FROM HenKhamBenh h
         JOIN BenhNhan b ON h.MaBenhNhan = b.MaBenhNhan
@@ -38,7 +38,6 @@ public class HenKhamBenhDAO {
                 model.setGioBatDau(rs.getTime("GioBatDau").toLocalTime());
                 model.setGioKetThuc(rs.getTime("GioKetThuc").toLocalTime());
                 model.setMaBacSi(rs.getString("MaBacSi"));
-                model.setTinhTrang(rs.getString("TinhTrang"));
 
                 model.setHoTen(rs.getString("HoTen"));
                 model.setNgaySinh(rs.getDate("NgaySinh").toLocalDate());
@@ -54,16 +53,17 @@ public class HenKhamBenhDAO {
         return null;
     }
 
+
     public static List<AppointmentModel> getAll() {
         List<AppointmentModel> list = new ArrayList<>();
 
         String sql = """
-    SELECT h.MaKhamBenh, h.MaBenhNhan, h.LyDoKham, h.NgayKham, h.GioBatDau, h.GioKetThuc,
-           h.MaBacSi, h.TinhTrang,
-           b.Ho, b.Ten, b.NgaySinh, b.SDT, b.GioiTinh
-    FROM HenKhamBenh h
-    JOIN BenhNhan b ON h.MaBenhNhan = b.MaBenhNhan
-    ORDER BY h.NgayKham DESC
+        SELECT h.MaKhamBenh, h.MaBenhNhan, h.LyDoKham, h.NgayKham, h.GioBatDau, h.GioKetThuc,
+               h.MaBacSi,
+               b.Ho, b.Ten, b.NgaySinh, b.SDT, b.GioiTinh
+        FROM HenKhamBenh h
+        JOIN BenhNhan b ON h.MaBenhNhan = b.MaBenhNhan
+        ORDER BY h.NgayKham DESC
     """;
 
         try (Connection conn = DatabaseConnector.connect();
@@ -79,7 +79,6 @@ public class HenKhamBenhDAO {
                 model.setGioBatDau(rs.getTime("GioBatDau").toLocalTime());
                 model.setGioKetThuc(rs.getTime("GioKetThuc").toLocalTime());
                 model.setMaBacSi(rs.getString("MaBacSi"));
-                model.setTinhTrang(rs.getString("TinhTrang"));
 
                 String ho = rs.getString("Ho");
                 String ten = rs.getString("Ten");
@@ -99,10 +98,11 @@ public class HenKhamBenhDAO {
         return list;
     }
 
+
     public static boolean insert(AppointmentModel model) {
         String sql = """
-        INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, GioBatDau, GioKetThuc, MaBacSi, TinhTrang)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, GioBatDau, GioKetThuc, MaBacSi)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     """;
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -114,7 +114,6 @@ public class HenKhamBenhDAO {
             stmt.setTime(5, Time.valueOf(model.getGioBatDau()));
             stmt.setTime(6, Time.valueOf(model.getGioKetThuc()));
             stmt.setString(7, model.getMaBacSi());
-            stmt.setString(8, model.getTinhTrang());
 
             return stmt.executeUpdate() > 0;
 
@@ -127,7 +126,7 @@ public class HenKhamBenhDAO {
     public static boolean update(AppointmentModel model) {
         String sql = """
         UPDATE HenKhamBenh
-        SET LyDoKham = ?, NgayKham = ?, GioBatDau = ?, GioKetThuc = ?, MaBacSi = ?, TinhTrang = ?
+        SET LyDoKham = ?, NgayKham = ?, GioBatDau = ?, GioKetThuc = ?, MaBacSi = ?
         WHERE MaKhamBenh = ?
     """;
 
@@ -139,8 +138,7 @@ public class HenKhamBenhDAO {
             stmt.setTime(3, Time.valueOf(model.getGioBatDau()));
             stmt.setTime(4, Time.valueOf(model.getGioKetThuc()));
             stmt.setString(5, model.getMaBacSi());
-            stmt.setString(6, model.getTinhTrang());
-            stmt.setString(7, model.getMaKhamBenh());
+            stmt.setString(6, model.getMaKhamBenh());
 
             return stmt.executeUpdate() > 0;
 
@@ -150,6 +148,7 @@ public class HenKhamBenhDAO {
 
         return false;
     }
+
 
 
     // ✅ 5. Đếm số lượng bệnh nhân khác nhau theo ngày/tháng/năm

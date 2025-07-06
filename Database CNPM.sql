@@ -39,10 +39,9 @@ CREATE TABLE HenKhamBenh (
   MaBenhNhan VARCHAR(20),
   LyDoKham TEXT,
   NgayKham DATE,
-  NgayketThuc DATE,
+  GioBatDau TIME,
+  GioKetThuc TIME,
   MaBacSi VARCHAR(20),
-  TinhTrang TEXT,
-  CHECK (NgayKham = NgayketThuc)
 );
 
 CREATE TABLE PhieuKhamBenh (
@@ -158,32 +157,32 @@ INSERT INTO LichTruc (MaLichTruc, MaBacSi, NgayTruc, CaTruc) VALUES
 ('LT010', 'BS001', '2025-07-05', 'Chiều');
 
 -- Hẹn khám bệnh (tập trung vào tháng 7/2025)
-INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, NgayketThuc, MaBacSi, TinhTrang) VALUES
-('HKB001', 'BN001', 'Đau đầu thường xuyên', '2025-07-01', '2025-07-01', 'BS001', 'Đã khám xong'),
-('HKB002', 'BN002', 'Khám sức khỏe định kỳ', '2025-07-01', '2025-07-01', 'BS001', 'Đã khám xong'),
-('HKB003', 'BN003', 'Đau bụng', '2025-07-02', '2025-07-02', 'BS002', 'Đã khám xong'),
-('HKB004', 'BN004', 'Ho kéo dài', '2025-07-02', '2025-07-02', 'BS003', 'Đã khám xong'),
-('HKB005', 'BN005', 'Khám tim mạch', '2025-07-03', '2025-07-03', 'BS001', 'Đã khám xong'),
-('HKB006', 'BN006', 'Đau lưng', '2025-07-03', '2025-07-03', 'BS002', 'Đã khám xong'),
-('HKB007', 'BN007', 'Khám mắt', '2025-07-04', '2025-07-04', 'BS003', 'Đã khám xong'),
-('HKB008', 'BN008', 'Đau khớp', '2025-07-04', '2025-07-04', 'BS001', 'Đã khám xong'),
-('HKB009', 'BN009', 'Khám da liễu', '2025-07-05', '2025-07-05', 'BS002', 'Đã khám xong'),
-('HKB010', 'BN010', 'Khám phụ khoa', '2025-07-05', '2025-07-05', 'BS003', 'Đã khám xong'),
-('HKB011', 'BN011', 'Đau răng', '2025-07-08', '2025-07-08', 'BS001', 'Đã khám xong'),
-('HKB012', 'BN012', 'Khám tai mũi họng', '2025-07-08', '2025-07-08', 'BS002', 'Đã khám xong'),
-('HKB013', 'BN013', 'Đau dạ dày', '2025-07-09', '2025-07-09', 'BS003', 'Đã khám xong'),
-('HKB014', 'BN014', 'Khám tổng quát', '2025-07-09', '2025-07-09', 'BS001', 'Đã khám xong'),
-('HKB015', 'BN015', 'Huyết áp cao', '2025-07-10', '2025-07-10', 'BS002', 'Đã khám xong'),
-('HKB016', 'BN001', 'Tái khám đau đầu', '2025-07-15', '2025-07-15', 'BS001', 'Đã khám xong'),
-('HKB017', 'BN003', 'Tái khám đau bụng', '2025-07-16', '2025-07-16', 'BS002', 'Đã khám xong'),
-('HKB018', 'BN005', 'Tái khám tim mạch', '2025-07-17', '2025-07-17', 'BS001', 'Đã khám xong'),
-('HKB019', 'BN007', 'Tái khám mắt', '2025-07-18', '2025-07-18', 'BS003', 'Đã khám xong'),
-('HKB020', 'BN012', 'Tái khám tai mũi họng', '2025-07-19', '2025-07-19', 'BS002', 'Đã khám xong'),
-('HKB021', 'BN002', 'Khám sức khỏe định kỳ', '2025-07-22', '2025-07-22', 'BS001', 'Đã khám xong'),
-('HKB022', 'BN004', 'Tái khám ho', '2025-07-23', '2025-07-23', 'BS003', 'Đã khám xong'),
-('HKB023', 'BN006', 'Tái khám đau lưng', '2025-07-24', '2025-07-24', 'BS002', 'Đã khám xong'),
-('HKB024', 'BN008', 'Tái khám đau khớp', '2025-07-25', '2025-07-25', 'BS001', 'Đã khám xong'),
-('HKB025', 'BN010', 'Tái khám phụ khoa', '2025-07-26', '2025-07-26', 'BS003', 'Đã khám xong');
+INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, GioBatDau, GioKetThuc, MaBacSi) VALUES
+('HKB001', 'BN001', 'Đau đầu thường xuyên', '2025-07-01', '08:00', '08:30', 'BS001'),
+('HKB002', 'BN002', 'Khám sức khỏe định kỳ', '2025-07-01', '08:30', '09:00', 'BS001'),
+('HKB003', 'BN003', 'Đau bụng', '2025-07-02', '09:00', '09:30', 'BS002'),
+('HKB004', 'BN004', 'Ho kéo dài', '2025-07-02', '09:30', '10:00', 'BS003'),
+('HKB005', 'BN005', 'Khám tim mạch', '2025-07-03', '08:00', '08:30', 'BS001'),
+('HKB006', 'BN006', 'Đau lưng', '2025-07-03', '08:30', '09:00', 'BS002'),
+('HKB007', 'BN007', 'Khám mắt', '2025-07-04', '09:00', '09:30', 'BS003'),
+('HKB008', 'BN008', 'Đau khớp', '2025-07-04', '09:30', '10:00', 'BS001'),
+('HKB009', 'BN009', 'Khám da liễu', '2025-07-05', '08:00', '08:30', 'BS002'),
+('HKB010', 'BN010', 'Khám phụ khoa', '2025-07-05', '08:30', '09:00', 'BS003'),
+('HKB011', 'BN011', 'Đau răng', '2025-07-08', '09:00', '09:30', 'BS001'),
+('HKB012', 'BN012', 'Khám tai mũi họng', '2025-07-08', '09:30', '10:00', 'BS002'),
+('HKB013', 'BN013', 'Đau dạ dày', '2025-07-09', '08:00', '08:30', 'BS003'),
+('HKB014', 'BN014', 'Khám tổng quát', '2025-07-09', '08:30', '09:00', 'BS001'),
+('HKB015', 'BN015', 'Huyết áp cao', '2025-07-10', '09:00', '09:30', 'BS002'),
+('HKB016', 'BN001', 'Tái khám đau đầu', '2025-07-15', '08:00', '08:30', 'BS001'),
+('HKB017', 'BN003', 'Tái khám đau bụng', '2025-07-16', '08:30', '09:00', 'BS002'),
+('HKB018', 'BN005', 'Tái khám tim mạch', '2025-07-17', '09:00', '09:30', 'BS001'),
+('HKB019', 'BN007', 'Tái khám mắt', '2025-07-18', '09:30', '10:00', 'BS003'),
+('HKB020', 'BN012', 'Tái khám tai mũi họng', '2025-07-19', '08:00', '08:30', 'BS002'),
+('HKB021', 'BN002', 'Khám sức khỏe định kỳ', '2025-07-22', '08:30', '09:00', 'BS001'),
+('HKB022', 'BN004', 'Tái khám ho', '2025-07-23', '09:00', '09:30', 'BS003'),
+('HKB023', 'BN006', 'Tái khám đau lưng', '2025-07-24', '09:30', '10:00', 'BS002'),
+('HKB024', 'BN008', 'Tái khám đau khớp', '2025-07-25', '08:00', '08:30', 'BS001'),
+('HKB025', 'BN010', 'Tái khám phụ khoa', '2025-07-26', '08:30', '09:00', 'BS003');
 
 -- Phiếu khám bệnh
 INSERT INTO PhieuKhamBenh (MaPhieuKham, MaBenhNhan, NgayKham, NgayLapPhieu, ChanDoan, KetQuaKham, DieuTri, TienKham, MaBacSi) VALUES

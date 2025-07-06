@@ -15,9 +15,11 @@ public class AppointmentModel {
     private LocalTime gioBatDau;
     private LocalTime gioKetThuc;
     private String maBacSi;
-    private String tinhTrang;
 
-    public AppointmentModel(String maKhamBenh, String maBenhNhan, String hoTen, LocalDate ngaySinh, String soDienThoai, String gioiTinh, String lyDoKham, LocalDate ngayKham, LocalTime gioBatDau, LocalTime gioKetThuc, String maBacSi, String tinhTrang) {
+    public AppointmentModel(String maKhamBenh, String maBenhNhan, String hoTen, LocalDate ngaySinh,
+                            String soDienThoai, String gioiTinh, String lyDoKham,
+                            LocalDate ngayKham, LocalTime gioBatDau, LocalTime gioKetThuc,
+                            String maBacSi) {
         this.maKhamBenh = maKhamBenh;
         this.maBenhNhan = maBenhNhan;
         this.hoTen = hoTen;
@@ -29,7 +31,6 @@ public class AppointmentModel {
         this.gioBatDau = gioBatDau;
         this.gioKetThuc = gioKetThuc;
         this.maBacSi = maBacSi;
-        this.tinhTrang = tinhTrang;
     }
 
     public AppointmentModel() {}
@@ -120,13 +121,5 @@ public class AppointmentModel {
 
     public void setMaBacSi(String maBacSi) {
         this.maBacSi = maBacSi;
-    }
-
-    public String getTinhTrang() {
-        return tinhTrang;
-    }
-
-    public void setTinhTrang(String tinhTrang) {
-        this.tinhTrang = tinhTrang;
     }
 }

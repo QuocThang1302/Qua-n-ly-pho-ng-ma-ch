@@ -126,11 +126,12 @@ public class LoginController {
 
             if (rs.next()) {
                 // Lấy vai trò từ CSDL
+                String userId = rs.getString("MaNhanVien");
                 String vaiTroStr = rs.getString("RoleID");
                 Role role = Role.valueOf(vaiTroStr.toUpperCase());
 
                 // Lưu vào context
-                UserContext.getInstance().setUser(taiKhoan, role);
+                UserContext.getInstance().setUser(taiKhoan, userId, role);
                 return true;
             } else {
                 return false;

@@ -78,7 +78,7 @@ public class AppointmentController {
                 model.setMaKhamBenh(UUID.randomUUID().toString());
                 model.setLyDoKham(title);
                 model.setNgayKham(param.getZonedDateTime().toLocalDate());
-                model.setTinhTrang("Chưa khám");
+
 
                 AppointmentEntry entry = new AppointmentEntry(title, model);
                 entry.setInterval(param.getZonedDateTime());
