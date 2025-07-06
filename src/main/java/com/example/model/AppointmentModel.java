@@ -1,6 +1,8 @@
 package com.example.model;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+
 public class AppointmentModel {
     private String maKhamBenh;
     private String maBenhNhan;
@@ -10,11 +12,12 @@ public class AppointmentModel {
     private String gioiTinh;
     private String lyDoKham;
     private LocalDate ngayKham;
-    private LocalDate ngayKetThuc;
+    private LocalTime gioBatDau;
+    private LocalTime gioKetThuc;
     private String maBacSi;
     private String tinhTrang;
 
-    public AppointmentModel(String maKhamBenh, String maBenhNhan, String hoTen, LocalDate ngaySinh, String soDienThoai, String gioiTinh, String lyDoKham, LocalDate ngayKham, LocalDate ngayKetThuc, String maBacSi, String tinhTrang) {
+    public AppointmentModel(String maKhamBenh, String maBenhNhan, String hoTen, LocalDate ngaySinh, String soDienThoai, String gioiTinh, String lyDoKham, LocalDate ngayKham, LocalTime gioBatDau, LocalTime gioKetThuc, String maBacSi, String tinhTrang) {
         this.maKhamBenh = maKhamBenh;
         this.maBenhNhan = maBenhNhan;
         this.hoTen = hoTen;
@@ -23,14 +26,13 @@ public class AppointmentModel {
         this.gioiTinh = gioiTinh;
         this.lyDoKham = lyDoKham;
         this.ngayKham = ngayKham;
-        this.ngayKetThuc = ngayKetThuc;
+        this.gioBatDau = gioBatDau;
+        this.gioKetThuc = gioKetThuc;
         this.maBacSi = maBacSi;
         this.tinhTrang = tinhTrang;
     }
 
-    public AppointmentModel() {
-
-    }
+    public AppointmentModel() {}
 
     public String getMaKhamBenh() {
         return maKhamBenh;
@@ -96,12 +98,20 @@ public class AppointmentModel {
         this.ngayKham = ngayKham;
     }
 
-    public LocalDate getNgayKetThuc() {
-        return ngayKetThuc;
+    public LocalTime getGioBatDau() {
+        return gioBatDau;
     }
 
-    public void setNgayKetThuc(LocalDate ngayKetThuc) {
-        this.ngayKetThuc = ngayKetThuc;
+    public void setGioBatDau(LocalTime gioBatDau) {
+        this.gioBatDau = gioBatDau;
+    }
+
+    public LocalTime getGioKetThuc() {
+        return gioKetThuc;
+    }
+
+    public void setGioKetThuc(LocalTime gioKetThuc) {
+        this.gioKetThuc = gioKetThuc;
     }
 
     public String getMaBacSi() {

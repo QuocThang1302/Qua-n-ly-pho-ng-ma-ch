@@ -13,16 +13,15 @@ import java.util.List;
 
 public class HenKhamBenhDAO {
 
-    // ✅ 1. Truy xuất lịch hẹn + bệnh nhân theo mã khám
     public static AppointmentModel getAppointmentWithPatient(String maKhamBenh) {
         String sql = """
-            SELECT h.MaKhamBenh, h.MaBenhNhan, h.LyDoKham, h.NgayKham, h.NgayKetThuc,
-                   h.MaBacSi, h.TinhTrang,
-                   b.HoTen, b.NgaySinh, b.SoDienThoai, b.GioiTinh
-            FROM HenKhamBenh h
-            JOIN BenhNhan b ON h.MaBenhNhan = b.MaBenhNhan
-            WHERE h.MaKhamBenh = ?
-        """;
+        SELECT h.MaKhamBenh, h.MaBenhNhan, h.LyDoKham, h.NgayKham, h.GioBatDau, h.GioKetThuc,
+               h.MaBacSi, h.TinhTrang,
+               b.HoTen, b.NgaySinh, b.SDT, b.GioiTinh
+        FROM HenKhamBenh h
+        JOIN BenhNhan b ON h.MaBenhNhan = b.MaBenhNhan
+        WHERE h.MaKhamBenh = ?
+    """;
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -36,13 +35,14 @@ public class HenKhamBenhDAO {
                 model.setMaBenhNhan(rs.getString("MaBenhNhan"));
                 model.setLyDoKham(rs.getString("LyDoKham"));
                 model.setNgayKham(rs.getDate("NgayKham").toLocalDate());
-                model.setNgayKetThuc(rs.getDate("NgayKetThuc").toLocalDate());
+                model.setGioBatDau(rs.getTime("GioBatDau").toLocalTime());
+                model.setGioKetThuc(rs.getTime("GioKetThuc").toLocalTime());
                 model.setMaBacSi(rs.getString("MaBacSi"));
                 model.setTinhTrang(rs.getString("TinhTrang"));
 
                 model.setHoTen(rs.getString("HoTen"));
                 model.setNgaySinh(rs.getDate("NgaySinh").toLocalDate());
-                model.setSoDienThoai(rs.getString("SoDienThoai"));
+                model.setSoDienThoai(rs.getString("SDT"));
                 model.setGioiTinh(rs.getString("GioiTinh"));
                 return model;
             }
@@ -54,12 +54,56 @@ public class HenKhamBenhDAO {
         return null;
     }
 
-    // ✅ 2. Thêm lịch hẹn mới
+    public static List<AppointmentModel> getAll() {
+        List<AppointmentModel> list = new ArrayList<>();
+
+        String sql = """
+    SELECT h.MaKhamBenh, h.MaBenhNhan, h.LyDoKham, h.NgayKham, h.GioBatDau, h.GioKetThuc,
+           h.MaBacSi, h.TinhTrang,
+           b.Ho, b.Ten, b.NgaySinh, b.SDT, b.GioiTinh
+    FROM HenKhamBenh h
+    JOIN BenhNhan b ON h.MaBenhNhan = b.MaBenhNhan
+    ORDER BY h.NgayKham DESC
+    """;
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                AppointmentModel model = new AppointmentModel();
+                model.setMaKhamBenh(rs.getString("MaKhamBenh"));
+                model.setMaBenhNhan(rs.getString("MaBenhNhan"));
+                model.setLyDoKham(rs.getString("LyDoKham"));
+                model.setNgayKham(rs.getDate("NgayKham").toLocalDate());
+                model.setGioBatDau(rs.getTime("GioBatDau").toLocalTime());
+                model.setGioKetThuc(rs.getTime("GioKetThuc").toLocalTime());
+                model.setMaBacSi(rs.getString("MaBacSi"));
+                model.setTinhTrang(rs.getString("TinhTrang"));
+
+                String ho = rs.getString("Ho");
+                String ten = rs.getString("Ten");
+                model.setHoTen((ho != null ? ho : "") + " " + (ten != null ? ten : ""));
+
+                model.setNgaySinh(rs.getDate("NgaySinh").toLocalDate());
+                model.setSoDienThoai(rs.getString("SDT"));
+                model.setGioiTinh(rs.getString("GioiTinh"));
+
+                list.add(model);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
     public static boolean insert(AppointmentModel model) {
         String sql = """
-            INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, NgayKetThuc, MaBacSi, TinhTrang)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """;
+        INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, GioBatDau, GioKetThuc, MaBacSi, TinhTrang)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """;
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -67,9 +111,10 @@ public class HenKhamBenhDAO {
             stmt.setString(2, model.getMaBenhNhan());
             stmt.setString(3, model.getLyDoKham());
             stmt.setDate(4, Date.valueOf(model.getNgayKham()));
-            stmt.setDate(5, Date.valueOf(model.getNgayKetThuc()));
-            stmt.setString(6, model.getMaBacSi());
-            stmt.setString(7, model.getTinhTrang());
+            stmt.setTime(5, Time.valueOf(model.getGioBatDau()));
+            stmt.setTime(6, Time.valueOf(model.getGioKetThuc()));
+            stmt.setString(7, model.getMaBacSi());
+            stmt.setString(8, model.getTinhTrang());
 
             return stmt.executeUpdate() > 0;
 
@@ -79,23 +124,23 @@ public class HenKhamBenhDAO {
         return false;
     }
 
-    // ✅ 3. Cập nhật lịch hẹn
     public static boolean update(AppointmentModel model) {
         String sql = """
-            UPDATE HenKhamBenh
-            SET LyDoKham = ?, NgayKham = ?, NgayKetThuc = ?, MaBacSi = ?, TinhTrang = ?
-            WHERE MaKhamBenh = ?
-        """;
+        UPDATE HenKhamBenh
+        SET LyDoKham = ?, NgayKham = ?, GioBatDau = ?, GioKetThuc = ?, MaBacSi = ?, TinhTrang = ?
+        WHERE MaKhamBenh = ?
+    """;
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, model.getLyDoKham());
             stmt.setDate(2, Date.valueOf(model.getNgayKham()));
-            stmt.setDate(3, Date.valueOf(model.getNgayKetThuc()));
-            stmt.setString(4, model.getMaBacSi());
-            stmt.setString(5, model.getTinhTrang());
-            stmt.setString(6, model.getMaKhamBenh());
+            stmt.setTime(3, Time.valueOf(model.getGioBatDau()));
+            stmt.setTime(4, Time.valueOf(model.getGioKetThuc()));
+            stmt.setString(5, model.getMaBacSi());
+            stmt.setString(6, model.getTinhTrang());
+            stmt.setString(7, model.getMaKhamBenh());
 
             return stmt.executeUpdate() > 0;
 
@@ -106,22 +151,6 @@ public class HenKhamBenhDAO {
         return false;
     }
 
-    // ✅ 4. Xóa lịch hẹn
-    public static boolean delete(String maKhamBenh) {
-        String sql = "DELETE FROM HenKhamBenh WHERE MaKhamBenh = ?";
-
-        try (Connection conn = DatabaseConnector.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, maKhamBenh);
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
 
     // ✅ 5. Đếm số lượng bệnh nhân khác nhau theo ngày/tháng/năm
     public static int countDistinctPatientsByDate(FilterDate filter) {

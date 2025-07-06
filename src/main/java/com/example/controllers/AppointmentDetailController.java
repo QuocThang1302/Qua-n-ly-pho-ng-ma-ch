@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.DAO.HenKhamBenhDAO;
 import com.example.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +20,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+
 public class AppointmentDetailController {
 
     @FXML private TextField txtMaBenhNhan,txtHoTen, txtSoDienThoai, txtGioBatDau, txtGioKetThuc;
@@ -29,12 +31,18 @@ public class AppointmentDetailController {
 
     private AppointmentEntry entry;
     private AppointmentModel model;
+    private Runnable onRefreshCallback;
+
+    public void setOnRefreshCallback(Runnable callback) {
+        this.onRefreshCallback = callback;
+    }
 
     public void setEntry(AppointmentEntry entry) {
         this.entry = entry;
         this.model = entry.getModel();
 
         // Đổ dữ liệu từ model ra UI
+        txtMaBenhNhan.setText(model.getMaBenhNhan());
         txtHoTen.setText(model.getHoTen());
         txtSoDienThoai.setText(model.getSoDienThoai());
         dateNgaySinh.setValue(model.getNgaySinh());
@@ -49,8 +57,81 @@ public class AppointmentDetailController {
         txtGioKetThuc.setText(entry.getEndTime().toString());
 
         btnPhieuKhamBenh.setOnAction(e-> handlePhieuKham());
-        btnLuu.setOnAction(e -> handleLuu());
+        if (isNullOrEmpty(txtMaBenhNhan.getText()) && isNullOrEmpty(txtHoTen.getText())) {
+            btnLuu.setOnAction(e -> handleLuuMoi());
+        } else {
+            btnLuu.setOnAction(e -> handleLuu());
+        }
     }
+
+    private boolean isNullOrEmpty(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
+    private void handleLuuMoi() {
+        // Lấy dữ liệu từ giao diện
+        String hoTen = txtHoTen.getText().trim();
+        String maBenhNhan = txtMaBenhNhan.getText().trim();
+        String soDienThoai = txtSoDienThoai.getText().trim();
+        LocalDate ngaySinh = dateNgaySinh.getValue();
+        String gioiTinh = cbGioiTinh.getValue();
+        String lyDo = txtLyDo.getText().trim();
+        LocalDate ngayKham = dateNgayKham.getValue();
+        String gioBatDauStr = txtGioBatDau.getText().trim();
+        String gioKetThucStr = txtGioKetThuc.getText().trim();
+        String maBacSi = "BS001"; // thay bằng mã bác sĩ thực tế
+        String tinhTrang = "Chưa khám";
+
+        if (hoTen.isEmpty() || soDienThoai.isEmpty() || ngaySinh == null || gioiTinh == null
+                || ngayKham == null || maBenhNhan.isEmpty() || gioBatDauStr.isEmpty() || gioKetThucStr.isEmpty()) {
+            showAlert("Vui lòng nhập đầy đủ thông tin.");
+            return;
+        }
+
+        // Chuyển đổi thời gian
+        LocalTime gioBatDau;
+        LocalTime gioKetThuc;
+        try {
+            gioBatDau = LocalTime.parse(gioBatDauStr);
+            gioKetThuc = LocalTime.parse(gioKetThucStr);
+        } catch (Exception e) {
+            showAlert("Thời gian không hợp lệ! Vui lòng nhập đúng định dạng HH:mm.");
+            return;
+        }
+        if (!gioBatDau.isBefore(gioKetThuc)) {
+            showAlert("Giờ bắt đầu phải trước giờ kết thúc.");
+            return;
+        }
+
+        // Sinh mã khám bệnh mới
+        String maKhamBenh = "KB" + System.currentTimeMillis();
+
+        // Tạo model lịch hẹn
+        AppointmentModel model = new AppointmentModel();
+        model.setMaKhamBenh(maKhamBenh);
+        model.setMaBenhNhan(maBenhNhan);
+        model.setLyDoKham(lyDo);
+        model.setNgayKham(ngayKham);
+        model.setGioBatDau(gioBatDau);
+        model.setGioKetThuc(gioKetThuc);
+        model.setMaBacSi(maBacSi);
+        model.setTinhTrang(tinhTrang);
+
+        // Gọi DAO để lưu lịch hẹn
+        boolean success = HenKhamBenhDAO.insert(model);
+
+        if (success) {
+            txtMaBenhNhan.setText(maBenhNhan);
+            showInfo("Đã lưu lịch hẹn mới thành công!");
+
+            if (onRefreshCallback != null) {
+                onRefreshCallback.run(); // gọi refresh ở controller cha
+            }
+        } else {
+            showAlert("Không thể lưu lịch hẹn!");
+        }
+    }
+
 
     private void handlePhieuKham() {
         try {
@@ -101,45 +182,56 @@ public class AppointmentDetailController {
 // Hiển thị cửa sổ và chờ đóng
             stage.showAndWait();
 
-
-
         } catch (IOException e) {
             showAlert("Không thể mở phiếu khám: " + e.getMessage());
         }
     }
 
-
     private void handleLuu() {
         try {
             // Lấy thông tin từ giao diện
-            String hoTen = txtHoTen.getText();
-            String sdt = txtSoDienThoai.getText();
+            String hoTen = txtHoTen.getText().trim();
+            String sdt = txtSoDienThoai.getText().trim();
             LocalDate ngaySinh = dateNgaySinh.getValue();
             String gioiTinh = cbGioiTinh.getValue();
-            String lyDo = txtLyDo.getText();
+            String lyDo = txtLyDo.getText().trim();
             LocalDate ngayKham = dateNgayKham.getValue();
+            LocalTime gioBatDau = LocalTime.parse(txtGioBatDau.getText().trim());
+            LocalTime gioKetThuc = LocalTime.parse(txtGioKetThuc.getText().trim());
 
-            LocalTime gioBatDau = LocalTime.parse(txtGioBatDau.getText());
-            LocalTime gioKetThuc = LocalTime.parse(txtGioKetThuc.getText());
+            if (!gioBatDau.isBefore(gioKetThuc)) {
+                showAlert("Giờ bắt đầu phải trước giờ kết thúc.");
+                return;
+            }
 
-            // Cập nhật entry (giờ và ngày giống nhau)
+            // Cập nhật entry trong calendar view
             entry.changeStartDate(ngayKham);
             entry.changeStartTime(gioBatDau);
-            entry.changeEndDate(ngayKham); // cùng ngày
+            entry.changeEndDate(ngayKham);
             entry.changeEndTime(gioKetThuc);
             entry.setTitle(hoTen + " - " + lyDo);
 
-            // Cập nhật model
+            // Cập nhật dữ liệu trong model
             model.setHoTen(hoTen);
             model.setSoDienThoai(sdt);
             model.setNgaySinh(ngaySinh);
             model.setGioiTinh(gioiTinh);
             model.setLyDoKham(lyDo);
             model.setNgayKham(ngayKham);
-            model.setNgayKetThuc(ngayKham); // luôn đồng bộ
-            Stage stage = (Stage) btnLuu.getScene().getWindow();
-            stage.close();
-            System.out.println("✅ Đã lưu: " + model.getMaKhamBenh());
+            model.setGioBatDau(gioBatDau);
+            model.setGioKetThuc(gioKetThuc);
+            model.setTinhTrang("Chưa khám"); // hoặc cập nhật theo checkbox/trạng thái
+            model.setMaBacSi("BS001"); // hoặc lấy từ combobox nếu có
+
+            // Cập nhật vào database
+            boolean success = HenKhamBenhDAO.update(model);
+            if (success) {
+                System.out.println("✅ Đã cập nhật lịch hẹn: " + model.getMaKhamBenh());
+                Stage stage = (Stage) btnLuu.getScene().getWindow();
+                stage.close();
+            } else {
+                showAlert("Không thể cập nhật lịch hẹn!");
+            }
 
         } catch (DateTimeParseException ex) {
             showAlert("Định dạng giờ không hợp lệ. Vui lòng nhập HH:mm");
@@ -147,6 +239,8 @@ public class AppointmentDetailController {
             showAlert("Lỗi khi lưu thông tin: " + ex.getMessage());
         }
     }
+
+
     @FXML
     private void handleChonBenhNhanCu() {
         try {
@@ -184,4 +278,13 @@ public class AppointmentDetailController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Thông báo");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }

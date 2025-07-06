@@ -1,9 +1,9 @@
-
 package com.example.controllers;
 
 import com.calendarfx.model.Calendar;
 import com.calendarfx.model.CalendarSource;
 import com.calendarfx.view.CalendarView;
+import com.example.DAO.HenKhamBenhDAO;
 import com.example.model.AppointmentEntry;
 import com.example.model.AppointmentModel;
 import com.example.model.UserContext;
@@ -33,6 +33,8 @@ public class AppointmentController {
     private StackPane calendarContainer;
 
     private CalendarView calendarView;
+    private Calendar calendar;
+
     @FXML
     public void initialize() {
         calendarView = new CalendarView();
@@ -40,125 +42,102 @@ public class AppointmentController {
         calendarView.setShowPrintButton(false);
         calendarView.showDayPage();
 
-        Calendar calendar = new Calendar("Lịch Khám");
+        calendar = new Calendar("Lịch Khám");
         calendar.setStyle(Calendar.Style.STYLE1);
-        // TODO : load  ✅ Load dữ liệu từ DB hàm ở cuối class
-        loadAppointmentsFromDatabase(calendar);
+
+        // Load dữ liệu từ DB
+        loadAppointmentsFromDatabase();
 
         CalendarSource source = new CalendarSource("Phòng khám");
         source.getCalendars().add(calendar);
         calendarView.getCalendarSources().add(source);
         calendarContainer.getChildren().add(calendarView);
 
+        // ✅ XỬ LÝ DOUBLE-CLICK ĐơN GIẢN
         calendarView.setEntryFactory(param -> {
-            String title = "Khám Mới";
+            // Khi double click tạo Entry mới, ta chặn lại ở đây
             AppointmentModel model = new AppointmentModel();
-            model.setMaKhamBenh(UUID.randomUUID().toString());
-            model.setLyDoKham(title);
+            AppointmentEntry entry = new AppointmentEntry("", model);
+
+            // Gán ngày giờ vào model nếu cần:
             model.setNgayKham(param.getZonedDateTime().toLocalDate());
-            model.setTinhTrang("Chưa khám");
 
-            AppointmentEntry entry = new AppointmentEntry(title, model);
-            entry.setInterval(param.getZonedDateTime());
-            registerEntryChangeListeners(entry);
-            return entry;
+            // Gọi form chi tiết để người dùng nhập
+            Platform.runLater(() -> openAppointmentDetailWindow(entry));
+
+            // Trả null để không thêm "New Entry" vào giao diện
+            return null;
         });
-
         calendarView.setEntryDetailsPopOverContentCallback(param -> {
             if (!(param.getEntry() instanceof AppointmentEntry entry)) return null;
 
-            // Mở detail stage
+            // Mở cửa sổ chi tiết lịch hẹn
             Platform.runLater(() -> openAppointmentDetailWindow(entry));
 
             return null;
         });
 
+
     }
+
     private void openAppointmentDetailWindow(AppointmentEntry entry) {
         try {
+            System.out.println("🔧 Opening appointment detail window...");
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/appointment_detail.fxml"));
             Parent root = loader.load();
 
             AppointmentDetailController controller = loader.getController();
             controller.setEntry(entry);
 
+            // Set callback để refresh calendar sau khi đóng window
+            controller.setOnRefreshCallback(this::refreshCalendar);
+
             Stage stage = new Stage();
             stage.setTitle("Chi tiết lịch hẹn");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
+
         } catch (IOException e) {
+            System.err.println("❌ Error opening appointment detail: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    private void refreshCalendar() {
+        System.out.println("🔄 Refreshing calendar...");
 
-    private void registerEntryChangeListeners(AppointmentEntry entry) {
-        entry.titleProperty().addListener((obs, oldVal, newVal) -> updateEntry(entry));
-        entry.intervalProperty().addListener((obs, oldVal, newVal) -> updateEntry(entry));
+        // Xóa tất cả entries cũ
+        calendar.clear();
+
+        // Load lại từ DB
+        loadAppointmentsFromDatabase();
+
+        // Force refresh UI
+        Platform.runLater(() -> {
+            calendarView.refreshData();
+        });
     }
 
-    private void updateEntry(AppointmentEntry entry) {
-        AppointmentModel model = entry.getModel();
-        if (model == null) return;
+    private void loadAppointmentsFromDatabase() {
+        List<AppointmentModel> danhSach = HenKhamBenhDAO.getAll();
+        System.out.println("📥 Loading " + danhSach.size() + " appointments from database...");
 
-        model.setLyDoKham(entry.getTitle());
-        model.setNgayKham(entry.getStartDate());
-        //TODO cap nhat db
-        System.out.println("Cập nhật DB cho: " + model.getMaKhamBenh() + " - " + model.getLyDoKham());
-    }
-    private void loadAppointmentsFromDatabase(Calendar calendar) {
-        // ⚠️ Giả định đã có DAO như sau:
-        // List<AppointmentModel> danhSach = AppointmentDAO.getAllForToday();
-        // hoặc AppointmentDAO.getAll()
-
-        // TODO: thay dòng sau bằng dữ liệu thực từ DAO
-        // List<AppointmentModel> danhSach = AppointmentDAO.getAll();
-
-        System.out.println("Đang tải lịch hẹn từ DB...");
-
-        // Giả lập danh sách (để test nếu chưa có DAO)
-        // Xoá đoạn này khi dùng DAO thật
-        List<AppointmentModel> danhSach = List.of(
-                new AppointmentModel(
-                        "KB001",
-                        "BN001",
-                        "Nguyễn Văn A",
-                        LocalDate.of(1990, 1, 1),
-                        "0901234567",
-                        "Nam",
-                        "Đau đầu",
-                        LocalDate.now(),
-                        LocalDate.now(),
-                        "BS001",
-                        "Chưa khám"
-                ),
-                new AppointmentModel(
-                        "KB002",
-                        "BN002",
-                        "Trần Thị B",
-                        LocalDate.of(1985, 5, 20),
-                        "0912345678",
-                        "Nữ",
-                        "Sốt nhẹ",
-                        LocalDate.now(),
-                        LocalDate.now(),
-                        "BS002",
-                        "Đã khám"
-                )
-        );
-
-
-
-        // Duyệt từng model để tạo Entry và thêm vào calendar
         for (AppointmentModel model : danhSach) {
-            AppointmentEntry entry = new AppointmentEntry(model.getHoTen(), model);
-            entry.setInterval(
-                    model.getNgayKham().atTime(LocalTime.of(9, 0)),
-                    model.getNgayKham().atTime(LocalTime.of(9, 30))
-            );
+            String title = model.getHoTen() != null ? model.getHoTen() : "Khám mới";
+            AppointmentEntry entry = new AppointmentEntry(title, model);
+            LocalDate ngay = model.getNgayKham();
+            LocalTime batDau = model.getGioBatDau();
+            LocalTime ketThuc = model.getGioKetThuc();
+
+            if (ngay != null && batDau != null && ketThuc != null) {
+                entry.setInterval(ngay.atTime(batDau), ngay.atTime(ketThuc));
+            } else {
+                // fallback nếu thiếu dữ liệu
+                entry.setInterval(ngay.atTime(9, 0), ngay.atTime(9, 30));
+            }
             calendar.addEntry(entry);
         }
     }
-
 }
