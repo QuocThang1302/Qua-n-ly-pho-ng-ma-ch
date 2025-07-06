@@ -17,12 +17,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import com.example.DAO.HenKhamBenhDAO;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppointmentListController {
     @FXML
@@ -112,7 +115,22 @@ public class AppointmentListController {
     }
 
     private void loadAppointmentsByDate(LocalDate date) {
-        allAppointments.setAll(MedicalReportDAO.getMedicalReportsByDate(date));
+        // Lấy danh sách các mã khám bệnh đúng ngày
+        List<AppointmentModel> appointments = HenKhamBenhDAO.getAll();
+        List<String> maKhamBenhList = new ArrayList<>();
+        for (AppointmentModel ap : appointments) {
+            if (ap.getNgayKham() != null && ap.getNgayKham().isEqual(date)) {
+                maKhamBenhList.add(ap.getMaKhamBenh());
+            }
+        }
+        List<MedicalReportModel> reports = new ArrayList<>();
+        for (String maKhamBenh : maKhamBenhList) {
+            MedicalReportModel report = MedicalReportDAO.getCompleteMedicalReportByMaKhamBenh(maKhamBenh);
+            if (report != null) {
+                reports.add(report);
+            }
+        }
+        allAppointments.setAll(reports);
         filterAppointmentsByName(tfSearch.getText());
     }
 
