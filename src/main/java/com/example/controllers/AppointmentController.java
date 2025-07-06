@@ -83,7 +83,7 @@ public class AppointmentController {
             menu.getItems().add(deleteItem);
             return menu;
         });
-
+//
         // ✅ XỬ LÝ DOUBLE-CLICK ĐơN GIẢN
         calendarView.setEntryFactory(param -> {
             // Khi double click tạo Entry mới, chỉ mở form chi tiết, không tạo entry mới trên calendar
