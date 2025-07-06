@@ -412,4 +412,88 @@ public class BillDAO {
             stmt.executeUpdate();
         }
     }
+
+    // Xóa thuốc khỏi đơn thuốc dựa vào mã phiếu khám và mã thuốc
+    public static boolean removeMedicineFromDonThuoc(String maPhieuKham, String maThuoc) {
+        // Lấy mã đơn thuốc từ mã phiếu khám
+        String getDonThuocSql = "SELECT MaDonThuoc FROM HoaDon WHERE MaPhieuKham = ?";
+        String maDonThuoc = null;
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(getDonThuocSql)) {
+            stmt.setString(1, maPhieuKham);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                maDonThuoc = rs.getString("MaDonThuoc");
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy mã đơn thuốc: " + e.getMessage());
+            return false;
+        }
+        if (maDonThuoc == null) return false;
+
+        // Xóa thuốc khỏi CTDonThuoc
+        String deleteSql = "DELETE FROM CTDonThuoc WHERE MaDonThuoc = ? AND MaThuoc = ? RETURNING SoLuong";
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(deleteSql)) {
+            stmt.setString(1, maDonThuoc);
+            stmt.setString(2, maThuoc);
+            ResultSet rs = stmt.executeQuery();
+            int soLuongDaXoa = 0;
+            if (rs.next()) {
+                soLuongDaXoa = rs.getInt("SoLuong");
+            }
+            if (soLuongDaXoa > 0) {
+                // Sau khi xóa, cập nhật lại tổng tiền hóa đơn
+                updateHoaDonTotalPrice(conn, maPhieuKham);
+                // Tăng lại số lượng thuốc trong kho
+                String updateKho = "UPDATE Thuoc SET SoLuong = SoLuong + ? WHERE MaThuoc = ?";
+                try (PreparedStatement updateStmt = conn.prepareStatement(updateKho)) {
+                    updateStmt.setInt(1, soLuongDaXoa);
+                    updateStmt.setString(2, maThuoc);
+                    updateStmt.executeUpdate();
+                }
+                return true;
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi xóa thuốc khỏi đơn thuốc: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Cập nhật số lượng thuốc trong CTDonThuoc (chi tiết đơn thuốc) theo mã phiếu khám, mã thuốc
+    public static boolean updateMedicineQuantityInDonThuoc(String maPhieuKham, String maThuoc, int soLuongMoi) {
+        // Lấy mã đơn thuốc từ mã phiếu khám
+        String getDonThuocSql = "SELECT MaDonThuoc FROM HoaDon WHERE MaPhieuKham = ?";
+        String maDonThuoc = null;
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(getDonThuocSql)) {
+            stmt.setString(1, maPhieuKham);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                maDonThuoc = rs.getString("MaDonThuoc");
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy mã đơn thuốc: " + e.getMessage());
+            return false;
+        }
+        if (maDonThuoc == null) return false;
+
+        // Cập nhật số lượng trong CTDonThuoc
+        String updateSql = "UPDATE CTDonThuoc SET SoLuong = ? WHERE MaDonThuoc = ? AND MaThuoc = ?";
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(updateSql)) {
+            stmt.setInt(1, soLuongMoi);
+            stmt.setString(2, maDonThuoc);
+            stmt.setString(3, maThuoc);
+            int affected = stmt.executeUpdate();
+            if (affected > 0) {
+                // Sau khi cập nhật, cập nhật lại tổng tiền hóa đơn
+                updateHoaDonTotalPrice(conn, maPhieuKham);
+                return true;
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi cập nhật số lượng thuốc trong đơn thuốc: " + e.getMessage());
+        }
+        return false;
+    }
 }

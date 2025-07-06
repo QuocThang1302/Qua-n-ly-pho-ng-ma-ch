@@ -59,6 +59,11 @@ public class AppointmentDetailController {
         btnPhieuKhamBenh.setOnAction(e-> handlePhieuKham());
 
         if (isNullOrEmpty(txtMaBenhNhan.getText()) && isNullOrEmpty(txtHoTen.getText())) {
+            // Tự động sinh mã bệnh nhân mới
+            String prefix = "BN";
+            int nextId = com.example.DAO.PatientDAO.getNextIdNumber(prefix);
+            String newMaBenhNhan = prefix + String.format("%03d", nextId);
+            txtMaBenhNhan.setText(newMaBenhNhan);
             btnLuu.setOnAction(e -> handleLuuMoi());
         } else {
             btnLuu.setOnAction(e -> handleLuu());
@@ -89,6 +94,22 @@ public class AppointmentDetailController {
                 || ngayKham == null || maBenhNhan.isEmpty() || gioBatDauStr.isEmpty() || gioKetThucStr.isEmpty()) {
             showAlert("Vui lòng nhập đầy đủ thông tin.");
             return;
+        }
+
+        // Thêm mới bệnh nhân nếu chưa tồn tại
+        PatientModel patient = new PatientModel(
+            maBenhNhan,
+            hoTen,
+            ngaySinh,
+            soDienThoai,
+            gioiTinh
+        );
+        if (com.example.DAO.PatientDAO.getById(maBenhNhan) == null) {
+            boolean inserted = com.example.DAO.PatientDAO.insert(patient);
+            if (!inserted) {
+                showAlert("Không thể thêm mới bệnh nhân!");
+                return;
+            }
         }
 
         // Chuyển đổi thời gian
