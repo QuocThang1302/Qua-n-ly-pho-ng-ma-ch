@@ -105,6 +105,43 @@ public class MedicalReportController implements MedicineDataChangeListener {
         }
     }
 
+    // Phương thức mới: Refresh danh sách thuốc từ database
+    public void refreshMedicineList() {
+        try {
+            String maPhieuKham = tfMaPhieuKham.getText();
+            if (maPhieuKham != null && !maPhieuKham.trim().isEmpty()) {
+                // Lấy lại thông tin hóa đơn từ database
+                String maHoaDon = getMaHoaDonByMaPhieuKham(maPhieuKham);
+                if (maHoaDon != null) {
+                    BillModel bill = com.example.DAO.BillDAO.getBillById(maHoaDon);
+                    if (bill != null && bill.getDanhSachThuoc() != null) {
+                        danhSachThuoc.setAll(bill.getDanhSachThuoc());
+                        updateTongTien();
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Lỗi", "Không thể refresh danh sách thuốc: " + ex.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    // Phương thức hỗ trợ: Lấy mã hóa đơn từ mã phiếu khám
+    private String getMaHoaDonByMaPhieuKham(String maPhieuKham) {
+        String sql = "SELECT MaHoaDon FROM HoaDon WHERE MaPhieuKham = ?";
+        try (java.sql.Connection conn = com.example.utils.DatabaseConnector.connect();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maPhieuKham);
+            java.sql.ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("MaHoaDon");
+            }
+        } catch (java.sql.SQLException e) {
+            System.err.println("Lỗi khi lấy mã hóa đơn: " + e.getMessage());
+        }
+        return null;
+    }
+
     private void setupButtons() {
         btnThemThuoc.setOnAction(event -> {
             try {
@@ -114,8 +151,20 @@ public class MedicalReportController implements MedicineDataChangeListener {
                 
                 // Set callback để nhận thuốc được chọn
                 controller.setOnMedicineSelected(medicine -> {
-                    danhSachThuoc.add(medicine);
-                    updateTongTien();
+                    // Lưu thuốc vào database
+                    String maPhieuKham = tfMaPhieuKham.getText();
+                    if (maPhieuKham != null && !maPhieuKham.trim().isEmpty()) {
+                        boolean success = com.example.DAO.BillDAO.addMedicineToExistingDonThuoc(maPhieuKham, medicine);
+                        if (success) {
+                            // Refresh danh sách thuốc từ database để đảm bảo dữ liệu đồng bộ
+                            refreshMedicineList();
+                            showAlert("Thành công", "Đã thêm thuốc vào hóa đơn và lưu vào database!", Alert.AlertType.INFORMATION);
+                        } else {
+                            showAlert("Lỗi", "Không thể lưu thuốc vào database!", Alert.AlertType.ERROR);
+                        }
+                    } else {
+                        showAlert("Lỗi", "Không có mã phiếu khám để lưu thuốc!", Alert.AlertType.ERROR);
+                    }
                 });
                 
                 Stage dialogStage = new Stage();

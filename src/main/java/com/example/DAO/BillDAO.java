@@ -295,6 +295,69 @@ public class BillDAO {
         return revenueList;
     }
 
+    // Phương thức mới: Thêm thuốc vào đơn thuốc hiện có
+    public static boolean addMedicineToExistingDonThuoc(String maPhieuKham, MedicineModel thuoc) {
+        try (Connection conn = DatabaseConnector.connect()) {
+            conn.setAutoCommit(false);
+            try {
+                // 1. Lấy mã đơn thuốc từ hóa đơn
+                String getMaDonThuoc = "SELECT MaDonThuoc FROM HoaDon WHERE MaPhieuKham = ?";
+                String maDonThuoc = null;
+                
+                try (PreparedStatement stmt = conn.prepareStatement(getMaDonThuoc)) {
+                    stmt.setString(1, maPhieuKham);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs.next()) {
+                        maDonThuoc = rs.getString("MaDonThuoc");
+                    }
+                }
 
+                // 2. Nếu chưa có đơn thuốc, tạo mới
+                if (maDonThuoc == null) {
+                    maDonThuoc = "DT" + System.currentTimeMillis();
+                    String insertDonThuoc = "INSERT INTO DonThuoc (MaDonThuoc, MaPhieuKham, NgayLapDon) VALUES (?, ?, ?)";
+                    
+                    try (PreparedStatement stmtDonThuoc = conn.prepareStatement(insertDonThuoc)) {
+                        stmtDonThuoc.setString(1, maDonThuoc);
+                        stmtDonThuoc.setString(2, maPhieuKham);
+                        stmtDonThuoc.setTimestamp(3, Timestamp.valueOf(java.time.LocalDateTime.now()));
+                        stmtDonThuoc.executeUpdate();
+                    }
 
+                    // Cập nhật hóa đơn
+                    String updateHoaDon = "UPDATE HoaDon SET MaDonThuoc = ? WHERE MaPhieuKham = ?";
+                    try (PreparedStatement stmtHoaDon = conn.prepareStatement(updateHoaDon)) {
+                        stmtHoaDon.setString(1, maDonThuoc);
+                        stmtHoaDon.setString(2, maPhieuKham);
+                        stmtHoaDon.executeUpdate();
+                    }
+                }
+
+                // 3. Thêm thuốc vào chi tiết đơn thuốc
+                String insertCTDonThuoc = "INSERT INTO CTDonThuoc (MaDonThuoc, MaThuoc, SoLuong, GiaTien, HuongDanSuDung) VALUES (?, ?, ?, ?, ?)";
+                
+                try (PreparedStatement stmtCTDonThuoc = conn.prepareStatement(insertCTDonThuoc)) {
+                    stmtCTDonThuoc.setString(1, maDonThuoc);
+                    stmtCTDonThuoc.setString(2, thuoc.getMaThuoc());
+                    stmtCTDonThuoc.setInt(3, thuoc.getSoLuong());
+                    stmtCTDonThuoc.setDouble(4, thuoc.getGiaTien());
+                    stmtCTDonThuoc.setString(5, thuoc.getHuongDanSuDung());
+                    stmtCTDonThuoc.executeUpdate();
+                }
+
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi thêm thuốc vào đơn thuốc: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
