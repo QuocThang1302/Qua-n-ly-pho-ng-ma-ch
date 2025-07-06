@@ -179,8 +179,10 @@ public class PatientDetailDialogController {
             // Tạo stage mới (window mới)
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Phiếu khám bệnh");
+            dialogStage.setScene(new Scene(root, 800, 600)); // Set kích thước cửa sổ
+
+            dialogStage.setResizable(false); // Không cho resize
             dialogStage.initModality(Modality.APPLICATION_MODAL); // chặn tương tác với window chính
-            dialogStage.setScene(new Scene(root));
             dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
