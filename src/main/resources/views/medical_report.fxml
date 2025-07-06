@@ -1,132 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
-            xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/17.0.12"
             fx:controller="com.example.controllers.MedicalReportController"
-            prefWidth="800" prefHeight="600"
             style="-fx-background-color: white;"
             stylesheets="@../CSS/medical_report.css">
 
-    <top>
-        <Label text="PHIẾU KHÁM BỆNH" style="-fx-font-size: 24px; -fx-font-weight: bold;" BorderPane.alignment="CENTER"/>
-    </top>
-
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: white;">
+        <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: white;">
             <content>
-                <VBox spacing="24" style="-fx-background-color: white;" fillWidth="true">
-                    <padding>
-                        <Insets top="20" bottom="20" left="24" right="24"/>
-                    </padding>
+                <AnchorPane prefHeight="1123" prefWidth="794">
+                    <VBox prefHeight="1123" prefWidth="794" spacing="24" style="-fx-background-color: white; -fx-alignment: TOP_LEFT;" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                        <padding>
+                            <Insets bottom="20" left="24" right="24" top="20" />
+                        </padding>
 
-                    <TitledPane expanded="true" text="Thông tin khám bệnh">
-                        <GridPane hgap="16" vgap="10">
-                            <padding><Insets bottom="20" left="12" right="20" top="12" /></padding>
+                        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;" text="📋 PHIẾU KHÁM BỆNH" />
 
-                            <columnConstraints>
-                                <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="120" />
-                                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
-                            </columnConstraints>
+                        <TitledPane expanded="true" text="Thông tin khám bệnh">
+                            <GridPane hgap="16" vgap="10">
+                                <padding><Insets bottom="20" left="12" right="20" top="12" /></padding>
 
-                            <Label text="Mã phiếu khám:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                            <TextField fx:id="tfMaPhieuKham" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                <columnConstraints>
+                                    <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="120" />
+                                    <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
+                                </columnConstraints>
 
-                            <Label text="Ngày lập phiếu:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                            <TextField fx:id="tfNgayLap" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                <Label text="Mã phiếu khám:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                <TextField fx:id="tfMaPhieuKham" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                            <Label text="Mã bệnh nhân:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                            <TextField fx:id="tfMaBenhNhan" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                <Label text="Ngày lập phiếu:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                <TextField fx:id="tfNgayLap" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                            <Label text="Họ tên:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                            <TextField fx:id="tfHoTen" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                <Label text="Mã bệnh nhân:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                <TextField fx:id="tfMaBenhNhan" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                            <Label text="Ngày sinh:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-                            <TextField fx:id="tfNgaySinh" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                <Label text="Họ tên:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                <TextField fx:id="tfHoTen" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                            <Label text="Giới tính:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-                            <TextField fx:id="tfGioiTinh" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                <Label text="Ngày sinh:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                                <TextField fx:id="tfNgaySinh" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-                            <Label text="SĐT:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-                            <TextField fx:id="tfSoDienThoai" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                <Label text="Giới tính:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                                <TextField fx:id="tfGioiTinh" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-                            <Label text="Tên bác sĩ:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
-                            <TextField fx:id="tfTenBacSi" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                <Label text="SĐT:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                                <TextField fx:id="tfSoDienThoai" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
-                            <Label text="Lý do khám:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
-                            <TextField fx:id="tfLyDoKham" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                                <Label text="Tên bác sĩ:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+                                <TextField fx:id="tfTenBacSi" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
 
-                            <Label text="Chẩn đoán:" GridPane.columnIndex="0" GridPane.rowIndex="9" GridPane.valignment="TOP" />
-                            <TextArea fx:id="txtChanDoan" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                                <Label text="Lý do khám:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+                                <TextField fx:id="tfLyDoKham" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="8" />
 
-                            <rowConstraints>
-                                <RowConstraints />
-                                <RowConstraints />
-                                <RowConstraints />
-                                <RowConstraints />
-                                <RowConstraints />
-                                <RowConstraints />
-                                <RowConstraints />
-                                <RowConstraints />
-                                <RowConstraints />
-                                <RowConstraints />
-                            </rowConstraints>
-                        </GridPane>
-                    </TitledPane>
+                                <Label text="Chẩn đoán:" GridPane.columnIndex="0" GridPane.rowIndex="9" GridPane.valignment="TOP" />
+                                <TextArea fx:id="txtChanDoan" GridPane.columnIndex="1" GridPane.rowIndex="9" />
 
-                    <!-- ĐƠN THUỐC -->
-                    <TitledPane text="💊 Đơn thuốc" expanded="true" VBox.vgrow="ALWAYS">
-                        <content>
-                            <VBox spacing="12" VBox.vgrow="ALWAYS">
-                                <padding><Insets bottom="12" left="12" right="12" top="12"/></padding>
-                                <TableView fx:id="tableThuocHoaDon" VBox.vgrow="ALWAYS" minHeight="200">
+                                <rowConstraints>
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                </rowConstraints>
+                            </GridPane>
+                        </TitledPane>
+
+                        <TitledPane expanded="true" text="💊 Danh sách thuốc kê trong hóa đơn">
+                            <VBox spacing="12">
+                                <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+                                <TableView fx:id="tableThuocHoaDon" prefHeight="200">
                                     <columns>
-                                        <TableColumn fx:id="colTenThuoc" prefWidth="200" text="Tên thuốc"/>
-                                        <TableColumn fx:id="colSoLuong" prefWidth="80" text="Số lượng"/>
-                                        <TableColumn fx:id="colDonGia" prefWidth="100" text="Đơn giá"/>
+                                        <TableColumn fx:id="colTenThuoc" prefWidth="200" text="Tên thuốc" />
+                                        <TableColumn fx:id="colSoLuong" prefWidth="80" text="Số lượng" />
+                                        <TableColumn fx:id="colDonGia" prefWidth="100" text="Đơn giá" />
                                     </columns>
                                 </TableView>
-                                <HBox alignment="CENTER_RIGHT">
-                                    <Button fx:id="btnThemThuoc" text="➕ Thêm thuốc"/>
+                                <HBox alignment="CENTER_RIGHT" spacing="10">
+                                    <Button fx:id="btnThemThuoc" text="➕ Thêm thuốc" />
                                 </HBox>
                             </VBox>
-                        </content>
-                    </TitledPane>
+                        </TitledPane>
 
-                    <!-- THÔNG TIN HÓA ĐƠN -->
-                    <TitledPane expanded="true" text="Thông tin hóa đơn">
-                        <GridPane hgap="16" vgap="10">
-                            <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+                        <TitledPane expanded="true" text="Thông tin hóa đơn">
+                            <GridPane hgap="16" vgap="10">
+                                <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
 
-                            <columnConstraints>
-                                <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="120" />
-                                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
-                            </columnConstraints>
+                                <columnConstraints>
+                                    <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="120" />
+                                    <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
+                                </columnConstraints>
 
-                            <Label text="Ngày lập hóa đơn:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                            <TextField fx:id="tfNgayHoaDon" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                <Label text="Ngày lập hóa đơn:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                <TextField fx:id="tfNgayHoaDon" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                            <Label text="Tiền thuốc:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                            <TextField fx:id="tfTienThuoc" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                <Label text="Tiền thuốc:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                <TextField fx:id="tfTienThuoc" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                            <Label text="Tiền khám:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                            <TextField fx:id="tfTienKham" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                <Label text="Tiền khám:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                <TextField fx:id="tfTienKham" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                            <Label text="Tổng tiền:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                            <TextField fx:id="tfTongTien" editable="false" style="-fx-text-fill: red; -fx-font-weight: bold" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                <Label text="Tổng tiền:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                <TextField fx:id="tfTongTien" editable="false" style="-fx-text-fill: red; -fx-font-weight: bold" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                            <rowConstraints>
-                                <RowConstraints />
-                                <RowConstraints />
-                                <RowConstraints />
-                                <RowConstraints />
-                            </rowConstraints>
-                        </GridPane>
-                    </TitledPane>
-                </VBox>
+                                <rowConstraints>
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                </rowConstraints>
+                            </GridPane>
+                        </TitledPane>
+                    </VBox>
+                </AnchorPane>
             </content>
         </ScrollPane>
     </center>
@@ -138,5 +133,4 @@
             <Button fx:id="btnXuatPdf" text="📄 Xuất PDF" />
         </HBox>
     </bottom>
-
 </BorderPane>

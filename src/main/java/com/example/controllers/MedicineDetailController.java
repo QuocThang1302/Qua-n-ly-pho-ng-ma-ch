@@ -17,9 +17,6 @@ public class MedicineDetailController {
     private Button btnAdd, btnUpdate, btnDelete;
 
     private MedicineDataChangeListener dataChangeListener;
-    private int originalQuantity = -1;
-    private String originalId = null;
-    private String maPhieuKham = null;
 
     public void setDataChangeListener(MedicineDataChangeListener listener) {
         this.dataChangeListener = listener;
@@ -41,10 +38,6 @@ public class MedicineDetailController {
         cbUnit.getItems().addAll("viên", "vỉ", "gói", "ống", "chai", "lọ", "tuýp", "ml", "mg", "g", "mcg", "IU");
     }
 
-    public void setMaPhieuKham(String maPhieuKham) {
-        this.maPhieuKham = maPhieuKham;
-    }
-
     public void setMedicine(MedicineModel medicineModel) {
         if (medicineModel != null) {
             btnAdd.setVisible(false);
@@ -60,8 +53,6 @@ public class MedicineDetailController {
             tfCost.setText(String.valueOf(medicineModel.getGiaTien()));
             tfGuide.setText(medicineModel.getHuongDanSuDung());
             cbUnit.getEditor().setText(medicineModel.getDonVi());
-            originalQuantity = medicineModel.getSoLuong();
-            originalId = medicineModel.getMaThuoc();
         }
     }
 
@@ -131,9 +122,6 @@ public class MedicineDetailController {
 
             MedicineModel medicine = new MedicineModel(id, ten, congDung, soLuong, giaTien, donVi, huongDan);
             try {
-                if (maPhieuKham != null && originalId != null && originalQuantity != -1 && originalId.equals(id) && soLuong != originalQuantity) {
-                    com.example.DAO.BillDAO.updateMedicineQuantityInDonThuoc(maPhieuKham, id, soLuong);
-                }
                 boolean success = com.example.DAO.MedicineDAO.updateMedicine(medicine);
                 if (success) {
                     showAlert("Thành công", "Cập nhật thuốc thành công!", Alert.AlertType.INFORMATION);

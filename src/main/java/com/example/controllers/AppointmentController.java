@@ -2,6 +2,7 @@ package com.example.controllers;
 
 import com.calendarfx.model.Calendar;
 import com.calendarfx.model.CalendarSource;
+import com.calendarfx.model.Entry;
 import com.calendarfx.view.CalendarView;
 import com.example.DAO.HenKhamBenhDAO;
 import com.example.model.AppointmentEntry;
@@ -13,8 +14,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -26,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class AppointmentController {
@@ -69,13 +75,48 @@ public class AppointmentController {
             // Trả null để không thêm "New Entry" vào giao diện
             return null;
         });
+
+        calendarView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DELETE) {
+                System.out.println("Delete key pressed - selections: " + calendarView.getSelections().size());
+
+                var selections = calendarView.getSelections();
+                if (!selections.isEmpty()) {
+                    Entry<?> selectedEntry = selections.iterator().next();
+
+                    if (selectedEntry instanceof AppointmentEntry) { // giả sử bạn có class AppointmentEntry
+                        AppointmentEntry entry = (AppointmentEntry) selectedEntry;
+
+                        boolean confirmed = confirmDelete(entry.getTitle());
+                        if (!confirmed) return;
+
+                        // Xóa trong CSDL
+                        boolean deleted = HenKhamBenhDAO.delete(entry.getModel().getMaKhamBenh());
+                        if (deleted) {
+                            entry.getCalendar().removeEntry(entry);
+                            showStatus("Xóa lịch hẹn khám thành công.", false);
+                        } else {
+                            showStatus("Xóa lịch hẹn khám thất bại.", true);
+                        }
+
+                        // Consume event để ngăn hành vi mặc định
+                        event.consume();
+                    }
+                } else {
+                    showStatus("Vui lòng chọn một lịch hẹn khám để xóa.", true);
+                }
+            }
+        });
+
+
         Role role = UserContext.getInstance().getRole();
         if(role.equals(Role.NURSE)){
+            /*
             calendarView.setEntryFactory(param -> {
                 String title = "Khám Mới";
                 AppointmentModel model = new AppointmentModel();
-                //TODO sua logic lay ma kham benh moi
-                model.setMaKhamBenh(UUID.randomUUID().toString());
+                String maKhamBenh = "KB" + HenKhamBenhDAO.getNextIdNumber("KB");
+                model.setMaKhamBenh(maKhamBenh);
                 model.setLyDoKham(title);
                 model.setNgayKham(param.getZonedDateTime().toLocalDate());
 
@@ -84,8 +125,22 @@ public class AppointmentController {
                 entry.setInterval(param.getZonedDateTime());
                 registerEntryChangeListeners(entry);
                 return entry;
+        });*/
+            // ✅ XỬ LÝ DOUBLE-CLICK ĐơN GIẢN
+            calendarView.setEntryFactory(param -> {
+                // Khi double click tạo Entry mới, ta chặn lại ở đây
+                AppointmentModel model = new AppointmentModel();
+                AppointmentEntry entry = new AppointmentEntry("", model);
 
-        });
+                // Gán ngày giờ vào model nếu cần:
+                model.setNgayKham(param.getZonedDateTime().toLocalDate());
+
+                // Gọi form chi tiết để người dùng nhập
+                Platform.runLater(() -> openAppointmentDetailWindow(entry));
+
+                // Trả null để không thêm "New Entry" vào giao diện
+                return null;
+            });
         }
         else {
             calendarView.setEntryFactory(createEntryParameter -> null);
@@ -178,5 +233,25 @@ public class AppointmentController {
             calendar.addEntry(entry);
         }
     }
+
+    private boolean confirmDelete(String title) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Xác nhận xóa");
+        alert.setHeaderText(null);
+        alert.setContentText("Bạn có chắc chắn muốn xóa lịch: \"" + title + "\"?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
+    }
+
+    private void showStatus(String message, boolean isError) {
+        Alert alert = new Alert(isError ? Alert.AlertType.ERROR : Alert.AlertType.INFORMATION);
+        alert.setTitle(isError ? "Lỗi" : "Thông báo");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+
 
 }

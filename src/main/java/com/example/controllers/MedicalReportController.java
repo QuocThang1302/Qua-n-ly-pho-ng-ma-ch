@@ -85,67 +85,6 @@ public class MedicalReportController implements MedicineDataChangeListener {
         colDonGia.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("giaTien"));
         tableThuocHoaDon.setItems(danhSachThuoc);
 
-        // Thêm context menu sửa/xóa cho từng dòng thuốc
-        tableThuocHoaDon.setRowFactory(tv -> {
-            TableRow<MedicineModel> row = new TableRow<>();
-            ContextMenu contextMenu = new ContextMenu();
-            MenuItem editItem = new MenuItem("Sửa");
-            MenuItem deleteItem = new MenuItem("Xóa");
-
-            editItem.setOnAction(event -> {
-                MedicineModel selected = row.getItem();
-                if (selected != null) {
-                    try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medicine_detail.fxml"));
-                        Parent root = loader.load();
-                        MedicineDetailController controller = loader.getController();
-                        controller.setMedicine(selected);
-                        controller.setMaPhieuKham(tfMaPhieuKham.getText());
-                        Stage dialogStage = new Stage();
-                        dialogStage.setTitle("Sửa thông tin thuốc");
-                        dialogStage.initModality(Modality.APPLICATION_MODAL);
-                        dialogStage.setScene(new Scene(root));
-                        dialogStage.showAndWait();
-                        // Sau khi sửa, refresh lại danh sách thuốc
-                        refreshMedicineList();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        showAlert("Lỗi", "Không thể mở cửa sổ sửa thuốc: " + ex.getMessage(), Alert.AlertType.ERROR);
-                    }
-                }
-            });
-
-            deleteItem.setOnAction(event -> {
-                MedicineModel selected = row.getItem();
-                if (selected != null) {
-                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc muốn xóa thuốc này khỏi hóa đơn?", ButtonType.YES, ButtonType.NO);
-                    confirm.setTitle("Xác nhận xóa");
-                    confirm.setHeaderText(null);
-                    confirm.showAndWait().ifPresent(type -> {
-                        if (type == ButtonType.YES) {
-                            String maPhieuKham = tfMaPhieuKham.getText();
-                            boolean success = com.example.DAO.BillDAO.removeMedicineFromDonThuoc(maPhieuKham, selected.getMaThuoc());
-                            if (success) {
-                                refreshMedicineList();
-                                updateTongTien();
-                                showAlert("Thành công", "Đã xóa thuốc khỏi hóa đơn!", Alert.AlertType.INFORMATION);
-                            } else {
-                                showAlert("Lỗi", "Không thể xóa thuốc khỏi hóa đơn!", Alert.AlertType.ERROR);
-                            }
-                        }
-                    });
-                }
-            });
-
-            contextMenu.getItems().addAll(editItem, deleteItem);
-            row.contextMenuProperty().bind(
-                    javafx.beans.binding.Bindings.when(row.emptyProperty())
-                            .then((ContextMenu) null)
-                            .otherwise(contextMenu)
-            );
-            return row;
-        });
-
         setupButtons();
         applyRolePermissions();
     }

@@ -72,9 +72,6 @@ public class BillModel {
     }
 
     public List<MedicineModel> getDanhSachThuoc() {
-        if (danhSachThuoc == null) {
-            return java.util.Collections.emptyList();
-        }
         return danhSachThuoc;
     }
 
