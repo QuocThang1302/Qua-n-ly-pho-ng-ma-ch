@@ -223,4 +223,48 @@ public class HenKhamBenhDAO {
 
         return counts;
     }
+
+    public static int getNextIdNumber(String prefix) {
+        String sql = "SELECT MaKhamBenh " +
+                "FROM HenKhamBenh " +
+                "WHERE MaKhamBenh LIKE ? " +
+                "AND MaKhamBenh ~ ? " +
+                "ORDER BY CAST(SUBSTRING(MaKhamBenh FROM ?) AS INTEGER) DESC " +
+                "LIMIT 1";
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, prefix + "%");
+            stmt.setString(2, "^" + prefix + "[0-9]+$");
+            stmt.setString(3, String.format("^.{%d}(\\d+)$", prefix.length()));
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String id = rs.getString("MaKhamBenh");
+                if (id != null && id.startsWith(prefix)) {
+                    try {
+                        String numberPart = id.substring(prefix.length());
+                        if (numberPart.matches("\\d+")) {
+                            int currentNumber = Integer.parseInt(numberPart);
+                            System.out.println("Found max MaKhamBenh: " + id + ", number: " + currentNumber);
+                            return currentNumber + 1;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error parsing number from: " + id);
+                    }
+                }
+            }
+
+            System.out.println("No existing MaKhamBenh found for prefix: " + prefix);
+            return 1;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error in getNextIdNumber (HenKhamBenhDAO): " + e.getMessage());
+            return 1;
+        }
+    }
+
 }

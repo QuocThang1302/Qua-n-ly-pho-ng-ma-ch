@@ -107,7 +107,7 @@ public class AppointmentDetailController {
         }
 
         // Sinh mã khám bệnh mới
-        String maKhamBenh = "KB" + System.currentTimeMillis();
+        String maKhamBenh = "KB" + HenKhamBenhDAO.getNextIdNumber("KB");
 
         // Tạo model lịch hẹn
         AppointmentModel model = new AppointmentModel();
@@ -195,7 +195,7 @@ public class AppointmentDetailController {
             model.setNgayKham(ngayKham);
             model.setGioBatDau(gioBatDau);
             model.setGioKetThuc(gioKetThuc);
-            model.setMaBacSi("BS001"); // hoặc lấy từ combobox nếu có
+            //model.setMaBacSi("BS001"); // hoặc lấy từ combobox nếu có
 
             // Cập nhật vào database
             boolean success = HenKhamBenhDAO.update(model);
