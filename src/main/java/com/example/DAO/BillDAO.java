@@ -40,7 +40,7 @@ public class BillDAO {
 
     // READ - Lấy hóa đơn theo mã
     public static BillModel getBillById(String maHoaDon) {
-        String sql = "SELECT h.MaHoaDon, h.MaPhieuKham, h.MaDonThuoc, pk.TienKham, h.TrangThai, h.NgayLapHoaDon as NgayLapDon " +
+        String sql = "SELECT h.MaHoaDon, h.MaPhieuKham, h.MaDonThuoc, pk.TienKham, h.TrangThai, h.NgayLapHoaDon as NgayLapDon, h.GiaTien " +
                 "FROM HoaDon h JOIN PhieuKhamBenh pk ON h.MaPhieuKham = pk.MaPhieuKham " +
                 "WHERE h.MaHoaDon = ?";
 
@@ -62,9 +62,9 @@ public class BillDAO {
                     List<MedicineModel> danhSachThuoc = getMedicinesByDonThuoc(bill.getMaDonThuoc());
                     bill.setDanhSachThuoc(danhSachThuoc);
 
-                    // Tính tổng tiền
-                    double tongTienThuoc = calculateTotalMedicinePrice(danhSachThuoc);
-                    bill.setTongTien(bill.getTienKham() + tongTienThuoc);
+                    // Lấy tổng tiền từ database thay vì tính toán
+                    double tongTien = rs.getDouble("GiaTien");
+                    bill.setTongTien(tongTien);
 
                     return bill;
                 }
@@ -78,7 +78,7 @@ public class BillDAO {
     // READ - Lấy tất cả hóa đơn
     public static List<BillModel> getAllBills() {
         List<BillModel> bills = new ArrayList<>();
-        String sql = "SELECT h.MaHoaDon, h.MaDonThuoc, pk.TienKham, h.TrangThai, h.NgayLapHoaDon as NgayLapDon " +
+        String sql = "SELECT h.MaHoaDon, h.MaDonThuoc, pk.TienKham, h.TrangThai, h.NgayLapHoaDon as NgayLapDon, h.GiaTien " +
                 "FROM HoaDon h JOIN PhieuKhamBenh pk ON h.MaPhieuKham = pk.MaPhieuKham " +
                 "ORDER BY h.NgayLapHoaDon DESC";
 
@@ -98,9 +98,9 @@ public class BillDAO {
                 List<MedicineModel> danhSachThuoc = getMedicinesByDonThuoc(bill.getMaDonThuoc());
                 bill.setDanhSachThuoc(danhSachThuoc);
 
-                // Tính tổng tiền
-                double tongTienThuoc = calculateTotalMedicinePrice(danhSachThuoc);
-                bill.setTongTien(bill.getTienKham() + tongTienThuoc);
+                // Lấy tổng tiền từ database thay vì tính toán
+                double tongTien = rs.getDouble("GiaTien");
+                bill.setTongTien(tongTien);
 
                 bills.add(bill);
             }
@@ -345,6 +345,9 @@ public class BillDAO {
                     stmtCTDonThuoc.executeUpdate();
                 }
 
+                // 4. Cập nhật tổng tiền hóa đơn
+                updateHoaDonTotalPrice(conn, maPhieuKham);
+
                 conn.commit();
                 return true;
 
@@ -359,5 +362,54 @@ public class BillDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    // Phương thức mới: Cập nhật tổng tiền hóa đơn
+    private static void updateHoaDonTotalPrice(Connection conn, String maPhieuKham) throws SQLException {
+        // 1. Lấy tiền khám từ phiếu khám
+        String getTienKham = "SELECT TienKham FROM PhieuKhamBenh WHERE MaPhieuKham = ?";
+        double tienKham = 0;
+        
+        try (PreparedStatement stmt = conn.prepareStatement(getTienKham)) {
+            stmt.setString(1, maPhieuKham);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                tienKham = rs.getDouble("TienKham");
+            }
+        }
+
+        // 2. Tính tổng tiền thuốc từ đơn thuốc
+        String getMaDonThuoc = "SELECT MaDonThuoc FROM HoaDon WHERE MaPhieuKham = ?";
+        String maDonThuoc = null;
+        
+        try (PreparedStatement stmt = conn.prepareStatement(getMaDonThuoc)) {
+            stmt.setString(1, maPhieuKham);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                maDonThuoc = rs.getString("MaDonThuoc");
+            }
+        }
+
+        double tongTienThuoc = 0;
+        if (maDonThuoc != null) {
+            String getTongTienThuoc = "SELECT SUM(SoLuong * GiaTien) as TongTien FROM CTDonThuoc WHERE MaDonThuoc = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(getTongTienThuoc)) {
+                stmt.setString(1, maDonThuoc);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    tongTienThuoc = rs.getDouble("TongTien");
+                }
+            }
+        }
+
+        // 3. Cập nhật tổng tiền hóa đơn
+        double tongTien = tienKham + tongTienThuoc;
+        String updateHoaDon = "UPDATE HoaDon SET GiaTien = ? WHERE MaPhieuKham = ?";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(updateHoaDon)) {
+            stmt.setDouble(1, tongTien);
+            stmt.setString(2, maPhieuKham);
+            stmt.executeUpdate();
+        }
     }
 }

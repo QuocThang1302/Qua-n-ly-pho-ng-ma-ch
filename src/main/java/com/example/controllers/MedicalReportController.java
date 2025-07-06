@@ -116,6 +116,18 @@ public class MedicalReportController implements MedicineDataChangeListener {
                     BillModel bill = com.example.DAO.BillDAO.getBillById(maHoaDon);
                     if (bill != null && bill.getDanhSachThuoc() != null) {
                         danhSachThuoc.setAll(bill.getDanhSachThuoc());
+                        // Cập nhật tổng tiền từ database thay vì tính toán local
+                        tfTienThuoc.setText(String.format("%.0f", bill.getDanhSachThuoc().stream()
+                                .mapToDouble(t -> t.getSoLuong() * t.getGiaTien()).sum()));
+                        try {
+                            double tienKham = Double.parseDouble(tfTienKham.getText());
+                            tfTongTien.setText(String.format("%.0f", bill.getTongTien()));
+                        } catch (NumberFormatException ex) {
+                            tfTongTien.setText(String.format("%.0f", bill.getTongTien()));
+                        }
+                    } else {
+                        // Nếu không có thuốc, reset về 0
+                        danhSachThuoc.clear();
                         updateTongTien();
                     }
                 }
@@ -158,6 +170,8 @@ public class MedicalReportController implements MedicineDataChangeListener {
                         if (success) {
                             // Refresh danh sách thuốc từ database để đảm bảo dữ liệu đồng bộ
                             refreshMedicineList();
+                            // Cập nhật tổng tiền trên giao diện
+                            updateTongTien();
                             showAlert("Thành công", "Đã thêm thuốc vào hóa đơn và lưu vào database!", Alert.AlertType.INFORMATION);
                         } else {
                             showAlert("Lỗi", "Không thể lưu thuốc vào database!", Alert.AlertType.ERROR);
