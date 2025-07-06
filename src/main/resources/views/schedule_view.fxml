@@ -12,7 +12,7 @@
     </padding>
 
     <!-- Ngày và Ca trực -->
-    <HBox alignment="CENTER_LEFT" spacing="10">
+    <HBox fx:id="ShiftDayAddBox" alignment="CENTER_LEFT" spacing="10">
         <Label text="Ngày:" >
             <padding>
                 <Insets left="40"/>
@@ -28,7 +28,7 @@
     </HBox>
 
     <!-- Thông tin nhân viên -->
-    <GridPane hgap="10" vgap="10">
+    <GridPane fx:id="StaffInfo" hgap="10" vgap="10">
         <columnConstraints>
             <ColumnConstraints halignment="RIGHT" minWidth="80" />
             <ColumnConstraints hgrow="ALWAYS" />

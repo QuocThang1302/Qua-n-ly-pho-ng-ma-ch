@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import com.example.helper.NavigationHelper;
+import com.example.model.Role;
 import com.example.model.UserContext;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
@@ -21,6 +22,7 @@ public class MenuController {
         setMenuItemHandlers();
         setMenuActive(btnDashboard);
         NavigationHelper.setContent(contentArea, "/views/dashboard.fxml");
+        handlePermission();
     }
 
     private void setMenuItemHandlers() {
@@ -76,6 +78,34 @@ public class MenuController {
 
         // Optional: Apply fade transition for soft feedback
         applyFadeAnimation(selectedItem);
+    }
+    private void handlePermission(){
+            Role role = UserContext.getInstance().getRole();
+            switch (role) {
+                case ADMIN -> {
+
+                }
+                case DOCTOR -> {
+                    btnDashboard.setVisible(false);
+                    btnDashboard.setManaged(false);
+                    btnStaff.setVisible(false);
+                    btnStaff.setManaged(false);
+                    btnAnalytics.setVisible(false);
+                    btnAnalytics.setManaged(false);
+                }
+                case NURSE -> {
+                    btnDashboard.setVisible(false);
+                    btnDashboard.setManaged(false);
+                    btnStaff.setVisible(false);
+                    btnStaff.setManaged(false);
+                    btnAnalytics.setVisible(false);
+                    btnAnalytics.setManaged(false);
+                }
+                case MANAGER -> {
+                    btnStaff.setVisible(false);
+                    btnStaff.setManaged(false);
+                }
+            }
     }
 
     private void applyFadeAnimation(HBox item) {

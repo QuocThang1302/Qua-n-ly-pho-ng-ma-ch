@@ -238,4 +238,45 @@ public class MedicineDAO {
         }
     }
 
+    // Phương thức mới: Giảm số lượng thuốc trong kho
+    public static boolean reduceMedicineQuantity(String maThuoc, int soLuongGiam) {
+        String sql = "UPDATE Thuoc SET SoLuong = SoLuong - ? WHERE MaThuoc = ? AND SoLuong >= ?";
+        
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, soLuongGiam);
+            stmt.setString(2, maThuoc);
+            stmt.setInt(3, soLuongGiam); // Đảm bảo số lượng còn lại >= số lượng cần giảm
+            
+            int result = stmt.executeUpdate();
+            return result > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi giảm số lượng thuốc: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Phương thức kiểm tra số lượng thuốc có đủ không
+    public static boolean checkMedicineAvailability(String maThuoc, int soLuongCan) {
+        String sql = "SELECT SoLuong FROM Thuoc WHERE MaThuoc = ?";
+        
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, maThuoc);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                int soLuongHienTai = rs.getInt("SoLuong");
+                return soLuongHienTai >= soLuongCan;
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi kiểm tra số lượng thuốc: " + e.getMessage());
+        }
+        
+        return false;
+    }
 }

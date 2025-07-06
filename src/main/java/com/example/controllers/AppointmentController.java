@@ -6,6 +6,7 @@ import com.calendarfx.view.CalendarView;
 import com.example.DAO.HenKhamBenhDAO;
 import com.example.model.AppointmentEntry;
 import com.example.model.AppointmentModel;
+import com.example.model.Role;
 import com.example.model.UserContext;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -68,6 +69,28 @@ public class AppointmentController {
             // Trả null để không thêm "New Entry" vào giao diện
             return null;
         });
+        Role role = UserContext.getInstance().getRole();
+        if(role.equals(Role.NURSE)){
+            calendarView.setEntryFactory(param -> {
+                String title = "Khám Mới";
+                AppointmentModel model = new AppointmentModel();
+                //TODO sua logic lay ma kham benh moi
+                model.setMaKhamBenh(UUID.randomUUID().toString());
+                model.setLyDoKham(title);
+                model.setNgayKham(param.getZonedDateTime().toLocalDate());
+                model.setTinhTrang("Chưa khám");
+
+                AppointmentEntry entry = new AppointmentEntry(title, model);
+                entry.setInterval(param.getZonedDateTime());
+                registerEntryChangeListeners(entry);
+                return entry;
+
+        });
+        }
+        else {
+            calendarView.setEntryFactory(createEntryParameter -> null);
+        }
+
         calendarView.setEntryDetailsPopOverContentCallback(param -> {
             if (!(param.getEntry() instanceof AppointmentEntry entry)) return null;
 
@@ -78,6 +101,21 @@ public class AppointmentController {
         });
 
 
+    }
+
+    private void registerEntryChangeListeners(AppointmentEntry entry) {
+        entry.titleProperty().addListener((obs, oldVal, newVal) -> updateEntry(entry));
+        entry.intervalProperty().addListener((obs, oldVal, newVal) -> updateEntry(entry));
+    }
+
+    private void updateEntry(AppointmentEntry entry) {
+        AppointmentModel model = entry.getModel();
+        if (model == null) return;
+
+        model.setLyDoKham(entry.getTitle());
+        model.setNgayKham(entry.getStartDate());
+        //TODO cap nhat db
+        System.out.println("Cập nhật DB cho: " + model.getMaKhamBenh() + " - " + model.getLyDoKham());
     }
 
     private void openAppointmentDetailWindow(AppointmentEntry entry) {
@@ -140,4 +178,5 @@ public class AppointmentController {
             calendar.addEntry(entry);
         }
     }
+
 }

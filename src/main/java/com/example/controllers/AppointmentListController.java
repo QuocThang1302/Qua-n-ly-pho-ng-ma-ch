@@ -8,10 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -135,15 +132,19 @@ public class AppointmentListController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medical_report.fxml"));
             Parent root = loader.load();
-            //System.out.println(medicalReportModel.getNgaySinh());
 
             // Lấy controller để truyền dữ liệu
             MedicalReportController controller = loader.getController();
-            controller.setData(medicalReportModel, medicalReportModel.getHoaDon());
+            
+            // Sử dụng phương thức mới để load dữ liệu từ database
+            controller.loadMedicalReportByMaKhamBenh(medicalReportModel.getMaKhamBenh());
 
             // Tạo stage mới (window mới)
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Phiếu khám bệnh");
+            dialogStage.setScene(new Scene(root, 800, 600)); // Set kích thước cửa sổ
+
+            dialogStage.setResizable(false); // Không cho resize
             dialogStage.initModality(Modality.APPLICATION_MODAL); // chặn tương tác với window chính
             dialogStage.setScene(new Scene(root));
             dialogStage.showAndWait();

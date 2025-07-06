@@ -26,6 +26,7 @@ import java.awt.Desktop;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 import java.awt.print.PrinterJob;
+import com.example.controllers.MedicineSelectionDialogController;
 
 public class MedicalReportController implements MedicineDataChangeListener {
 
@@ -61,7 +62,7 @@ public class MedicalReportController implements MedicineDataChangeListener {
         tfTenBacSi.setText(report.getTenBacSi());
         tfLyDoKham.setText(report.getLyDoKham());
         if (report.getNgayLap() != null) {
-            tfNgayLap.setText(report.getNgayLap().format(fmt));
+            tfNgayLap.setText(report.getNgayLap().toLocalDate().format(fmt));
         } else {
             tfNgayLap.setText("");
         }
@@ -88,21 +89,106 @@ public class MedicalReportController implements MedicineDataChangeListener {
         applyRolePermissions();
     }
 
+    // Phương thức mới: Load phiếu khám bệnh từ database dựa vào mã khám bệnh
+    public void loadMedicalReportByMaKhamBenh(String maKhamBenh) {
+        try {
+            MedicalReportModel report = com.example.DAO.MedicalReportDAO.getCompleteMedicalReportByMaKhamBenh(maKhamBenh);
+            if (report != null) {
+                BillModel bill = report.getHoaDon();
+                setData(report, bill);
+            } else {
+                showAlert("Lỗi", "Không tìm thấy phiếu khám bệnh với mã: " + maKhamBenh, Alert.AlertType.ERROR);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Lỗi", "Không thể load phiếu khám bệnh: " + ex.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    // Phương thức mới: Refresh danh sách thuốc từ database
+    public void refreshMedicineList() {
+        try {
+            String maPhieuKham = tfMaPhieuKham.getText();
+            if (maPhieuKham != null && !maPhieuKham.trim().isEmpty()) {
+                // Lấy lại thông tin hóa đơn từ database
+                String maHoaDon = getMaHoaDonByMaPhieuKham(maPhieuKham);
+                if (maHoaDon != null) {
+                    BillModel bill = com.example.DAO.BillDAO.getBillById(maHoaDon);
+                    if (bill != null && bill.getDanhSachThuoc() != null) {
+                        danhSachThuoc.setAll(bill.getDanhSachThuoc());
+                        // Cập nhật tổng tiền từ database thay vì tính toán local
+                        tfTienThuoc.setText(String.format("%.0f", bill.getDanhSachThuoc().stream()
+                                .mapToDouble(t -> t.getSoLuong() * t.getGiaTien()).sum()));
+                        try {
+                            double tienKham = Double.parseDouble(tfTienKham.getText());
+                            tfTongTien.setText(String.format("%.0f", bill.getTongTien()));
+                        } catch (NumberFormatException ex) {
+                            tfTongTien.setText(String.format("%.0f", bill.getTongTien()));
+                        }
+                    } else {
+                        // Nếu không có thuốc, reset về 0
+                        danhSachThuoc.clear();
+                        updateTongTien();
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Lỗi", "Không thể refresh danh sách thuốc: " + ex.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    // Phương thức hỗ trợ: Lấy mã hóa đơn từ mã phiếu khám
+    private String getMaHoaDonByMaPhieuKham(String maPhieuKham) {
+        String sql = "SELECT MaHoaDon FROM HoaDon WHERE MaPhieuKham = ?";
+        try (java.sql.Connection conn = com.example.utils.DatabaseConnector.connect();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maPhieuKham);
+            java.sql.ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("MaHoaDon");
+            }
+        } catch (java.sql.SQLException e) {
+            System.err.println("Lỗi khi lấy mã hóa đơn: " + e.getMessage());
+        }
+        return null;
+    }
+
     private void setupButtons() {
         btnThemThuoc.setOnAction(event -> {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medicine_detail.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medicine_selection_dialog.fxml"));
                 Parent root = loader.load();
-                MedicineDetailController controller = loader.getController();
-                controller.setDataChangeListener(this);
+                MedicineSelectionDialogController controller = loader.getController();
+                
+                // Set callback để nhận thuốc được chọn
+                controller.setOnMedicineSelected(medicine -> {
+                    // Lưu thuốc vào database
+                    String maPhieuKham = tfMaPhieuKham.getText();
+                    if (maPhieuKham != null && !maPhieuKham.trim().isEmpty()) {
+                        boolean success = com.example.DAO.BillDAO.addMedicineToExistingDonThuoc(maPhieuKham, medicine);
+                        if (success) {
+                            // Refresh danh sách thuốc từ database để đảm bảo dữ liệu đồng bộ
+                            refreshMedicineList();
+                            // Cập nhật tổng tiền trên giao diện
+                            updateTongTien();
+                            showAlert("Thành công", "Đã thêm thuốc vào hóa đơn và lưu vào database!", Alert.AlertType.INFORMATION);
+                        } else {
+                            showAlert("Lỗi", "Không thể lưu thuốc vào database!", Alert.AlertType.ERROR);
+                        }
+                    } else {
+                        showAlert("Lỗi", "Không có mã phiếu khám để lưu thuốc!", Alert.AlertType.ERROR);
+                    }
+                });
+                
                 Stage dialogStage = new Stage();
-                dialogStage.setTitle("Thêm thuốc");
+                dialogStage.setTitle("Chọn thuốc từ kho");
                 dialogStage.initModality(Modality.APPLICATION_MODAL);
                 dialogStage.setScene(new Scene(root));
                 dialogStage.showAndWait();
             } catch (IOException ex) {
                 ex.printStackTrace();
-                showAlert("Lỗi", "Không thể mở cửa sổ thêm thuốc: " + ex.getMessage(), Alert.AlertType.ERROR);
+                showAlert("Lỗi", "Không thể mở cửa sổ chọn thuốc: " + ex.getMessage(), Alert.AlertType.ERROR);
             }
         });
 
