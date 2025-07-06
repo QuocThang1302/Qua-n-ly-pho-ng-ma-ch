@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="16" style="-fx-background-color: white; -fx-border-color: #43a047; -fx-border-width: 2; -fx-background-radius: 6;"
+      xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
+      stylesheets="@../CSS/patient_detail_style.css"
+      fx:controller="com.example.controllers.MedicineSelectionDialogController"
+      prefWidth="800" prefHeight="600">
+    <padding><Insets bottom="20" left="24" right="24" top="20" /></padding>
+
+    <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="💊 Chọn thuốc từ kho" />
+
+    <!-- Tìm kiếm -->
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <Label text="Tìm kiếm:" />
+        <TextField fx:id="tfSearch" promptText="Nhập tên thuốc hoặc mã thuốc..." HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnSearch" text="🔍 Tìm" onAction="#handleSearch" />
+    </HBox>
+
+    <!-- Bảng thuốc -->
+    <TableView fx:id="tableMedicine" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colMaThuoc" text="Mã thuốc" prefWidth="80" />
+            <TableColumn fx:id="colTenThuoc" text="Tên thuốc" prefWidth="200" />
+            <TableColumn fx:id="colCongDung" text="Công dụng" prefWidth="150" />
+            <TableColumn fx:id="colSoLuong" text="Số lượng trong kho" prefWidth="120" />
+            <TableColumn fx:id="colGiaTien" text="Đơn giá" prefWidth="100" />
+            <TableColumn fx:id="colDonVi" text="Đơn vị" prefWidth="80" />
+        </columns>
+    </TableView>
+
+    <!-- Thông tin thuốc được chọn -->
+    <TitledPane text="Thông tin thuốc được chọn" expanded="true">
+        <GridPane hgap="12" vgap="8">
+            <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+
+            <Label text="Mã thuốc:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="tfSelectedMaThuoc" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+            <Label text="Tên thuốc:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id="tfSelectedTenThuoc" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <Label text="Số lượng trong kho:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <TextField fx:id="tfSelectedSoLuongKho" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+            <Label text="Số lượng cần:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <TextField fx:id="tfSelectedSoLuongCan" promptText="Nhập số lượng..." GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+            <Label text="Đơn giá:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+            <TextField fx:id="tfSelectedGiaTien" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+            <Label text="Hướng dẫn sử dụng:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <TextArea fx:id="tfSelectedHuongDan" prefRowCount="2" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+            <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="120" />
+                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
+            </columnConstraints>
+        </GridPane>
+    </TitledPane>
+
+    <!-- Nút điều khiển -->
+    <HBox alignment="CENTER_RIGHT" spacing="12">
+        <Button fx:id="btnAddToBill" text="➕ Thêm vào hóa đơn" onAction="#handleAddToBill" />
+        <Button fx:id="btnCancel" text="❌ Hủy" onAction="#handleCancel" />
+    </HBox>
+</VBox> 
