@@ -21,7 +21,7 @@ public class MenuController {
     private void initialize() {
         setMenuItemHandlers();
         setMenuActive(btnDashboard);
-        NavigationHelper.setContent(contentArea, "/views/dashboard.fxml");
+        NavigationHelper.setContent(contentArea, "/views/appointment.fxml");
         handlePermission();
     }
 
