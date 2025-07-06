@@ -113,7 +113,6 @@ public class StaffDAO {
         return staff;
     }
 
-    // Thêm method này vào class StaffDAO của bạn
 
     public static int getNextIdNumber(String prefix) {
         // PostgreSQL: dùng ~ để regex, SUBSTRING(MaNhanVien FROM ...) để lấy phần số

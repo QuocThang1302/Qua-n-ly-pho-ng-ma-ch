@@ -39,7 +39,7 @@
 
         <!-- Cột 1: Bệnh nhân -->
         <VBox spacing="10" HBox.hgrow="ALWAYS">
-            <StackPane prefHeight="100" style="-fx-background-color: #F1F8E9; -fx-background-radius: 10;">
+            <StackPane prefHeight="150" style="-fx-background-color: #F1F8E9; -fx-background-radius: 10;">
                 <VBox alignment="CENTER" spacing="5">
                     <Label style="-fx-font-size: 28;" text="👥" />
                     <Label style="-fx-font-size: 14; -fx-font-weight: bold;" text="Tổng bệnh nhân" />
@@ -53,7 +53,7 @@
 
         <!-- Cột 2: Doanh thu -->
         <VBox spacing="10" HBox.hgrow="ALWAYS">
-            <StackPane prefHeight="100" style="-fx-background-color: #FFF3E0; -fx-background-radius: 10;">
+            <StackPane prefHeight="150" style="-fx-background-color: #FFF3E0; -fx-background-radius: 10;">
                 <VBox alignment="CENTER" spacing="5">
                     <Label style="-fx-font-size: 28;" text="💰" />
                     <Label style="-fx-font-size: 14; -fx-font-weight: bold;" text="Doanh thu" />

@@ -135,6 +135,7 @@ public class AppointmentListController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medical_report.fxml"));
             Parent root = loader.load();
+            //System.out.println(medicalReportModel.getNgaySinh());
 
             // Lấy controller để truyền dữ liệu
             MedicalReportController controller = loader.getController();

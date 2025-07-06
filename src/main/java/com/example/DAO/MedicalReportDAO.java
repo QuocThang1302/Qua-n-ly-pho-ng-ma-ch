@@ -271,31 +271,40 @@ public class MedicalReportDAO {
 
     public static List<MedicalReportModel> getMedicalReportsByDate(LocalDate date) {
         List<MedicalReportModel> reports = new ArrayList<>();
+
         String sql = """
-            SELECT 
-                h.MaKhamBenh,
-                p.MaPhieuKham,
-                h.MaBenhNhan,
-                h.MaBacSi,
-                CONCAT(bn.Ho, ' ', bn.Ten) as HoTenBenhNhan,
-                h.LyDoKham,
-                p.KetQuaKham,
-                p.ChanDoan,
-                p.DieuTri,
-                p.TienKham,
-                p.NgayKham,
-                hd.MaHoaDon
-            FROM HenKhamBenh h
-            INNER JOIN PhieuKhamBenh p ON h.MaBenhNhan = p.MaBenhNhan
-            INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
-            LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
-            WHERE p.NgayKham = ?
-            ORDER BY p.NgayKham DESC
-            LIMIT 40
-        """;
+        SELECT 
+            h.MaKhamBenh,
+            p.MaPhieuKham,
+            h.MaBenhNhan,
+            h.MaBacSi,
+            CONCAT(bn.Ho, ' ', bn.Ten) as HoTenBenhNhan,
+            CONCAT(nv.Ho, ' ', nv.Ten) as TenBacSi,
+            bn.NgaySinh,
+            bn.SDT as SoDienThoai,
+            bn.GioiTinh,
+            h.LyDoKham,
+            p.KetQuaKham,
+            p.ChanDoan,
+            p.DieuTri,
+            p.TienKham,
+            p.NgayKham,
+            hd.MaHoaDon
+        FROM HenKhamBenh h
+        INNER JOIN PhieuKhamBenh p ON h.MaBenhNhan = p.MaBenhNhan
+        INNER JOIN BenhNhan bn ON h.MaBenhNhan = bn.MaBenhNhan
+        INNER JOIN NhanVien nv ON h.MaBacSi = nv.MaNhanVien
+        LEFT JOIN HoaDon hd ON p.MaPhieuKham = hd.MaPhieuKham
+        WHERE p.NgayKham = ? AND nv.RoleID = 'DOCTOR'
+        ORDER BY p.NgayKham DESC
+        LIMIT 40
+    """;
+
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setDate(1, Date.valueOf(date));
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     MedicalReportModel report = new MedicalReportModel();
@@ -304,25 +313,43 @@ public class MedicalReportDAO {
                     report.setMaBenhNhan(rs.getString("MaBenhNhan"));
                     report.setMaBacSi(rs.getString("MaBacSi"));
                     report.setHoTen(rs.getString("HoTenBenhNhan"));
+                    report.setTenBacSi(rs.getString("TenBacSi"));
+
+                    Date ngaySinh = rs.getDate("NgaySinh");
+                    if (ngaySinh != null) {
+                        report.setNgaySinh(ngaySinh.toLocalDate());
+                    }
+
+                    report.setSoDienThoai(rs.getString("SoDienThoai"));
+                    report.setGioiTinh(rs.getString("GioiTinh"));
                     report.setLyDoKham(rs.getString("LyDoKham"));
                     report.setKetQuaKham(rs.getString("KetQuaKham"));
                     report.setChanDoan(rs.getString("ChanDoan"));
                     report.setDieuTri(rs.getString("DieuTri"));
                     report.setTienKham(rs.getDouble("TienKham"));
-                    // Nếu cần lấy chi tiết hóa đơn:
+
+                    Timestamp ngayKham = rs.getTimestamp("NgayKham");
+                    if (ngayKham != null) {
+                        report.setNgayKham(ngayKham.toLocalDateTime());
+                    }
+
                     String maHoaDon = rs.getString("MaHoaDon");
                     if (maHoaDon != null && !maHoaDon.isEmpty()) {
                         BillModel bill = BillDAO.getBillById(maHoaDon);
                         report.setHoaDon(bill);
                     }
+
                     reports.add(report);
                 }
             }
+
         } catch (SQLException e) {
             System.err.println("Lỗi khi lấy danh sách phiếu khám bệnh theo ngày: " + e.getMessage());
         }
+
         return reports;
     }
+
 
     // UPDATE - Cập nhật medical report
     public static boolean updatePhieuKhamBenh(MedicalReportModel medicalReport, LocalDateTime ngayKham, LocalDateTime ngayLapPhieu, String dieuTri, String ketQuaKham, double tienKham) {
