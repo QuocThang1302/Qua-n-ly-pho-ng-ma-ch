@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.DAO.MedicineDAO;
 import com.example.model.MedicineModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,6 +30,11 @@ public class MedicineDetailController {
         btnUpdate.setManaged(false);
         btnDelete.setVisible(false);
         btnDelete.setManaged(false);
+        tfId.setEditable(false);
+        tfId.setStyle("-fx-background-color: #f0f0f0;");
+        int nextIdNumber = MedicineDAO.getNextIdNumber("T");
+        String nextId = String.format("T%03d", nextIdNumber); // VD: T001, T002, ...
+        tfId.setText(nextId);
         cbUnit.getItems().addAll("viên", "vỉ", "gói", "ống", "chai", "lọ", "tuýp", "ml", "mg", "g", "mcg", "IU");
     }
 

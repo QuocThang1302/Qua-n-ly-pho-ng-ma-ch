@@ -54,10 +54,10 @@ public class DutyShiftDAO {
 
 
     // ✅ Thêm mới 1 lịch trực
-    public static boolean insertDutyShift(DutyShiftModel model, String maLichTruc ,String congViec, String trangThai) {
+    public static boolean insertDutyShift(DutyShiftModel model, String maLichTruc) {
         String sql = """
-        INSERT INTO LichTruc (MaLichTruc, MaBacSi, NgayTruc, CaTruc, CongViec, TrangThai)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO LichTruc (MaLichTruc, MaBacSi, NgayTruc, CaTruc)
+        VALUES (?, ?, ?, ?)
     """;
 
 
@@ -68,8 +68,6 @@ public class DutyShiftDAO {
             stmt.setString(2, model.getMaBacSi());
             stmt.setDate(3, Date.valueOf(model.getNgay()));
             stmt.setString(4, model.getCaTruc());
-            stmt.setString(5, congViec);
-            stmt.setString(6, trangThai);
 
             return stmt.executeUpdate() > 0;
 
@@ -79,36 +77,6 @@ public class DutyShiftDAO {
 
         return false;
     }
-
-
-    // ✏️ Cập nhật lịch trực
-    public static boolean updateDutyShift(String maLichTruc, String congViec, String trangThai, DutyShiftModel model) {
-        String sql = """
-        UPDATE LichTruc
-        SET MaBacSi = ?, NgayTruc = ?, CaTruc = ?, CongViec = ?, TrangThai = ?
-        WHERE MaLichTruc = ?
-    """;
-
-        try (Connection conn = DatabaseConnector.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, model.getMaBacSi());
-            stmt.setDate(2, Date.valueOf(model.getNgay()));
-            stmt.setString(3, model.getCaTruc());
-            stmt.setString(4, congViec);
-            stmt.setString(5, trangThai);
-            stmt.setString(6, maLichTruc);
-
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-
 
     // ❌ Xoá lịch trực
     public static boolean deleteDutyShift(String maLichTruc) {

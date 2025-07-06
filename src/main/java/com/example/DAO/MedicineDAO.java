@@ -194,4 +194,89 @@ public class MedicineDAO {
 
         return list;
     }
+
+    public static int getNextIdNumber(String prefix) {
+        String sql = "SELECT MaThuoc " +
+                "FROM thuoc " +
+                "WHERE MaThuoc LIKE ? " +
+                "AND MaThuoc ~ ? " +
+                "ORDER BY CAST(SUBSTRING(MaThuoc FROM ?) AS INTEGER) DESC " +
+                "LIMIT 1";
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, prefix + "%");
+            stmt.setString(2, "^" + prefix + "[0-9]+$");
+            stmt.setString(3, String.format("^.{%d}(\\d+)$", prefix.length()));
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String medicineId = rs.getString("MaThuoc");
+                if (medicineId != null && medicineId.startsWith(prefix)) {
+                    try {
+                        String numberPart = medicineId.substring(prefix.length());
+                        if (numberPart.matches("\\d+")) {
+                            int currentNumber = Integer.parseInt(numberPart);
+                            System.out.println("Found max ID: " + medicineId + ", number: " + currentNumber);
+                            return currentNumber + 1;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error parsing number from: " + medicineId);
+                    }
+                }
+            }
+
+            System.out.println("No existing ID found for prefix: " + prefix);
+            return 1;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error in getNextIdNumber: " + e.getMessage());
+            return 1;
+        }
+    }
+
+    // Phương thức mới: Giảm số lượng thuốc trong kho
+    public static boolean reduceMedicineQuantity(String maThuoc, int soLuongGiam) {
+        String sql = "UPDATE Thuoc SET SoLuong = SoLuong - ? WHERE MaThuoc = ? AND SoLuong >= ?";
+        
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, soLuongGiam);
+            stmt.setString(2, maThuoc);
+            stmt.setInt(3, soLuongGiam); // Đảm bảo số lượng còn lại >= số lượng cần giảm
+            
+            int result = stmt.executeUpdate();
+            return result > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi giảm số lượng thuốc: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Phương thức kiểm tra số lượng thuốc có đủ không
+    public static boolean checkMedicineAvailability(String maThuoc, int soLuongCan) {
+        String sql = "SELECT SoLuong FROM Thuoc WHERE MaThuoc = ?";
+        
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, maThuoc);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                int soLuongHienTai = rs.getInt("SoLuong");
+                return soLuongHienTai >= soLuongCan;
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi kiểm tra số lượng thuốc: " + e.getMessage());
+        }
+        
+        return false;
+    }
 }

@@ -34,6 +34,11 @@ public class FilterDate {
             default -> "";
         };
     }
+
+    public static FilterDate fromLocalDate(LocalDate date) {
+        return new FilterDate("Ngày", date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+    }
+
     public Year getYear() { return year; }
     public YearMonth getYearMonth() { return yearMonth; }
     public LocalDate getLocalDate() { return localDate; }

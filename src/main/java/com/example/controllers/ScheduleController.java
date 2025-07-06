@@ -330,10 +330,7 @@ public class ScheduleController {
         String maLichTruc = UUID.randomUUID().toString().substring(0, 20);
         DutyShiftModel duty = new DutyShiftModel(maLichTruc, code, name, role, date, shift);
 
-        String congViec = roleText;
-        String trangThai = "Sẵn sàng";
-
-        boolean success = DutyShiftDAO.insertDutyShift(duty, maLichTruc, congViec, trangThai);
+        boolean success = DutyShiftDAO.insertDutyShift(duty, maLichTruc);
         if (!success) {
             showStatus("Lỗi khi lưu lịch trực vào CSDL.", true);
             return;

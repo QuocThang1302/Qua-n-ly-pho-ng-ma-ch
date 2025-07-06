@@ -31,9 +31,7 @@ CREATE TABLE LichTruc (
   MaLichTruc VARCHAR(20) PRIMARY KEY,
   MaBacSi VARCHAR(20),
   NgayTruc DATE,
-  CaTruc TEXT,
-  CongViec VARCHAR(100),
-  TrangThai VARCHAR(50)
+  CaTruc TEXT
 );
 
 CREATE TABLE HenKhamBenh (
@@ -58,7 +56,6 @@ CREATE TABLE PhieuKhamBenh (
   TienKham DECIMAL(10,2),
   MaBacSi VARCHAR(20)
 );
-
 CREATE TABLE Thuoc (
   MaThuoc VARCHAR(20) PRIMARY KEY,
   TenThuoc VARCHAR(100),
@@ -96,11 +93,8 @@ CREATE TABLE HoaDon (
 );
 
 CREATE TABLE QuiDinh (
-  MaQuiDinh VARCHAR(20) PRIMARY KEY,
-  TenQuiDinh VARCHAR(100),
-  MoTa TEXT,
-  NgayCapNhat DATE,
-  NguoiCapNhat VARCHAR(20)
+  TenQuiDinh VARCHAR(50) PRIMARY KEY,
+  GiaTri DECIMAL(15, 2)
 );
 
 -- Foreign keys
@@ -115,103 +109,197 @@ ALTER TABLE HenKhamBenh ADD FOREIGN KEY (MaBenhNhan) REFERENCES BenhNhan (MaBenh
 ALTER TABLE HenKhamBenh ADD FOREIGN KEY (MaBacSi) REFERENCES NhanVien (MaNhanVien);
 ALTER TABLE CTDonThuoc ADD FOREIGN KEY (MaDonThuoc) REFERENCES DonThuoc (MaDonThuoc);
 ALTER TABLE CTDonThuoc ADD FOREIGN KEY (MaThuoc) REFERENCES Thuoc (MaThuoc);
-ALTER TABLE QuiDinh ADD FOREIGN KEY (NguoiCapNhat) REFERENCES NhanVien (MaNhanVien);
 
 -- Data
 INSERT INTO Role (RoleID, TenRole) VALUES
-('ADMIN', 'Quản trị'),
+('ADMIN', 'Quản trị viên'),
 ('DOCTOR', 'Bác sĩ'),
 ('MANAGER', 'Quản lý'),
 ('NURSE', 'Y Tá');
 
--- Thêm dữ liệu cho bảng BenhNhan
-INSERT INTO BenhNhan (MaBenhNhan, Ho, Ten, NgaySinh, GioiTinh, SDT) VALUES
-('BN001', 'Nguyễn', 'Văn An', '1985-03-15', 'Nam', '0901234567'),
-('BN002', 'Trần', 'Thị Bình', '1990-07-22', 'Nữ', '0912345678'),
-('BN003', 'Lê', 'Hoàng Cường', '1978-11-08', 'Nam', '0923456789'),
-('BN004', 'Phạm', 'Thị Dung', '1995-01-30', 'Nữ', '0934567890'),
-('BN005', 'Hoàng', 'Văn Em', '1987-09-12', 'Nam', '0945678901'),
-('BN006', 'Vũ', 'Thị Phương', '1992-05-18', 'Nữ', '0956789012'),
-('BN007', 'Đặng', 'Minh Quang', '1980-12-25', 'Nam', '0967890123'),
-('BN008', 'Bùi', 'Thị Hoa', '1993-04-07', 'Nữ', '0978901234');
-
--- Thêm dữ liệu cho bảng NhanVien
 INSERT INTO NhanVien (MaNhanVien, Ho, Ten, RoleID, Luong, NgaySinh, GioiTinh, CCCD, DiaChi, SDT, Email, MatKhau) VALUES
-('NV001', 'Nguyễn', 'Thị Admin', 'ADMIN', 25000000.00, '1980-01-15', 'Nữ', '123456789012', '123 Đường ABC, Quận 1, TP.HCM', '0901111111', 'admin@phongkham.com', 'admin123'),
-('NV002', 'Trần', 'Văn Bách', 'DOCTOR', 35000000.00, '1975-05-20', 'Nam', '234567890123', '456 Đường DEF, Quận 2, TP.HCM', '0902222222', 'bs.bach@phongkham.com', 'doctor123'),
-('NV003', 'Lê', 'Thị Cẩm', 'DOCTOR', 32000000.00, '1982-08-10', 'Nữ', '345678901234', '789 Đường GHI, Quận 3, TP.HCM', '0903333333', 'bs.cam@phongkham.com', 'doctor456'),
-('NV004', 'Phạm', 'Minh Đức', 'MANAGER', 28000000.00, '1978-12-03', 'Nam', '456789012345', '321 Đường JKL, Quận 4, TP.HCM', '0904444444', 'ql.duc@phongkham.com', 'manager123'),
-('NV005', 'Hoàng', 'Thị Ên', 'NURSE', 18000000.00, '1990-03-25', 'Nữ', '567890123456', '654 Đường MNO, Quận 5, TP.HCM', '0905555555', 'yt.en@phongkham.com', 'nurse123'),
-('NV006', 'Vũ', 'Văn Phúc', 'NURSE', 17500000.00, '1988-06-18', 'Nam', '678901234567', '987 Đường PQR, Quận 6, TP.HCM', '0906666666', 'yt.phuc@phongkham.com', 'nurse456'),
-('NV007', 'Đặng', 'Thị Giang', 'DOCTOR', 34000000.00, '1979-09-14', 'Nữ', '789012345678', '147 Đường STU, Quận 7, TP.HCM', '0907777777', 'bs.giang@phongkham.com', 'doctor789');
+('123', 'Nguyen', 'Van A', 'ADMIN', 15000000, '1990-05-15', 'Nam', '123456789012', '123 Nguyen Trai, Q1, TP.HCM', '0901234567', 'admin@phongkham.com', '123456'),
+('BS001', 'Tran', 'Thi B', 'DOCTOR', 20000000, '1985-03-20', 'Nu', '234567890123', '456 Le Loi, Q3, TP.HCM', '0912345678', 'bs001@phongkham.com', 'password123'),
+('BS002', 'Le', 'Van C', 'DOCTOR', 22000000, '1988-07-10', 'Nam', '345678901234', '789 Hai Ba Trung, Q1, TP.HCM', '0923456789', 'bs002@phongkham.com', 'password123'),
+('BS003', 'Pham', 'Thi D', 'DOCTOR', 21000000, '1987-11-25', 'Nu', '456789012345', '321 Vo Van Tan, Q3, TP.HCM', '0934567890', 'bs003@phongkham.com', 'password123'),
+('YT001', 'Hoang', 'Van E', 'NURSE', 8000000, '1992-01-08', 'Nam', '567890123456', '654 Cach Mang Thang 8, Q10, TP.HCM', '0945678901', 'yt001@phongkham.com', 'password123'),
+('YT002', 'Vo', 'Thi F', 'NURSE', 8500000, '1993-09-12', 'Nu', '678901234567', '987 Pasteur, Q1, TP.HCM', '0956789012', 'yt002@phongkham.com', 'password123'),
+('QL001', 'Dang', 'Van G', 'MANAGER', 12000000, '1983-04-30', 'Nam', '789012345678', '159 Dong Khoi, Q1, TP.HCM', '0967890123', 'ql001@phongkham.com', 'password123');
 
--- Thêm dữ liệu cho bảng LichTruc
-INSERT INTO LichTruc (MaLichTruc, MaBacSi, NgayTruc, CaTruc, CongViec, TrangThai) VALUES
-('LT001', 'NV002', '2025-07-01', 'Sáng', 'Khám bệnh tổng quát', 'Đã xác nhận'),
-('LT002', 'NV003', '2025-07-01', 'Chiều', 'Khám chuyên khoa nội', 'Đã xác nhận'),
-('LT003', 'NV007', '2025-07-01', 'Tối', 'Khám cấp cứu', 'Đã xác nhận'),
-('LT004', 'NV002', '2025-07-02', 'Sáng', 'Khám bệnh tổng quát', 'Chờ xác nhận'),
-('LT005', 'NV003', '2025-07-02', 'Chiều', 'Khám chuyên khoa nội', 'Đã xác nhận'),
-('LT006', 'NV007', '2025-07-03', 'Sáng', 'Khám chuyên khoa phụ khoa', 'Đã xác nhận'),
-('LT007', 'NV002', '2025-07-03', 'Tối', 'Khám cấp cứu', 'Đã xác nhận'),
-('LT008', 'NV003', '2025-07-04', 'Sáng', 'Khám nội tổng quát', 'Chờ xác nhận');
+-- Bệnh nhân
+INSERT INTO BenhNhan (MaBenhNhan, Ho, Ten, NgaySinh, GioiTinh, SDT) VALUES
+('BN001', 'Nguyen', 'Van H', '1980-05-15', 'Nam', '0978901234'),
+('BN002', 'Tran', 'Thi I', '1992-08-20', 'Nu', '0989012345'),
+('BN003', 'Le', 'Van J', '1975-12-10', 'Nam', '0990123456'),
+('BN004', 'Pham', 'Thi K', '1988-03-25', 'Nu', '0901234567'),
+('BN005', 'Hoang', 'Van L', '1995-07-08', 'Nam', '0912345678'),
+('BN006', 'Vo', 'Thi M', '1990-11-12', 'Nu', '0923456789'),
+('BN007', 'Dang', 'Van N', '1985-09-30', 'Nam', '0934567890'),
+('BN008', 'Bui', 'Thi O', '1982-02-14', 'Nu', '0945678901'),
+('BN009', 'Ngo', 'Van P', '1991-06-18', 'Nam', '0956789012'),
+('BN010', 'Do', 'Thi Q', '1987-10-22', 'Nu', '0967890123'),
+('BN011', 'Luu', 'Van R', '1993-04-05', 'Nam', '0978901234'),
+('BN012', 'Cao', 'Thi S', '1989-01-17', 'Nu', '0989012345'),
+('BN013', 'Truong', 'Van T', '1984-08-29', 'Nam', '0990123456'),
+('BN014', 'Ly', 'Thi U', '1996-12-03', 'Nu', '0901234567'),
+('BN015', 'Mai', 'Van V', '1981-05-26', 'Nam', '0912345678');
 
--- Thêm dữ liệu cho bảng HenKhamBenh
+-- Lịch trực
+INSERT INTO LichTruc (MaLichTruc, MaBacSi, NgayTruc, CaTruc) VALUES
+('LT001', 'BS001', '2025-07-01', 'Tối'),
+('LT002', 'BS002', '2025-07-01', 'Chiều'),
+('LT003', 'BS003', '2025-07-02', 'Tối'),
+('LT004', 'BS001', '2025-07-02', 'Chiều'),
+('LT005', 'BS002', '2025-07-03', 'Tối'),
+('LT006', 'BS003', '2025-07-03', 'Chiều'),
+('LT007', 'BS001', '2025-07-04', 'Sáng'),
+('LT008', 'BS002', '2025-07-04', 'Chiều'),
+('LT009', 'BS003', '2025-07-05', 'Sáng'),
+('LT010', 'BS001', '2025-07-05', 'Chiều');
+
+-- Hẹn khám bệnh (tập trung vào tháng 7/2025)
 INSERT INTO HenKhamBenh (MaKhamBenh, MaBenhNhan, LyDoKham, NgayKham, NgayketThuc, MaBacSi, TinhTrang) VALUES
-('HKB001', 'BN001', 'Đau đầu, chóng mặt kéo dài 3 ngày', '2025-07-01', '2025-07-01', 'NV002', 'Đã hoàn thành'),
-('HKB002', 'BN002', 'Khám sức khỏe định kỳ', '2025-07-01', '2025-07-01', 'NV003', 'Đã hoàn thành'),
-('HKB003', 'BN003', 'Đau bụng, buồn nôn', '2025-07-02', '2025-07-02', 'NV002', 'Đã xác nhận'),
-('HKB004', 'BN004', 'Khám thai định kỳ', '2025-07-02', '2025-07-02', 'NV007', 'Đã xác nhận'),
-('HKB005', 'BN005', 'Ho khan, sốt nhẹ', '2025-07-03', '2025-07-03', 'NV003', 'Chờ khám'),
-('HKB006', 'BN006', 'Đau lưng, tê tay', '2025-07-03', '2025-07-03', 'NV002', 'Chờ khám');
+('HKB001', 'BN001', 'Đau đầu thường xuyên', '2025-07-01', '2025-07-01', 'BS001', 'Đã khám xong'),
+('HKB002', 'BN002', 'Khám sức khỏe định kỳ', '2025-07-01', '2025-07-01', 'BS001', 'Đã khám xong'),
+('HKB003', 'BN003', 'Đau bụng', '2025-07-02', '2025-07-02', 'BS002', 'Đã khám xong'),
+('HKB004', 'BN004', 'Ho kéo dài', '2025-07-02', '2025-07-02', 'BS003', 'Đã khám xong'),
+('HKB005', 'BN005', 'Khám tim mạch', '2025-07-03', '2025-07-03', 'BS001', 'Đã khám xong'),
+('HKB006', 'BN006', 'Đau lưng', '2025-07-03', '2025-07-03', 'BS002', 'Đã khám xong'),
+('HKB007', 'BN007', 'Khám mắt', '2025-07-04', '2025-07-04', 'BS003', 'Đã khám xong'),
+('HKB008', 'BN008', 'Đau khớp', '2025-07-04', '2025-07-04', 'BS001', 'Đã khám xong'),
+('HKB009', 'BN009', 'Khám da liễu', '2025-07-05', '2025-07-05', 'BS002', 'Đã khám xong'),
+('HKB010', 'BN010', 'Khám phụ khoa', '2025-07-05', '2025-07-05', 'BS003', 'Đã khám xong'),
+('HKB011', 'BN011', 'Đau răng', '2025-07-08', '2025-07-08', 'BS001', 'Đã khám xong'),
+('HKB012', 'BN012', 'Khám tai mũi họng', '2025-07-08', '2025-07-08', 'BS002', 'Đã khám xong'),
+('HKB013', 'BN013', 'Đau dạ dày', '2025-07-09', '2025-07-09', 'BS003', 'Đã khám xong'),
+('HKB014', 'BN014', 'Khám tổng quát', '2025-07-09', '2025-07-09', 'BS001', 'Đã khám xong'),
+('HKB015', 'BN015', 'Huyết áp cao', '2025-07-10', '2025-07-10', 'BS002', 'Đã khám xong'),
+('HKB016', 'BN001', 'Tái khám đau đầu', '2025-07-15', '2025-07-15', 'BS001', 'Đã khám xong'),
+('HKB017', 'BN003', 'Tái khám đau bụng', '2025-07-16', '2025-07-16', 'BS002', 'Đã khám xong'),
+('HKB018', 'BN005', 'Tái khám tim mạch', '2025-07-17', '2025-07-17', 'BS001', 'Đã khám xong'),
+('HKB019', 'BN007', 'Tái khám mắt', '2025-07-18', '2025-07-18', 'BS003', 'Đã khám xong'),
+('HKB020', 'BN012', 'Tái khám tai mũi họng', '2025-07-19', '2025-07-19', 'BS002', 'Đã khám xong'),
+('HKB021', 'BN002', 'Khám sức khỏe định kỳ', '2025-07-22', '2025-07-22', 'BS001', 'Đã khám xong'),
+('HKB022', 'BN004', 'Tái khám ho', '2025-07-23', '2025-07-23', 'BS003', 'Đã khám xong'),
+('HKB023', 'BN006', 'Tái khám đau lưng', '2025-07-24', '2025-07-24', 'BS002', 'Đã khám xong'),
+('HKB024', 'BN008', 'Tái khám đau khớp', '2025-07-25', '2025-07-25', 'BS001', 'Đã khám xong'),
+('HKB025', 'BN010', 'Tái khám phụ khoa', '2025-07-26', '2025-07-26', 'BS003', 'Đã khám xong');
 
--- Thêm dữ liệu cho bảng PhieuKhamBenh
+-- Phiếu khám bệnh
 INSERT INTO PhieuKhamBenh (MaPhieuKham, MaBenhNhan, NgayKham, NgayLapPhieu, ChanDoan, KetQuaKham, DieuTri, TienKham, MaBacSi) VALUES
-('PKB001', 'BN001', '2025-07-01', '2025-07-01', 'Hội chứng căng thẳng, đau đầu do stress', 'Huyết áp bình thường, nhiệt độ 36.5°C, mạch 72 lần/phút', 'Nghỉ ngơi, uống thuốc giảm đau theo chỉ định', 200000.00, 'NV002'),
-('PKB002', 'BN002', '2025-07-01', '2025-07-01', 'Sức khỏe bình thường', 'Các chỉ số sinh hiệu ổn định, không có dấu hiệu bất thường', 'Duy trì lối sống lành mạnh, tái khám sau 6 tháng', 150000.00, 'NV003'),
-('PKB003', 'BN007', '2025-06-28', '2025-06-28', 'Viêm dạ dày cấp', 'Đau vùng thượng vị, buồn nôn, không sốt', 'Kiêng cay nóng, ăn nhạt, uống thuốc theo đơn', 180000.00, 'NV002'),
-('PKB004', 'BN008', '2025-06-29', '2025-06-29', 'Cảm cúm thông thường', 'Sốt nhẹ 37.2°C, ho có đờm, nghẹt mũi', 'Nghỉ ngơi, uống thuốc cảm cúm, nhiều nước', 120000.00, 'NV003');
+('PKB001', 'BN001', '2025-07-01', '2025-07-01', 'Đau đầu do căng thẳng', 'Huyết áp bình thường, không có dấu hiệu bất thường', 'Nghỉ ngơi, uống thuốc giảm đau', 200000, 'BS001'),
+('PKB002', 'BN002', '2025-07-01', '2025-07-01', 'Khỏe mạnh', 'Tất cả chỉ số đều bình thường', 'Duy trì lối sống lành mạnh', 150000, 'BS001'),
+('PKB003', 'BN003', '2025-07-02', '2025-07-02', 'Viêm dạ dày', 'Đau bụng vùng thượng vị', 'Thuốc kháng acid, chế độ ăn nhạt', 250000, 'BS002'),
+('PKB004', 'BN004', '2025-07-02', '2025-07-02', 'Viêm họng', 'Họng đỏ, ho khô', 'Thuốc ho, súc miệng nước muối', 180000, 'BS003'),
+('PKB005', 'BN005', '2025-07-03', '2025-07-03', 'Rối loạn nhịp tim nhẹ', 'Tim đập không đều nhẹ', 'Thuốc điều hòa nhịp tim', 300000, 'BS001'),
+('PKB006', 'BN006', '2025-07-03', '2025-07-03', 'Đau cơ lưng', 'Cơ lưng căng cứng', 'Thuốc giảm đau, massage', 220000, 'BS002'),
+('PKB007', 'BN007', '2025-07-04', '2025-07-04', 'Cận thị', 'Thị lực giảm', 'Kê đơn kính cận', 200000, 'BS003'),
+('PKB008', 'BN008', '2025-07-04', '2025-07-04', 'Viêm khớp', 'Khớp sưng đau', 'Thuốc chống viêm', 280000, 'BS001'),
+('PKB009', 'BN009', '2025-07-05', '2025-07-05', 'Viêm da cơ địa', 'Da đỏ, ngứa', 'Thuốc bôi da, tránh dị ứng', 240000, 'BS002'),
+('PKB010', 'BN010', '2025-07-05', '2025-07-05', 'Viêm phụ khoa', 'Khí hư bất thường', 'Thuốc kháng sinh, vệ sinh', 320000, 'BS003'),
+('PKB011', 'BN011', '2025-07-08', '2025-07-08', 'Sâu răng', 'Răng hàm bị sâu', 'Hàn răng, vệ sinh răng miệng', 200000, 'BS001'),
+('PKB012', 'BN012', '2025-07-08', '2025-07-08', 'Viêm xoang', 'Nghẹt mũi, đau đầu', 'Thuốc xịt mũi, kháng sinh', 260000, 'BS002'),
+('PKB013', 'BN013', '2025-07-09', '2025-07-09', 'Loét dạ dày', 'Đau dạ dày sau ăn', 'Thuốc ức chế acid, chế độ ăn', 350000, 'BS003'),
+('PKB014', 'BN014', '2025-07-09', '2025-07-09', 'Sức khỏe tốt', 'Các chỉ số bình thường', 'Tiếp tục duy trì', 150000, 'BS001'),
+('PKB015', 'BN015', '2025-07-10', '2025-07-10', 'Tăng huyết áp độ 1', 'Huyết áp 150/90', 'Thuốc hạ huyết áp, ít muối', 300000, 'BS002'),
+('PKB016', 'BN001', '2025-07-15', '2025-07-15', 'Đau đầu cải thiện', 'Tình trạng tốt hơn', 'Tiếp tục thuốc', 180000, 'BS001'),
+('PKB017', 'BN003', '2025-07-16', '2025-07-16', 'Viêm dạ dày thuyên giảm', 'Đau bụng giảm', 'Tiếp tục điều trị', 200000, 'BS002'),
+('PKB018', 'BN005', '2025-07-17', '2025-07-17', 'Nhịp tim ổn định', 'Tim đập đều', 'Giảm liều thuốc', 250000, 'BS001'),
+('PKB019', 'BN007', '2025-07-18', '2025-07-18', 'Thị lực ổn định', 'Đeo kính phù hợp', 'Khám lại 6 tháng', 150000, 'BS003'),
+('PKB020', 'BN012', '2025-07-19', '2025-07-19', 'Viêm xoang cải thiện', 'Mũi thông thoáng hơn', 'Tiếp tục xịt mũi', 200000, 'BS002'),
+('PKB021', 'BN002', '2025-07-22', '2025-07-22', 'Sức khỏe tốt', 'Tất cả chỉ số bình thường', 'Duy trì lối sống', 150000, 'BS001'),
+('PKB022', 'BN004', '2025-07-23', '2025-07-23', 'Viêm họng khỏi', 'Họng không còn đỏ', 'Ngừng thuốc', 120000, 'BS003'),
+('PKB023', 'BN006', '2025-07-24', '2025-07-24', 'Đau lưng cải thiện', 'Cơ lưng mềm hơn', 'Tiếp tục vật lý trị liệu', 180000, 'BS002'),
+('PKB024', 'BN008', '2025-07-25', '2025-07-25', 'Viêm khớp giảm', 'Khớp ít sưng', 'Giảm liều thuốc', 220000, 'BS001'),
+('PKB025', 'BN010', '2025-07-26', '2025-07-26', 'Phụ khoa bình thường', 'Không còn viêm nhiễm', 'Ngừng thuốc', 250000, 'BS003');
 
--- Thêm dữ liệu cho bảng Thuoc
+-- Thuốc
 INSERT INTO Thuoc (MaThuoc, TenThuoc, CongDung, SoLuong, GiaTien, DonVi, HuongDanSuDung, HanSuDung) VALUES
-('T001', 'Paracetamol 500mg', 'Giảm đau, hạ sốt', 500, 2000.00, 'Viên', 'Uống 1-2 viên/lần, tối đa 8 viên/ngày', '2026-12-31'),
-('T002', 'Amoxicillin 500mg', 'Kháng sinh điều trị nhiễm khuẩn', 200, 5000.00, 'Viên', 'Uống 1 viên/lần, ngày 3 lần sau ăn', '2026-10-15'),
-('T003', 'Omeprazole 20mg', 'Điều trị loét dạ dày, trào ngược dạ dày', 300, 8000.00, 'Viên', 'Uống 1 viên/ngày trước ăn sáng 30 phút', '2026-08-20'),
-('T004', 'Loratadine 10mg', 'Chống dị ứng', 150, 3000.00, 'Viên', 'Uống 1 viên/ngày, có thể uống lúc đói', '2027-01-10'),
-('T005', 'Vitamin C 500mg', 'Bổ sung vitamin C, tăng sức đề kháng', 400, 1500.00, 'Viên', 'Uống 1 viên/ngày sau ăn', '2026-11-30'),
-('T006', 'Dextromethorphan', 'Thuốc ho', 100, 12000.00, 'Chai', 'Uống 1 thìa/lần, ngày 3 lần', '2026-09-15'),
-('T007', 'Domperidone 10mg', 'Chống nôn, đầy hơi', 200, 4000.00, 'Viên', 'Uống 1 viên trước ăn 15-30 phút', '2026-07-25'),
-('T008', 'Ibuprofen 400mg', 'Giảm đau, chống viêm', 250, 3500.00, 'Viên', 'Uống 1 viên/lần, tối đa 3 lần/ngày sau ăn', '2026-12-20');
+('T001', 'Paracetamol 500mg', 'Giảm đau, hạ sốt', 500, 2000, 'Viên', 'Uống 1-2 viên khi đau, tối đa 6 viên/ngày', '2026-12-31'),
+('T002', 'Omeprazole 20mg', 'Ức chế acid dạ dày', 300, 5000, 'Viên', 'Uống 1 viên/ngày trước ăn sáng', '2026-10-15'),
+('T003', 'Amoxicillin 500mg', 'Kháng sinh', 200, 8000, 'Viên', 'Uống 1 viên x 3 lần/ngày', '2025-12-20'),
+('T004', 'Cetirizine 10mg', 'Chống dị ứng', 400, 3000, 'Viên', 'Uống 1 viên/ngày', '2027-05-30'),
+('T005', 'Ibuprofen 400mg', 'Giảm đau, chống viêm', 350, 4000, 'Viên', 'Uống 1-2 viên khi đau', '2026-08-25'),
+('T006', 'Metformin 500mg', 'Điều trị tiểu đường', 250, 6000, 'Viên', 'Uống 1 viên x 2 lần/ngày', '2026-11-10'),
+('T007', 'Amlodipine 5mg', 'Hạ huyết áp', 180, 7000, 'Viên', 'Uống 1 viên/ngày', '2027-02-28'),
+('T008', 'Loratadine 10mg', 'Chống dị ứng', 320, 3500, 'Viên', 'Uống 1 viên/ngày', '2026-09-15'),
+('T009', 'Dexamethasone 0.5mg', 'Chống viêm', 150, 4500, 'Viên', 'Uống theo chỉ định bác sĩ', '2025-11-30'),
+('T010', 'Vitamin C 500mg', 'Bổ sung vitamin', 600, 1500, 'Viên', 'Uống 1 viên/ngày', '2027-01-20');
 
--- Thêm dữ liệu cho bảng DonThuoc
+-- Đơn thuốc
 INSERT INTO DonThuoc (MaDonThuoc, MaPhieuKham, NgayLapDon) VALUES
 ('DT001', 'PKB001', '2025-07-01'),
-('DT002', 'PKB002', '2025-07-01'),
-('DT003', 'PKB003', '2025-06-28'),
-('DT004', 'PKB004', '2025-06-29');
+('DT002', 'PKB003', '2025-07-02'),
+('DT003', 'PKB004', '2025-07-02'),
+('DT004', 'PKB005', '2025-07-03'),
+('DT005', 'PKB006', '2025-07-03'),
+('DT006', 'PKB008', '2025-07-04'),
+('DT007', 'PKB009', '2025-07-05'),
+('DT008', 'PKB010', '2025-07-05'),
+('DT009', 'PKB012', '2025-07-08'),
+('DT010', 'PKB013', '2025-07-09'),
+('DT011', 'PKB015', '2025-07-10'),
+('DT012', 'PKB016', '2025-07-15'),
+('DT013', 'PKB017', '2025-07-16'),
+('DT014', 'PKB018', '2025-07-17'),
+('DT015', 'PKB020', '2025-07-19'),
+('DT016', 'PKB023', '2025-07-24'),
+('DT017', 'PKB024', '2025-07-25');
 
--- Thêm dữ liệu cho bảng CTDonThuoc
+-- Chi tiết đơn thuốc
 INSERT INTO CTDonThuoc (MaDonThuoc, MaThuoc, SoLuong, GiaTien, HuongDanSuDung) VALUES
-('DT001', 'T001', 10, 20000.00, 'Uống khi đau đầu, 1-2 viên/lần'),
-('DT001', 'T005', 14, 21000.00, 'Uống 1 viên/ngày sau ăn sáng'),
-('DT002', 'T005', 30, 45000.00, 'Bổ sung vitamin, 1 viên/ngày'),
-('DT003', 'T003', 14, 112000.00, 'Uống trước ăn sáng 30 phút, 1 viên/ngày'),
-('DT003', 'T007', 20, 80000.00, 'Uống trước ăn 15 phút, ngày 3 lần'),
-('DT004', 'T001', 16, 32000.00, 'Uống khi sốt, 1-2 viên/lần'),
-('DT004', 'T006', 1, 12000.00, 'Uống 1 thìa khi ho, ngày 3 lần'),
-('DT004', 'T005', 7, 10500.00, 'Tăng sức đề kháng, 1 viên/ngày');
+('DT001', 'T001', 10, 20000, 'Uống khi đau đầu'),
+('DT002', 'T002', 14, 70000, 'Uống trước ăn sáng'),
+('DT003', 'T003', 21, 168000, 'Uống đủ liều kháng sinh'),
+('DT004', 'T007', 30, 210000, 'Uống hàng ngày'),
+('DT005', 'T005', 20, 80000, 'Uống khi đau'),
+('DT006', 'T005', 30, 120000, 'Uống sau ăn'),
+('DT006', 'T009', 10, 45000, 'Uống theo chỉ định'),
+('DT007', 'T004', 14, 42000, 'Uống mỗi tối'),
+('DT008', 'T003', 21, 168000, 'Uống đủ liều'),
+('DT009', 'T003', 21, 168000, 'Uống đủ liều kháng sinh'),
+('DT010', 'T002', 30, 150000, 'Uống trước ăn'),
+('DT011', 'T007', 30, 210000, 'Uống hàng ngày cùng giờ'),
+('DT012', 'T001', 10, 20000, 'Uống khi cần'),
+('DT013', 'T002', 14, 70000, 'Tiếp tục uống'),
+('DT014', 'T007', 15, 105000, 'Giảm liều'),
+('DT015', 'T003', 7, 56000, 'Uống thêm 1 tuần'),
+('DT016', 'T005', 14, 56000, 'Uống khi đau'),
+('DT017', 'T005', 15, 60000, 'Giảm liều dần');
 
--- Thêm dữ liệu cho bảng HoaDon
+-- Hóa đơn (tập trung vào tháng 7/2025)
 INSERT INTO HoaDon (MaHoaDon, TenHoaDon, MaDonThuoc, MaPhieuKham, NgayLapHoaDon, GiaTien, TrangThai) VALUES
-('HD001', 'Hóa đơn khám bệnh - BN001', 'DT001', 'PKB001', '2025-07-01', 241000.00, 'Đã thanh toán'),
-('HD002', 'Hóa đơn khám sức khỏe - BN002', 'DT002', 'PKB002', '2025-07-01', 195000.00, 'Đã thanh toán'),
-('HD003', 'Hóa đơn điều trị - BN007', 'DT003', 'PKB003', '2025-06-28', 372000.00, 'Đã thanh toán'),
-('HD004', 'Hóa đơn khám cảm cúm - BN008', 'DT004', 'PKB004', '2025-06-29', 174500.00, 'Chờ thanh toán');
-
+('HD001', 'Hóa đơn khám bệnh BN001', 'DT001', 'PKB001', '2025-07-01', 220000, 'Đã thanh toán'),
+('HD002', 'Hóa đơn khám bệnh BN002', NULL, 'PKB002', '2025-07-01', 150000, 'Đã thanh toán'),
+('HD003', 'Hóa đơn khám bệnh BN003', 'DT002', 'PKB003', '2025-07-02', 320000, 'Đã thanh toán'),
+('HD004', 'Hóa đơn khám bệnh BN004', 'DT003', 'PKB004', '2025-07-02', 348000, 'Đã thanh toán'),
+('HD005', 'Hóa đơn khám bệnh BN005', 'DT004', 'PKB005', '2025-07-03', 510000, 'Đã thanh toán'),
+('HD006', 'Hóa đơn khám bệnh BN006', 'DT005', 'PKB006', '2025-07-03', 300000, 'Đã thanh toán'),
+('HD007', 'Hóa đơn khám bệnh BN007', NULL, 'PKB007', '2025-07-04', 200000, 'Đã thanh toán'),
+('HD008', 'Hóa đơn khám bệnh BN008', 'DT006', 'PKB008', '2025-07-04', 445000, 'Đã thanh toán'),
+('HD009', 'Hóa đơn khám bệnh BN009', 'DT007', 'PKB009', '2025-07-05', 282000, 'Đã thanh toán'),
+('HD010', 'Hóa đơn khám bệnh BN010', 'DT008', 'PKB010', '2025-07-05', 488000, 'Đã thanh toán'),
+('HD011', 'Hóa đơn khám bệnh BN011', NULL, 'PKB011', '2025-07-08', 200000, 'Đã thanh toán'),
+('HD012', 'Hóa đơn khám bệnh BN012', 'DT009', 'PKB012', '2025-07-08', 428000, 'Đã thanh toán'),
+('HD013', 'Hóa đơn khám bệnh BN013', 'DT010', 'PKB013', '2025-07-09', 500000, 'Đã thanh toán'),
+('HD014', 'Hóa đơn khám bệnh BN014', NULL, 'PKB014', '2025-07-09', 150000, 'Đã thanh toán'),
+('HD015', 'Hóa đơn khám bệnh BN015', 'DT011', 'PKB015', '2025-07-10', 510000, 'Đã thanh toán'),
+('HD016', 'Hóa đơn tái khám BN001', 'DT012', 'PKB016', '2025-07-15', 200000, 'Đã thanh toán'),
+('HD017', 'Hóa đơn tái khám BN003', 'DT013', 'PKB017', '2025-07-16', 270000, 'Đã thanh toán'),
+('HD018', 'Hóa đơn tái khám BN005', 'DT014', 'PKB018', '2025-07-17', 355000, 'Đã thanh toán'),
+('HD019', 'Hóa đơn tái khám BN007', NULL, 'PKB019', '2025-07-18', 150000, 'Đã thanh toán'),
+('HD020', 'Hóa đơn tái khám BN012', 'DT015', 'PKB020', '2025-07-19', 256000, 'Đã thanh toán'),
+('HD021', 'Hóa đơn khám định kỳ BN002', NULL, 'PKB021', '2025-07-22', 150000, 'Đã thanh toán'),
+('HD022', 'Hóa đơn tái khám BN004', NULL, 'PKB022', '2025-07-23', 120000, 'Đã thanh toán'),
+('HD023', 'Hóa đơn tái khám BN006', 'DT016', 'PKB023', '2025-07-24', 236000, 'Đã thanh toán'),
+('HD024', 'Hóa đơn tái khám BN008', 'DT017', 'PKB024', '2025-07-25', 280000, 'Đã thanh toán'),
+('HD025', 'Hóa đơn tái khám BN010', NULL, 'PKB025', '2025-07-26', 250000, 'Đã thanh toán'),
+('HD026', 'Hóa đơn khám BN011 - Thẻ BHYT', NULL, 'PKB011', '2025-07-08', 80000, 'Đã thanh toán'),
+('HD027', 'Hóa đơn khám BN006 - Gói VIP', 'DT005', 'PKB006', '2025-07-03', 450000, 'Đã thanh toán'),
+('HD028', 'Hóa đơn khám BN013 - Điều trị dài hạn', 'DT010', 'PKB013', '2025-07-09', 600000, 'Đã thanh toán'),
+('HD029', 'Hóa đơn khám BN015 - Gói cao huyết áp', 'DT011', 'PKB015', '2025-07-10', 480000, 'Đã thanh toán'),
+('HD030', 'Hóa đơn khám BN005 - Theo dõi tim mạch', 'DT004', 'PKB005', '2025-07-03', 550000, 'Đã thanh toán');
 -- Thêm dữ liệu cho bảng QuiDinh
-INSERT INTO QuiDinh (MaQuiDinh, TenQuiDinh, MoTa, NgayCapNhat, NguoiCapNhat) VALUES
-('QD001', 'Quy định giờ làm việc', 'Phòng khám hoạt động từ 7:00 - 22:00 hàng ngày. Ca sáng: 7:00-12:00, Ca chiều: 13:00-18:00, Ca tối: 18:00-22:00', '2025-01-15', 'NV001'),
-('QD002', 'Quy định về tiền khám', 'Phí khám bệnh cơ bản: 120.000đ - 200.000đ tùy theo chuyên khoa. Khám sức khỏe định kỳ: 150.000đ', '2025-01-20', 'NV004'),
-('QD003', 'Quy định đặt lịch hẹn', 'Bệnh nhân có thể đặt lịch trước 1-7 ngày. Hủy lịch phải thông báo trước ít nhất 2 giờ', '2025-02-01', 'NV001'),
-('QD004', 'Quy định về thuốc', 'Kiểm tra hạn sử dụng thuốc hàng tuần. Thuốc gần hết hạn (❤ tháng) cần báo cáo để xử lý', '2025-02-10', 'NV004'),
-('QD005', 'Quy định an toàn và vệ sinh', 'Khử trùng phòng khám sau mỗi ca làm việc. Đeo khẩu trang và rửa tay thường xuyên', '2025-01-25', 'NV001');
+INSERT INTO QuiDinh (TenQuiDinh, GiaTri) VALUES
+('MAX_PATIENT_PER_DAY', 50),
+('DEFAULT_TIEN_KHAM', 150000);

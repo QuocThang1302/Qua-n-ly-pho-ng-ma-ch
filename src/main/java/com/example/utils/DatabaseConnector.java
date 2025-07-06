@@ -13,27 +13,13 @@ public class DatabaseConnector {
 
     public static Connection connect() {
         try {
-            // Kiểm tra nếu connection đã tồn tại và còn valid
-            if (connection != null && !connection.isClosed()) {
-                return connection;
-            }
-
-            // Load PostgreSQL JDBC Driver
             Class.forName("org.postgresql.Driver");
-
-            // Tạo connection mới
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Kết nối PostgreSQL thành công!");
-
-            return connection;
-
+            return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
             System.err.println("Lỗi SQL: " + e.getMessage());
-            e.printStackTrace();
             return null;
         } catch (ClassNotFoundException e) {
             System.err.println("Không tìm thấy PostgreSQL Driver!");
-            e.printStackTrace();
             return null;
         }
     }

@@ -55,43 +55,16 @@ public class AppointmentDetailController {
 
     private void handlePhieuKham() {
         try {
-            // ⚠️ TODO: Gọi DAO thực tế để lấy report và bill từ maKhamBenh
-            // MedicalReportModel report = MedicalReportDAO.getByMaKhamBenh(model.getMaKhamBenh());
-            // BillModel bill = report.getHoaDon();
-            // Dữ liệu mẫu (tạm thời, chưa dùng DAO)
-            List<MedicineModel> thuocList = List.of(
-                    new MedicineModel("T001", "Paracetamol", "Hạ sốt", 10, 5000, "viên", "Uống sau ăn"),
-                    new MedicineModel("T002", "Amoxicillin", "Kháng sinh", 20, 3000, "viên", "2 lần/ngày"),
-                    new MedicineModel("T003", "Vitamin C", "Tăng đề kháng", 15, 2000, "viên", "Uống buổi sáng")
-            );
-
-            BillModel bill = new BillModel(
-                    "HD001",300000,20000,"Da thanh toan","Ma don Thuoc",LocalDateTime.now(),thuocList, "MaPhieuKham");
-
-            MedicalReportModel report = new MedicalReportModel(
-                    model.getMaKhamBenh(),
-                    "PK001",
-                    model.getMaBenhNhan(),
-                    model.getMaBacSi(),
-                    model.getHoTen(),
-                    "Bác sĩ Minh",
-                    model.getNgaySinh(),
-                    model.getSoDienThoai(),
-                    model.getGioiTinh(),
-                    model.getLyDoKham(),
-                    LocalDateTime.now(),
-                    "Viêm mũi dị ứng",
-                    bill
-            );
-
-            // Load giao diện phiếu khám
+            // Load phiếu khám bệnh từ database dựa vào mã khám bệnh
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medical_report.fxml"));
             Parent view = loader.load();
 
             MedicalReportController controller = loader.getController();
-            controller.setData(report, bill);
+            
+            // Sử dụng phương thức mới để load dữ liệu từ database
+            controller.loadMedicalReportByMaKhamBenh(model.getMaKhamBenh());
 
-// Tạo một cửa sổ mới (Stage)
+            // Tạo một cửa sổ mới (Stage)
             Stage stage = new Stage();
             stage.setTitle("Phiếu khám bệnh");
             stage.setScene(new Scene(view, 800, 600)); // Set kích thước cửa sổ
@@ -99,10 +72,8 @@ public class AppointmentDetailController {
             stage.setResizable(false); // Không cho resize
             stage.initModality(Modality.APPLICATION_MODAL); // Chặn các cửa sổ khác cho đến khi đóng
 
-// Hiển thị cửa sổ và chờ đóng
+            // Hiển thị cửa sổ và chờ đóng
             stage.showAndWait();
-
-
 
         } catch (IOException e) {
             showAlert("Không thể mở phiếu khám: " + e.getMessage());
