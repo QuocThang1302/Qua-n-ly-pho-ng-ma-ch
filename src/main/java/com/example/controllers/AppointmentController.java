@@ -86,40 +86,13 @@ public class AppointmentController {
 
         // ✅ XỬ LÝ DOUBLE-CLICK ĐơN GIẢN
         calendarView.setEntryFactory(param -> {
-            // Khi double click tạo Entry mới, ta chặn lại ở đây
+            // Khi double click tạo Entry mới, chỉ mở form chi tiết, không tạo entry mới trên calendar
             AppointmentModel model = new AppointmentModel();
             AppointmentEntry entry = new AppointmentEntry("", model);
-
-            // Gán ngày giờ vào model nếu cần:
             model.setNgayKham(param.getZonedDateTime().toLocalDate());
-
-            // Gọi form chi tiết để người dùng nhập
             Platform.runLater(() -> openAppointmentDetailWindow(entry));
-
-            // Trả null để không thêm "New Entry" vào giao diện
             return null;
         });
-        Role role = UserContext.getInstance().getRole();
-        if(role.equals(Role.NURSE)){
-            calendarView.setEntryFactory(param -> {
-                String title = "Khám Mới";
-                AppointmentModel model = new AppointmentModel();
-                //TODO sua logic lay ma kham benh moi
-                model.setMaKhamBenh(UUID.randomUUID().toString());
-                model.setLyDoKham(title);
-                model.setNgayKham(param.getZonedDateTime().toLocalDate());
-
-
-                AppointmentEntry entry = new AppointmentEntry(title, model);
-                entry.setInterval(param.getZonedDateTime());
-                registerEntryChangeListeners(entry);
-                return entry;
-
-        });
-        }
-        else {
-            calendarView.setEntryFactory(createEntryParameter -> null);
-        }
 
         calendarView.setEntryDetailsPopOverContentCallback(param -> {
             if (!(param.getEntry() instanceof AppointmentEntry entry)) return null;
