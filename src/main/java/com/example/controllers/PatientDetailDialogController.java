@@ -172,7 +172,9 @@ public class PatientDetailDialogController {
 
             // Lấy controller để truyền dữ liệu
             MedicalReportController controller = loader.getController();
-            controller.setData(medicalReportModel, medicalReportModel.getHoaDon());
+            
+            // Sử dụng phương thức mới để load dữ liệu từ database
+            controller.loadMedicalReportByMaKhamBenh(medicalReportModel.getMaKhamBenh());
 
             // Tạo stage mới (window mới)
             Stage dialogStage = new Stage();

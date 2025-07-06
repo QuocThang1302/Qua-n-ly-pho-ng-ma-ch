@@ -122,6 +122,10 @@ public class MedicalReportModel {
         this.ngayLap = ngayLap;
     }
 
+    public void setNgayLap(LocalDateTime ngayLap) {
+        this.ngayLap = ngayLap;
+    }
+
     public String getChanDoan() {
         return chanDoan;
     }

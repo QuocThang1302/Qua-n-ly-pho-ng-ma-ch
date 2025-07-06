@@ -26,6 +26,7 @@ import java.awt.Desktop;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 import java.awt.print.PrinterJob;
+import com.example.controllers.MedicineSelectionDialogController;
 
 public class MedicalReportController implements MedicineDataChangeListener {
 
@@ -61,7 +62,7 @@ public class MedicalReportController implements MedicineDataChangeListener {
         tfTenBacSi.setText(report.getTenBacSi());
         tfLyDoKham.setText(report.getLyDoKham());
         if (report.getNgayLap() != null) {
-            tfNgayLap.setText(report.getNgayLap().format(fmt));
+            tfNgayLap.setText(report.getNgayLap().toLocalDate().format(fmt));
         } else {
             tfNgayLap.setText("");
         }
@@ -88,21 +89,43 @@ public class MedicalReportController implements MedicineDataChangeListener {
         applyRolePermissions();
     }
 
+    // Phương thức mới: Load phiếu khám bệnh từ database dựa vào mã khám bệnh
+    public void loadMedicalReportByMaKhamBenh(String maKhamBenh) {
+        try {
+            MedicalReportModel report = com.example.DAO.MedicalReportDAO.getCompleteMedicalReportByMaKhamBenh(maKhamBenh);
+            if (report != null) {
+                BillModel bill = report.getHoaDon();
+                setData(report, bill);
+            } else {
+                showAlert("Lỗi", "Không tìm thấy phiếu khám bệnh với mã: " + maKhamBenh, Alert.AlertType.ERROR);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Lỗi", "Không thể load phiếu khám bệnh: " + ex.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
     private void setupButtons() {
         btnThemThuoc.setOnAction(event -> {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medicine_detail.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medicine_selection_dialog.fxml"));
                 Parent root = loader.load();
-                MedicineDetailController controller = loader.getController();
-                controller.setDataChangeListener(this);
+                MedicineSelectionDialogController controller = loader.getController();
+                
+                // Set callback để nhận thuốc được chọn
+                controller.setOnMedicineSelected(medicine -> {
+                    danhSachThuoc.add(medicine);
+                    updateTongTien();
+                });
+                
                 Stage dialogStage = new Stage();
-                dialogStage.setTitle("Thêm thuốc");
+                dialogStage.setTitle("Chọn thuốc từ kho");
                 dialogStage.initModality(Modality.APPLICATION_MODAL);
                 dialogStage.setScene(new Scene(root));
                 dialogStage.showAndWait();
             } catch (IOException ex) {
                 ex.printStackTrace();
-                showAlert("Lỗi", "Không thể mở cửa sổ thêm thuốc: " + ex.getMessage(), Alert.AlertType.ERROR);
+                showAlert("Lỗi", "Không thể mở cửa sổ chọn thuốc: " + ex.getMessage(), Alert.AlertType.ERROR);
             }
         });
 

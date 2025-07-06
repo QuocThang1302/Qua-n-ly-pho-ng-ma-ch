@@ -135,11 +135,12 @@ public class AppointmentListController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medical_report.fxml"));
             Parent root = loader.load();
-            //System.out.println(medicalReportModel.getNgaySinh());
 
             // Lấy controller để truyền dữ liệu
             MedicalReportController controller = loader.getController();
-            controller.setData(medicalReportModel, medicalReportModel.getHoaDon());
+            
+            // Sử dụng phương thức mới để load dữ liệu từ database
+            controller.loadMedicalReportByMaKhamBenh(medicalReportModel.getMaKhamBenh());
 
             // Tạo stage mới (window mới)
             Stage dialogStage = new Stage();
