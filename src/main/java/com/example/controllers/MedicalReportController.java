@@ -75,13 +75,14 @@ public class MedicalReportController implements MedicineDataChangeListener {
         tableThuocHoaDon.setItems(danhSachThuoc);
 
         setupButtons();
-        applyRolePermissions();
+        handlePermission();
     }
 
     private void setupButtons() {
+        //TODO LAYOUT THÊM THUỐC MỚI TRONG SELECT HIỂN THỊ THUỐC CÒN LẠI NÊN KHÔNG CẦN LOAD SỐLUOWUONGWJ NHA
         btnThemThuoc.setOnAction(event -> {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/medicine_detail.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MedicineSelectionDialog.fxml"));
                 Parent root = loader.load();
                 MedicineDetailController controller = loader.getController();
                 controller.setDataChangeListener(this);
@@ -266,12 +267,22 @@ public class MedicalReportController implements MedicineDataChangeListener {
         }
     }
 
-    private void applyRolePermissions() {
+    private void handlePermission(){
         Role role = UserContext.getInstance().getRole();
-        boolean editable = role == Role.DOCTOR;
-        txtChanDoan.setEditable(editable);
-        btnThemThuoc.setVisible(!editable);
-        btnLuuPhieu.setVisible(!editable);
+        switch (role) {
+            case ADMIN -> {
+
+            }
+            case DOCTOR -> {
+
+            }
+            case NURSE -> {
+                btnLuuPhieu.setVisible(false);
+            }
+            case MANAGER -> {
+
+            }
+        }
     }
 
     @Override
