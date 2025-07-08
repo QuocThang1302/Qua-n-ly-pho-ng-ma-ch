@@ -70,14 +70,17 @@ public class MedicalReportController implements MedicineDataChangeListener {
 
         if (bill != null) {
             tfNgayHoaDon.setText(bill.getNgayLapDon().format(fmt));
-            double tienThuoc = bill.getDanhSachThuoc().stream().mapToDouble(thuoc -> thuoc.getGiaTien() * thuoc.getSoLuong()).sum();
+            double tienThuoc = 0;
+            if (bill.getDanhSachThuoc() != null) {
+                tienThuoc = bill.getDanhSachThuoc().stream().mapToDouble(thuoc -> thuoc.getGiaTien() * thuoc.getSoLuong()).sum();
+                danhSachThuoc.setAll(bill.getDanhSachThuoc());
+                System.out.println(bill.getDanhSachThuoc().size());
+            } else {
+                danhSachThuoc.clear();
+            }
             tfTienThuoc.setText(String.format("%.0f", tienThuoc));
             tfTienKham.setText(String.format("%.0f", bill.getTienKham()));
             tfTongTien.setText(String.format("%.0f", bill.getTongTien()));
-            if (bill.getDanhSachThuoc() != null) {
-                danhSachThuoc.setAll(bill.getDanhSachThuoc());
-                System.out.println(bill.getDanhSachThuoc().size());
-            }
         }
 
         colTenThuoc.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("tenThuoc"));
@@ -363,11 +366,7 @@ public class MedicalReportController implements MedicineDataChangeListener {
     }
 
     private void applyRolePermissions() {
-        Role role = UserContext.getInstance().getRole();
-        boolean editable = role == Role.DOCTOR;
-        txtChanDoan.setEditable(editable);
-        btnThemThuoc.setVisible(!editable);
-        btnLuuPhieu.setVisible(!editable);
+        
     }
 
     @Override

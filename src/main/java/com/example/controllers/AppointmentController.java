@@ -90,15 +90,6 @@ public class AppointmentController {
             return menu;
         });
 //
-        // ✅ XỬ LÝ DOUBLE-CLICK ĐơN GIẢN
-        calendarView.setEntryFactory(param -> {
-            // Khi double click tạo Entry mới, chỉ mở form chi tiết, không tạo entry mới trên calendar
-            AppointmentModel model = new AppointmentModel();
-            AppointmentEntry entry = new AppointmentEntry("", model);
-            model.setNgayKham(param.getZonedDateTime().toLocalDate());
-            Platform.runLater(() -> openAppointmentDetailWindow(entry));
-            return null;
-        });
 
 
         calendarView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -135,35 +126,13 @@ public class AppointmentController {
 
 
         Role role = UserContext.getInstance().getRole();
-        if(role.equals(Role.NURSE)){
-            /*
+        if(role.equals(Role.NURSE) || role.equals(Role.ADMIN)){
             calendarView.setEntryFactory(param -> {
-                String title = "Khám Mới";
-                AppointmentModel model = new AppointmentModel();
-                String maKhamBenh = "KB" + HenKhamBenhDAO.getNextIdNumber("KB");
-                model.setMaKhamBenh(maKhamBenh);
-                model.setLyDoKham(title);
-                model.setNgayKham(param.getZonedDateTime().toLocalDate());
-
-
-                AppointmentEntry entry = new AppointmentEntry(title, model);
-                entry.setInterval(param.getZonedDateTime());
-                registerEntryChangeListeners(entry);
-                return entry;
-        });*/
-            // ✅ XỬ LÝ DOUBLE-CLICK ĐơN GIẢN
-            calendarView.setEntryFactory(param -> {
-                // Khi double click tạo Entry mới, ta chặn lại ở đây
                 AppointmentModel model = new AppointmentModel();
                 AppointmentEntry entry = new AppointmentEntry("", model);
-
-                // Gán ngày giờ vào model nếu cần:
                 model.setNgayKham(param.getZonedDateTime().toLocalDate());
-
-                // Gọi form chi tiết để người dùng nhập
+                entry.setInterval(param.getZonedDateTime());
                 Platform.runLater(() -> openAppointmentDetailWindow(entry));
-
-                // Trả null để không thêm "New Entry" vào giao diện
                 return null;
             });
         }

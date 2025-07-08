@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -135,7 +137,9 @@ public class StaffDetailController {
             tfAddress.setText(staffModel.getAddress());
             tfPassword.setText(staffModel.getPassword());
             tfCCCD.setText(staffModel.getCccd());
-            tfSalary.setText(String.valueOf(staffModel.getLuong()));
+            DecimalFormat df = new DecimalFormat("#");
+            tfSalary.setText(df.format(staffModel.getLuong()));
+
             cbRole.setValue(staffModel.getRole());
             dpBirth.setValue(staffModel.getBirthday());
 

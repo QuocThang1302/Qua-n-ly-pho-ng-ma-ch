@@ -594,4 +594,47 @@ public class MedicalReportDAO {
         }
         return medicines;
     }
+    public static int getNextIdNumber(String prefix) {
+        String sql = "SELECT MaPhieuKham " +
+                "FROM PhieuKhamBenh " +
+                "WHERE MaPhieuKham LIKE ? " +
+                "AND MaPhieuKham ~ ? " +
+                "ORDER BY CAST(SUBSTRING(MaPhieuKham FROM ?) AS INTEGER) DESC " +
+                "LIMIT 1";
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, prefix + "%");
+            stmt.setString(2, "^" + prefix + "[0-9]+$");
+            stmt.setString(3, String.format("^.{%d}(\\d+)$", prefix.length()));
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String id = rs.getString("MaPhieuKham");
+                if (id != null && id.startsWith(prefix)) {
+                    try {
+                        String numberPart = id.substring(prefix.length());
+                        if (numberPart.matches("\\d+")) {
+                            int currentNumber = Integer.parseInt(numberPart);
+                            System.out.println("Found max MaPhieuKham: " + id + ", number: " + currentNumber);
+                            return currentNumber + 1;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error parsing number from: " + id);
+                    }
+                }
+            }
+
+            System.out.println("No existing MaPhieuKham found for prefix: " + prefix);
+            return 1;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error in getNextIdNumber (MedicalReportDAO): " + e.getMessage());
+            return 1;
+        }
+    }
+
 }
