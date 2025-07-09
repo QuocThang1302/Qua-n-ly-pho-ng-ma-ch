@@ -41,7 +41,7 @@ CREATE TABLE HenKhamBenh (
   NgayKham DATE,
   GioBatDau TIME,
   GioKetThuc TIME,
-  MaBacSi VARCHAR(20),
+  MaBacSi VARCHAR(20)
 );
 
 CREATE TABLE PhieuKhamBenh (

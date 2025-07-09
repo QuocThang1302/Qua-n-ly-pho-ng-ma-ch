@@ -307,6 +307,17 @@ public class AppointmentDetailController {
             } else {
                 System.out.println("⚠️ DEBUG: Không thể tạo PhieuKhamBenh rỗng, nhưng lịch hẹn đã được lưu");
             }
+            DonThuocModel newDonThuoc = new DonThuocModel();
+            String maDonThuoc = "DT" + DonThuocDAO.getNextIdNumber("DT");
+            newDonThuoc.setNgayLapDon(ngayLapPhieu);
+            newDonThuoc.setMaDonThuoc(maDonThuoc);
+            newDonThuoc.setMaPhieuKham(maPhieuKham);
+            boolean success2 = DonThuocDAO.insert(newDonThuoc);
+            if (success2) {
+                System.out.println("Thêm đơn thuốc thành công" + maDonThuoc );
+            } else {
+                System.out.println("Thêm đơn thuốc thất bại!");
+            }
 
             // Tạo hóa đơn rỗng duy nhất cho phiếu khám này nếu chưa có
             String maHoaDon = "HD" + maPhieuKham;
@@ -314,7 +325,7 @@ public class AppointmentDetailController {
             BillModel newBill = new BillModel();
             newBill.setMaHoaDon(maHoaDon);
             newBill.setMaPhieuKham(maPhieuKham);
-            newBill.setMaDonThuoc("DT102");
+            newBill.setMaDonThuoc(maDonThuoc);
             newBill.setTongTien(QuiDinhDAO.getGiaTri("DEFAULT_TIEN_KHAM").doubleValue()); // Tiền khám mặc định
             newBill.setTrangThai("Chưa thanh toán");
             LocalDateTime ngayLapHoaDon = LocalDateTime.now();
