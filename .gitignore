@@ -32,4 +32,8 @@ bin/
 /target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
 /target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
 
+# Cấu hình email - KHÔNG PUSH LÊN GITHUB
+src/main/resources/email.properties
+
+
 

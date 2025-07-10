@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20.0" alignment="CENTER" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controllers.EmailVerificationController"
+      prefWidth="400.0" prefHeight="300.0"
+      style="-fx-padding: 20; -fx-background-color: white;"
+      stylesheets="@../CSS/patient_detail_style.css">
+
+    <Label text="Quên mật khẩu" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <VBox spacing="8.0" alignment="CENTER">
+        <Label text="Nhập mã nhân viên:" style="-fx-font-size: 14"/>
+        <TextField fx:id="maNhanVienField" promptText="NV001"
+                   styleClass="text-field" prefWidth="300"/>
+    </VBox>
+
+    <VBox spacing="8.0" alignment="CENTER">
+        <Label text="Nhập email đã đăng ký:" style="-fx-font-size: 14"/>
+        <TextField fx:id="emailField" promptText="example@gmail.com"
+                   styleClass="text-field" prefWidth="300"/>
+    </VBox>
+
+    <VBox.margin>
+        <Insets top="10"/>
+    </VBox.margin>
+
+    <Button fx:id="btnXacNhan" text="Gửi mã xác nhận" onAction="#handleSendOTP"
+            prefWidth="150" prefHeight="35"
+            styleClass="btn-register"/>
+</VBox>

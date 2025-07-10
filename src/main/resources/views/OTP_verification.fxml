@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20.0" alignment="CENTER" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controllers.OTPVerificationController"
+      prefWidth="400.0" prefHeight="280.0"
+      style="-fx-padding: 20; -fx-background-color: white;"
+      stylesheets="@../CSS/patient_detail_style.css">
+
+    <Label text="Xác minh OTP" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <VBox spacing="8.0" alignment="CENTER">
+        <Label text="Nhập mã OTP đã gửi qua email:" style="-fx-font-size: 14"/>
+        <TextField fx:id="otpField" promptText="6 chữ số"
+                   styleClass="text-field" prefWidth="200"
+                   style="-fx-text-alignment: center; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+    </VBox>
+
+    <VBox.margin>
+        <Insets top="10"/>
+    </VBox.margin>
+
+    <Button text="Xác nhận" onAction="#handleVerifyOTP"
+            prefWidth="120" prefHeight="35"
+            styleClass="btn-register"/>
+</VBox>

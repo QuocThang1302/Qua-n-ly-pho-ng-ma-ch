@@ -48,6 +48,7 @@
                                     <PasswordField fx:id="txtMatKhau" prefHeight="25.0" prefWidth="410.0" promptText="Nhập mật khẩu" styleClass="rounded-textfield" />
                                     <TextField fx:id="txtMatKhauVisible" prefHeight="25.0" prefWidth="410.0" promptText="Nhập mật khẩu" styleClass="rounded-textfield" visible="false" />
                                 </StackPane>
+                                <Label text="Quên mật khẩu?" style="-fx-font-size: 12px; -fx-text-fill: #1E88E5; -fx-cursor: hand;" onMouseClicked="#handleForgotPassword"/>
                                 <CheckBox fx:id="chkShowPassword" style="-fx-font-size: 13px; -fx-text-fill: #388E3C; -fx-padding: 0 0 0 4;" text="Hiển thị mật khẩu" />
                                 <Label fx:id="lbltest" style="-fx-background-color: #FFEBEE; -fx-background-radius: 8; -fx-padding: 4 8; -fx-font-size: 14px;" text="Tài khoản hoặc mật khẩu bị sai. Vui lòng thử lại" textFill="RED" />
                                 <Button fx:id="btnDangNhap" prefHeight="43.0" prefWidth="98.0" styleClass="button login-btn" text="Đăng nhập" />

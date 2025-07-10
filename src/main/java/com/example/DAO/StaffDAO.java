@@ -158,4 +158,25 @@ public class StaffDAO {
         }
     }
 
+    public static StaffModel findByEmailAndId(String email, String maNhanVien) {
+        String sql = "SELECT * FROM NhanVien WHERE Email = ? AND MaNhanVien = ?";
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            stmt.setString(2, maNhanVien);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return parseStaff(rs); // Hàm này bạn giữ nguyên
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+
+
+
 }
