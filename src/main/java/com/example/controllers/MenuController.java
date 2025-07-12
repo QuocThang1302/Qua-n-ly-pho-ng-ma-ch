@@ -12,7 +12,7 @@ import javafx.util.Duration;
 import java.util.List;
 
 public class MenuController {
-    @FXML private HBox btnDashboard, btnStaff, btnPatients, btnAnalytics,btnAppointment,btnDutySchedule,btnMedicalReport,btnMedicine, btnLogout;
+    @FXML private HBox btnMyprofile,btnDashboard, btnStaff, btnPatients, btnAnalytics,btnAppointment,btnDutySchedule,btnMedicalReport,btnMedicine, btnLogout;
     @FXML private StackPane contentArea;
 
     private HBox currentActiveItem;
@@ -62,6 +62,10 @@ public class MenuController {
             setMenuActive(btnAppointment);
             NavigationHelper.setContent(contentArea,"/views/appointment.fxml");
         });
+        btnMyprofile.setOnMouseClicked(e -> {
+            setMenuActive(btnMyprofile);
+            NavigationHelper.setContent(contentArea,"/views/myprofile.fxml");
+        });
 
         btnLogout.setOnMouseClicked(e -> {
             UserContext.getInstance().clear();
@@ -102,8 +106,6 @@ public class MenuController {
                     btnAnalytics.setManaged(false);
                 }
                 case MANAGER -> {
-                    btnStaff.setVisible(false);
-                    btnStaff.setManaged(false);
                 }
             }
     }

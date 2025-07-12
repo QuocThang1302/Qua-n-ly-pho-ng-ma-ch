@@ -116,4 +116,22 @@ public class StaffModel {
         this.password = password;
     }
 
+    @Override
+    public String toString() {
+        return "StaffModel{" +
+                "id='" + id + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", role='" + role + '\'' +
+                ", luong=" + luong +
+                ", birthday=" + birthday +
+                ", gender='" + gender + '\'' +
+                ", cccd='" + cccd + '\'' +
+                ", address='" + address + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
+
 }

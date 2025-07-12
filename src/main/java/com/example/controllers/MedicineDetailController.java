@@ -2,6 +2,8 @@ package com.example.controllers;
 
 import com.example.DAO.MedicineDAO;
 import com.example.model.MedicineModel;
+import com.example.model.Role;
+import com.example.model.UserContext;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -24,12 +26,7 @@ public class MedicineDetailController {
 
     @FXML
     public void initialize() {
-        btnAdd.setVisible(true);
-        btnAdd.setManaged(true);
-        btnUpdate.setVisible(false);
-        btnUpdate.setManaged(false);
-        btnDelete.setVisible(false);
-        btnDelete.setManaged(false);
+        handlePermission();
         tfId.setEditable(false);
         tfId.setStyle("-fx-background-color: #f0f0f0;");
         int nextIdNumber = MedicineDAO.getNextIdNumber("T");
@@ -40,12 +37,7 @@ public class MedicineDetailController {
 
     public void setMedicine(MedicineModel medicineModel) {
         if (medicineModel != null) {
-            btnAdd.setVisible(false);
-            btnAdd.setManaged(false);
-            btnUpdate.setVisible(true);
-            btnUpdate.setManaged(true);
-            btnDelete.setVisible(true);
-            btnDelete.setManaged(true);
+
             tfId.setText(medicineModel.getMaThuoc());
             tfUse.setText(medicineModel.getCongDung());
             tfName.setText(medicineModel.getTenThuoc());
@@ -245,7 +237,38 @@ public class MedicineDetailController {
             showAlert("Lỗi", "Lỗi không xác định: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
+    private void handlePermission() {
+        Role role = UserContext.getInstance().getRole();
+        switch (role) {
+            case ADMIN -> {
 
+            }
+            case DOCTOR -> {
+                btnAdd.setVisible(false);
+                btnAdd.setManaged(false);
+                btnUpdate.setVisible(false);
+                btnUpdate.setManaged(false);
+                btnDelete.setVisible(false);
+                btnDelete.setManaged(false);
+            }
+            case NURSE -> {
+                btnAdd.setVisible(false);
+                btnAdd.setManaged(false);
+                btnUpdate.setVisible(false);
+                btnUpdate.setManaged(false);
+                btnDelete.setVisible(false);
+                btnDelete.setManaged(false);
+            }
+            case MANAGER -> {
+                btnAdd.setVisible(true);
+                btnAdd.setManaged(true);
+                btnUpdate.setVisible(true);
+                btnUpdate.setManaged(true);
+                btnDelete.setVisible(true);
+                btnDelete.setManaged(true);
+            }
+        }
+    }
     private void showAlert(String title, String content, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

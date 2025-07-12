@@ -1,7 +1,7 @@
 package com.example.model;
 
 public class UserContext {
-    private static UserContext instance;
+    private static final UserContext instance = new UserContext();
     private String userId;
     private String username;
     private Role role;
@@ -9,9 +9,6 @@ public class UserContext {
     private UserContext() {}
 
     public static UserContext getInstance() {
-        if (instance == null) {
-            instance = new UserContext();
-        }
         return instance;
     }
 

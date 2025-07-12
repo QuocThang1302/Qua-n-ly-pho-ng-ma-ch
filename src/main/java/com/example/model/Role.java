@@ -18,10 +18,10 @@ public enum Role {
 
     public String toVietnamese() {
         return switch (this) {
-            case DOCTOR -> "Bác sĩ";
-            case NURSE -> "Y tá";
-            case MANAGER -> "Quản lý";
-            case ADMIN -> "Quản trị";
+            case DOCTOR -> "bác sĩ";
+            case NURSE -> "y tá";
+            case MANAGER -> "quản lý";
+            case ADMIN -> "quản trị";
         };
     }
 }

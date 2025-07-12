@@ -175,6 +175,21 @@ public class StaffDAO {
         }
         return null;
     }
+    public static StaffModel getByID(String maNhanVien) {
+        String sql = "SELECT * FROM NhanVien WHERE MaNhanVien = ?";
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maNhanVien);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return parseStaff(rs);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi truy vấn nhân viên: " + e.getMessage());
+        }
+        return null;
+    }
 
     public static List<String> getDoctorIds() {
         List<String> list = new ArrayList<>();
