@@ -2,6 +2,7 @@ package com.example.controllers;
 
 import com.example.DAO.*;
 import com.example.model.*;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,6 +28,7 @@ public class AppointmentDetailController {
     @FXML private TextField txtMaBenhNhan,txtHoTen, txtSoDienThoai, txtGioBatDau, txtGioKetThuc;
     @FXML private DatePicker dateNgaySinh, dateNgayKham;
     @FXML private ChoiceBox<String> cbGioiTinh;
+    @FXML private ComboBox<String> cbMaBacSi;
     @FXML private TextArea txtLyDo;
     @FXML private Button btnLuu,btnPhieuKhamBenh,btnChonBenhNhanCu;
 
@@ -42,7 +44,7 @@ public class AppointmentDetailController {
     public void setEntry(AppointmentEntry entry) {
         this.entry = entry;
         this.model = entry.getModel();
-
+        cbMaBacSi.setItems(FXCollections.observableArrayList(StaffDAO.getDoctorIds()));
         // Kiểm tra xem đây có phải là lịch hẹn mới không
         if (isNullOrEmpty(model.getMaBenhNhan()) && isNullOrEmpty(model.getHoTen())) {
             // Đây là lịch hẹn mới - chỉ hiển thị placeholder, chưa sinh mã
@@ -60,7 +62,7 @@ public class AppointmentDetailController {
         dateNgaySinh.setValue(model.getNgaySinh());
         cbGioiTinh.getItems().setAll("Nam", "Nữ");
         cbGioiTinh.setValue(model.getGioiTinh());
-
+        cbMaBacSi.setValue(model.getMaBacSi());
         txtLyDo.setText(model.getLyDoKham());
 
         // Gán ngày khám chung
@@ -148,7 +150,7 @@ public class AppointmentDetailController {
         LocalDate ngayKham = dateNgayKham.getValue();
         String gioBatDauStr = txtGioBatDau.getText().trim();
         String gioKetThucStr = txtGioKetThuc.getText().trim();
-        String maBacSi = UserContext.getInstance().getUserId();
+        String maBacSi = cbMaBacSi.getValue();
 
         System.out.println("🔧 DEBUG: Dữ liệu đầu vào:");
         System.out.println("  - Họ tên: " + hoTen);
@@ -434,6 +436,7 @@ public class AppointmentDetailController {
             LocalDate ngaySinh = dateNgaySinh.getValue();
             String gioiTinh = cbGioiTinh.getValue();
             String lyDo = txtLyDo.getText().trim();
+            String maBacSi = cbMaBacSi.getValue();
             LocalDate ngayKham = dateNgayKham.getValue();
             LocalTime gioBatDau = LocalTime.parse(txtGioBatDau.getText().trim());
             LocalTime gioKetThuc = LocalTime.parse(txtGioKetThuc.getText().trim());
@@ -460,7 +463,7 @@ public class AppointmentDetailController {
             model.setNgayKham(ngayKham);
             model.setGioBatDau(gioBatDau);
             model.setGioKetThuc(gioKetThuc);
-            model.setMaBacSi("BS001"); // hoặc lấy từ combobox nếu có
+            model.setMaBacSi(maBacSi);
 
             // Cập nhật vào database
             boolean success = HenKhamBenhDAO.update(model);

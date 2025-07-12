@@ -176,6 +176,23 @@ public class StaffDAO {
         return null;
     }
 
+    public static List<String> getDoctorIds() {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT MaNhanVien FROM NhanVien WHERE RoleID = 'DOCTOR' ORDER BY MaNhanVien";
+
+        try (Connection conn = DatabaseConnector.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                list.add(rs.getString("MaNhanVien"));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
 
 
 

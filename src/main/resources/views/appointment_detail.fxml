@@ -14,6 +14,7 @@
 
 
     <GridPane hgap="12" vgap="10">
+        <!-- Dòng 0 -->
         <Label text="Bệnh nhân:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
         <HBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <TextField fx:id="txtMaBenhNhan" promptText="Mã BN" prefWidth="80" editable="false"/>
@@ -21,44 +22,55 @@
             <Button fx:id="btnChonBenhNhanCu" text="🔍" onAction="#handleChonBenhNhanCu"/>
         </HBox>
 
+        <!-- Dòng 1 - Mã bác sĩ -->
+        <Label text="Mã bác sĩ:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <ComboBox fx:id="cbMaBacSi" promptText="Chọn bác sĩ" GridPane.columnIndex="1" GridPane.rowIndex="1" editable="false"/>
 
-        <Label text="Ngày sinh:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <DatePicker fx:id="dateNgaySinh" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <!-- Dòng 2 -->
+        <Label text="Ngày sinh:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <DatePicker fx:id="dateNgaySinh" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-        <Label text="Số điện thoại:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-        <TextField fx:id="txtSoDienThoai" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <!-- Dòng 3 -->
+        <Label text="Số điện thoại:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <TextField fx:id="txtSoDienThoai" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-        <Label text="Giới tính:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-        <ChoiceBox fx:id="cbGioiTinh" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <!-- Dòng 4 -->
+        <Label text="Giới tính:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <ChoiceBox fx:id="cbGioiTinh" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-        <Label text="Lý do khám:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-        <TextArea fx:id="txtLyDo" prefRowCount="2" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <!-- Dòng 5 -->
+        <Label text="Lý do khám:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+        <TextArea fx:id="txtLyDo" prefRowCount="2" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-        <Label text="Ngày khám:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-        <DatePicker fx:id="dateNgayKham" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+        <!-- Dòng 6 -->
+        <Label text="Ngày khám:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+        <DatePicker fx:id="dateNgayKham" GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
-        <Label text="Giờ bắt đầu:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-        <TextField fx:id="txtGioBatDau" promptText="HH:mm" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+        <!-- Dòng 7 -->
+        <Label text="Giờ bắt đầu:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+        <TextField fx:id="txtGioBatDau" promptText="HH:mm" GridPane.columnIndex="1" GridPane.rowIndex="7" />
 
-        <Label text="Giờ kết thúc:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
-        <TextField fx:id="txtGioKetThuc" promptText="HH:mm" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-      <columnConstraints>
-         <ColumnConstraints />
-         <ColumnConstraints />
-      </columnConstraints>
-      <rowConstraints>
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-      </rowConstraints>
+        <!-- Dòng 8 -->
+        <Label text="Giờ kết thúc:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+        <TextField fx:id="txtGioKetThuc" promptText="HH:mm" GridPane.columnIndex="1" GridPane.rowIndex="8" />
 
-
+        <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+        </rowConstraints>
     </GridPane>
+
 
     <HBox alignment="CENTER_RIGHT" spacing="12">
         <padding><Insets bottom="10" /></padding>
