@@ -4,9 +4,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="main-container" stylesheets="@../CSS/staff_profile_style.css" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.MyProfileController">
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="main-container" stylesheets="@../CSS/staff_profile_style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.MyProfileController">
 
-    <VBox alignment="CENTER" spacing="12" styleClass="123">
+    <VBox alignment="CENTER" spacing="12" styleClass="content-wrapper">
         <padding><Insets bottom="20" left="30" right="30" top="20" /></padding>
 
         <!-- Header Section -->
@@ -16,7 +16,7 @@
         </VBox>
 
         <!-- Main Content -->
-        <VBox alignment="CENTER" maxWidth="1000" spacing="15">
+        <VBox alignment="CENTER" prefWidth="1200" maxWidth="1200" spacing="15">
 
             <!-- Personal Information Section -->
             <VBox alignment="CENTER_LEFT" spacing="8">
@@ -35,7 +35,7 @@
                     <TextField fx:id="tfId" editable="false" prefHeight="40" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                     <Label styleClass="field-label" text="Vai trò" GridPane.columnIndex="3" GridPane.rowIndex="0" />
-                    <ComboBox disable="true" fx:id="cbRole" prefHeight="40" styleClass="combo-box" GridPane.columnIndex="4" GridPane.rowIndex="0" />
+                    <ComboBox mouseTransparent="true" fx:id="cbRole" prefHeight="40" styleClass="combo-box" GridPane.columnIndex="4" GridPane.rowIndex="0" />
 
                     <!-- Row 1 -->
                     <Label styleClass="field-label" text="Họ và tên đệm" GridPane.columnIndex="0" GridPane.rowIndex="1" />
@@ -126,7 +126,7 @@
 
                     <!-- Row 0 -->
                     <Label styleClass="field-label" text="Mức lương" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <TextField fx:id="tfSalary" prefHeight="40" styleClass="text-field, salary-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <TextField fx:id="tfSalary" editable="false" prefHeight="40" styleClass="text-field, salary-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                     <rowConstraints>
                         <RowConstraints />
