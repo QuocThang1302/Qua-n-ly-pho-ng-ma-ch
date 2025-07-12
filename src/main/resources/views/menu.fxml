@@ -32,6 +32,24 @@
                     </ImageView>
                     <Label text="Bảng điều khiển" />
                 </HBox>
+                <HBox fx:id="btnAppointment" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image><Image url="@/assets/calendar.png" /></image>
+                    </ImageView>
+                    <Label text="Lịch khám" />
+                </HBox>
+                <HBox fx:id="btnMedicalReport" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image><Image url="@/assets/medical-report-icon.png" /></image>
+                    </ImageView>
+                    <Label text="Danh sách khám bệnh" />
+                </HBox>
+                <HBox fx:id="btnDutySchedule" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image><Image url="@/assets/calendar.png" /></image>
+                    </ImageView>
+                    <Label text="Lịch trực" />
+                </HBox>
                 <HBox fx:id="btnStaff" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
                     <ImageView fitHeight="24" fitWidth="24">
                         <image><Image url="@/assets/nurse-icon.png" /></image>
@@ -44,17 +62,13 @@
                     </ImageView>
                     <Label text="Bệnh nhân" />
                 </HBox>
-                <HBox fx:id="btnAppointment" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+
+
+                <HBox fx:id="btnMedicine" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
                     <ImageView fitHeight="24" fitWidth="24">
-                        <image><Image url="@/assets/calendar.png" /></image>
+                        <image><Image url="@/assets/pill-icon.png" /></image>
                     </ImageView>
-                    <Label text="Lịch khám" />
-                </HBox>
-                <HBox fx:id="btnDutySchedule" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
-                    <ImageView fitHeight="24" fitWidth="24">
-                        <image><Image url="@/assets/calendar.png" /></image>
-                    </ImageView>
-                    <Label text="Lịch trực" />
+                    <Label text="Thuốc" />
                 </HBox>
                 <HBox fx:id="btnAnalytics" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
                     <ImageView fitHeight="24" fitWidth="24">
@@ -62,18 +76,14 @@
                     </ImageView>
                     <Label text="Báo cáo tháng" />
                 </HBox>
-                <HBox fx:id="btnMedicine" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+                <HBox fx:id="btnMyprofile" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
                     <ImageView fitHeight="24" fitWidth="24">
-                        <image><Image url="@/assets/pill-icon.png" /></image>
+                        <image><Image url="@/assets/myprofile.png" /></image>
                     </ImageView>
-                    <Label text="Thuốc" />
+                    <Label text="Thông tin cá nhân" />
                 </HBox>
-                <HBox fx:id="btnMedicalReport" alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
-                    <ImageView fitHeight="24" fitWidth="24">
-                        <image><Image url="@/assets/medical-report-icon.png" /></image>
-                    </ImageView>
-                    <Label text="Danh sách khám bệnh" />
-                </HBox>
+
+
             </VBox>
 
             <!-- SIGN OUT AT BOTTOM -->

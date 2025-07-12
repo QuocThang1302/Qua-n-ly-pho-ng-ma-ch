@@ -89,7 +89,7 @@ public class MedicalReportController implements MedicineDataChangeListener {
         tableThuocHoaDon.setItems(danhSachThuoc);
 
         setupButtons();
-        applyRolePermissions();
+        handlePermission();
     }
 
     // Phương thức mới: Load phiếu khám bệnh từ database dựa vào mã khám bệnh
@@ -365,8 +365,32 @@ public class MedicalReportController implements MedicineDataChangeListener {
         }
     }
 
-    private void applyRolePermissions() {
-        
+    private void handlePermission() {
+        Role role = UserContext.getInstance().getRole();
+        switch (role) {
+            case ADMIN -> {
+
+            }
+            case DOCTOR -> {
+
+            }
+            case NURSE -> {
+            btnLuuPhieu.setVisible(false);
+            btnLuuPhieu.setManaged(false);
+            txtChanDoan.setEditable(false);
+            btnThemThuoc.setVisible(false);
+            btnThemThuoc.setManaged(false);
+            tfTienKham.setEditable(false);
+            }
+            case MANAGER -> {
+                btnLuuPhieu.setVisible(false);
+                btnLuuPhieu.setManaged(false);
+                txtChanDoan.setEditable(false);
+                btnThemThuoc.setVisible(false);
+                btnThemThuoc.setManaged(false);
+                tfTienKham.setEditable(false);
+            }
+        }
     }
 
     @Override
