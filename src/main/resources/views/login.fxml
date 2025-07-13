@@ -51,7 +51,10 @@
                                 <HBox>
                                     <CheckBox fx:id="chkShowPassword" style="-fx-font-size: 13px; -fx-text-fill: #388E3C; -fx-padding: 0 0 0 4;" text="Hiển thị mật khẩu" />
                                     <Region HBox.hgrow="ALWAYS"/>
-                                    <Label text="Quên mật khẩu?" style="-fx-font-size: 12px; -fx-text-fill: #1E88E5; -fx-cursor: hand;" onMouseClicked="#handleForgotPassword"/>
+                                    <Label text="Quên mật khẩu?"
+                                           mouseTransparent="false"
+                                           style="-fx-font-size: 12px; -fx-text-fill: #1E88E5; -fx-cursor: hand;"
+                                           onMouseClicked="#handleForgotPassword"/>
                                 </HBox>
                                 <Label fx:id="lbltest" style="-fx-background-color: #FFEBEE; -fx-background-radius: 8; -fx-padding: 4 8; -fx-font-size: 14px;" text="Tài khoản hoặc mật khẩu bị sai. Vui lòng thử lại" textFill="RED" />
                                 <Button fx:id="btnDangNhap" prefHeight="43.0" prefWidth="98.0" styleClass="button login-btn" text="Đăng nhập" />
@@ -63,7 +66,7 @@
         </VBox>
     </center>
     <right>
-        <AnchorPane prefHeight="512.0" prefWidth="353.0" BorderPane.alignment="CENTER">
+        <AnchorPane prefHeight="512.0" prefWidth="353.0" BorderPane.alignment="CENTER" mouseTransparent="true">
             <children>
                 <ImageView fitHeight="331.0" fitWidth="310.0" layoutX="109.0" layoutY="112.0" opacity="0.90" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, #90CAF9, 30, 0.3, 0, 6);">
                     <image>
